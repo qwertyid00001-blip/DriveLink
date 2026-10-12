@@ -261,7 +261,7 @@ function updateBodyNoteRequirement() {
 
 function saveBookings(bookings) {
   if (window.DriveLinkAPI) serverBookings = bookings;
-  else DriveLinkStorage.write('drivelink-bookings', bookings);
+  else DriveLinkStorage.writeBookings(bookings);
 }
 
 function saveConditions(conditions) {

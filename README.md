@@ -124,6 +124,11 @@ produksi.
   kategori servis melalui `PUT /api/admin/vehicle-service-categories`; perubahan
   nama mengikuti rincian riwayat dan kategori yang dihapus dialihkan ke kategori aktif
   pertama. Pengeluaran servis pada Ringkasan dijumlahkan dari seluruh riwayat servis.
+- Detail satu booking untuk halaman admin dibaca melalui `GET /api/admin/bookings/:id`.
+  Daftar `GET /api/admin/bookings` tetap mengembalikan seluruh isi booking, tetapi
+  dokumen identitas (base64) tidak lagi disimpan di cache browser: cache lokal hanya
+  menyimpan metadata dokumen, sedangkan foto aslinya diambil dari server saat tombol
+  detail diklik. Ini menjaga cache tetap di bawah kuota localStorage browser (±5 MiB).
 - Pengelolaan foto armada: unggah 2–6 gambar JPG/PNG maksimal 700 KB per foto
   (total maksimal 4 MB) saat menambah kendaraan atau mengganti galeri armada.
   Foto ditampilkan sebagai slideshow pada kartu armada di halaman pelanggan.
@@ -149,7 +154,15 @@ pelanggan mengirim bukti pembayaran biaya sewa (QRIS, transfer, atau tunai
 dengan foto kuitansi); admin memverifikasi pembayaran sewa sebelum persiapan unit.
 Pilihan jaminan selain deposit Rp1.000.000 tetap memakai alur pembayaran lama.
 Checklist petugas menuntaskan persiapan unit, lalu pelanggan memulai waktu sewa
-saat menekan Selesai pada serah-terima.
+saat menekan Selesai pada serah-terima. Tidak ada lagi tahap persetujuan
+serah-terima oleh admin: setelah checklist unit selesai, konfirmasi pelanggan
+langsung memulai hitung sewa. Pelanggan yang ditolak admin melihat alasannya di
+Pesanan Saya.
+
+> Keamanan: `ADMIN_USERNAME` hanya dipakai saat database masih kosong untuk membuat
+> admin pertama. Nilai di environment tidak pernah menaikkan role atau mengubah
+> akun mana pun. Batas satu ulasan per IP memakai `cf-connecting-ip`/`x-forwarded-for`
+> sehingga hanya berlaku bila server diakses lewat Cloudflare Tunnel.
 Untuk deployment gunakan HTTPS dan `NODE_ENV=production`. Unggahan bukti tidak
 memvalidasi transaksi bank secara otomatis; admin memeriksa bukti secara manual.
 Gateway pembayaran dan kontrol/telemetri IoT belum diimplementasikan oleh MVP ini.

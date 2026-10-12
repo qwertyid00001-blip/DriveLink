@@ -21,7 +21,7 @@ function loadBookings() {
 }
 
 function saveBookings(bookings) {
-  DriveLinkStorage.write('drivelink-bookings', bookings);
+  DriveLinkStorage.writeBookings(bookings);
 }
 
 function findLocalBooking() {

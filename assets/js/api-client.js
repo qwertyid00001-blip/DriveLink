@@ -93,5 +93,21 @@
     remove(key) {
       try { localStorage.removeItem(key); } catch { /* abaikan */ }
     },
+    // Cache booking hanya untuk merender tabel. Foto identitas (base64) dibuang supaya
+    // cache tidak melebihi kuota localStorage browser (sekitar 5 MiB). Foto inspeksi unit
+    // tetap disimpan karena dipakai halaman serah-terima, pengembalian, dan arsip.
+    writeBookings(bookings) {
+      const light = Array.isArray(bookings)
+        ? bookings.map((booking) => {
+          if (!booking?.documents) return booking;
+          const documents = {};
+          for (const [key, value] of Object.entries(booking.documents)) {
+            documents[key] = value && typeof value === 'object' ? { name: value.name || '' } : Boolean(value);
+          }
+          return { ...booking, documents };
+        })
+        : [];
+      return DriveLinkStorage.write('drivelink-bookings', light);
+    },
   };
 })();

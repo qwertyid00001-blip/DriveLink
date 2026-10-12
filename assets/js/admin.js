@@ -15,22 +15,6 @@ if (!session || !['admin', 'employee'].includes(session.role)) {
   if (welcomeNameElement) welcomeNameElement.textContent = adminName.split(' ')[0];
 }
 
-// Cache lokal hanya untuk merender tabel. Foto identitas (base64) dibuang supaya cache
-// tidak melebihi kuota localStorage browser; detail lengkap diambil dari server saat dibutuhkan.
-function lightweightBookingCache(bookings) {
-  if (!Array.isArray(bookings)) return [];
-  return bookings.map((booking) => {
-    if (!booking?.documents) return booking;
-    const documents = {};
-    for (const [key, value] of Object.entries(booking.documents)) {
-      documents[key] = value && typeof value === 'object'
-        ? { name: value.name || '' }
-        : Boolean(value);
-    }
-    return { ...booking, documents };
-  });
-}
-
 function readBookings() {
   const saved = DriveLinkStorage.read('drivelink-bookings', []);
   if (window.DriveLinkAPI && currentPage.startsWith('admin')) return saved;
@@ -79,7 +63,7 @@ function readBookings() {
 }
 
 function saveBookings(bookings) {
-  DriveLinkStorage.write('drivelink-bookings', bookings);
+  DriveLinkStorage.writeBookings(bookings);
 }
 
 const DEFAULT_FLEET = [
@@ -1235,7 +1219,7 @@ async function updateBookingApproval(bookingId, action, reason = '') {
         ...(action === 'reject' ? { reason } : {}),
       });
       const serverBookings = await DriveLinkAPI.get('/api/admin/bookings');
-      DriveLinkStorage.write('drivelink-bookings', serverBookings);
+      DriveLinkStorage.writeBookings(serverBookings);
       if (session?.role === 'admin' || session?.permissions?.includes('fleet')) {
         const serverFleet = await DriveLinkAPI.get('/api/admin/fleet');
         cacheFleet(serverFleet);
@@ -1292,7 +1276,7 @@ async function updateBookingPayment(bookingId, action, stage = 'rental') {
     try {
       await DriveLinkAPI.patch(`/api/admin/bookings/${encodeURIComponent(bookingId)}/payment`, { action, stage });
       const serverBookings = await DriveLinkAPI.get('/api/admin/bookings');
-      DriveLinkStorage.write('drivelink-bookings', serverBookings);
+      DriveLinkStorage.writeBookings(serverBookings);
       message.classList.remove('is-error');
       const stageLabel = stage === 'deposit' ? 'deposit' : 'pembayaran sewa';
       message.textContent = action === 'approve'
@@ -1872,7 +1856,7 @@ if (window.DriveLinkAPI && currentPage.startsWith('admin')) {
     try {
       if (currentPage === 'admin.html') {
         const overview = await DriveLinkAPI.get('/api/admin/overview');
-        DriveLinkStorage.write('drivelink-bookings', lightweightBookingCache(overview.bookings));
+        DriveLinkStorage.writeBookings(overview.bookings);
         renderBookings();
         document.getElementById('totalBookings').textContent = String(overview.totalBookings);
         document.getElementById('pendingBookings').textContent = String(overview.pendingBookings);
@@ -1884,7 +1868,7 @@ if (window.DriveLinkAPI && currentPage.startsWith('admin')) {
         renderOverviewCharts(overview);
       } else if (currentPage === 'admin-bookings.html') {
         const bookings = await DriveLinkAPI.get('/api/admin/bookings');
-        DriveLinkStorage.write('drivelink-bookings', lightweightBookingCache(bookings));
+        DriveLinkStorage.writeBookings(bookings);
         renderBookings();
       } else if (currentPage === 'admin-fleet.html') {
         const [fleet, categories] = await Promise.all([
