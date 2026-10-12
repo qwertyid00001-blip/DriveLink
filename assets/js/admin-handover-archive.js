@@ -198,7 +198,7 @@ async function loadArchive() {
   try {
     const bookings = window.DriveLinkAPI
       ? await DriveLinkAPI.get('/api/admin/handover/archive')
-      : JSON.parse(localStorage.getItem('drivelink-bookings') || '[]');
+      : DriveLinkStorage.read('drivelink-bookings', []);
     renderArchive(bookings);
   } catch (error) {
     archiveMessage.textContent = `Arsip checklist gagal dimuat: ${error.message}`;

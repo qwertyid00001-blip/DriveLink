@@ -113,7 +113,7 @@
   }
 
   window.DriveLinkSessionReady = DriveLinkAPI.get('/api/auth/session').then((session) => {
-    localStorage.setItem('drivelink-session', JSON.stringify(session));
+    DriveLinkStorage.write('drivelink-session', session);
     const sidebarLabel = document.querySelector('.sidebar-label');
     if (sidebarLabel) sidebarLabel.textContent = 'Menu';
     document.querySelectorAll('.admin-nav-link').forEach((link) => {

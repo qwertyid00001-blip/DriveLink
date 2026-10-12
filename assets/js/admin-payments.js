@@ -1,18 +1,18 @@
-const session = JSON.parse(localStorage.getItem('drivelink-session') || 'null');
+const session = DriveLinkStorage.read('drivelink-session', null);
 if (!session || !['admin', 'employee'].includes(session.role)) window.location.replace('auth.html');
 else document.getElementById('adminName').textContent = session.name || 'Admin';
 
 const settingsForm = document.getElementById('paymentSettingsForm');
 const settingsMessage = document.getElementById('settingsMessage');
 const imageInput = document.getElementById('qrImageInput');
-let qrImageData = JSON.parse(localStorage.getItem('drivelink-payment-settings') || '{}').qrImage || '';
+let qrImageData = DriveLinkStorage.read('drivelink-payment-settings', {}).qrImage || '';
 
 function saveSettings(value) {
-  localStorage.setItem('drivelink-payment-settings', JSON.stringify(value));
+  DriveLinkStorage.write('drivelink-payment-settings', value);
 }
 
 function renderSettings() {
-  const settings = JSON.parse(localStorage.getItem('drivelink-payment-settings') || '{}');
+  const settings = DriveLinkStorage.read('drivelink-payment-settings', {});
   ['qrName', 'bankName', 'bankAccount', 'bankHolder'].forEach((name) => {
     settingsForm.elements[name].value = settings[name] || '';
   });
@@ -85,8 +85,8 @@ if (window.DriveLinkAPI) {
     DriveLinkAPI.get('/api/auth/session'),
     DriveLinkAPI.get('/api/admin/payment-settings'),
   ]).then(([admin, settings]) => {
-    localStorage.setItem('drivelink-session', JSON.stringify(admin));
-    localStorage.setItem('drivelink-payment-settings', JSON.stringify(settings));
+    DriveLinkStorage.write('drivelink-session', admin);
+    DriveLinkStorage.write('drivelink-payment-settings', settings);
     ['qrName', 'bankName', 'bankAccount', 'bankHolder'].forEach((name) => {
       settingsForm.elements[name].value = settings[name] || '';
     });

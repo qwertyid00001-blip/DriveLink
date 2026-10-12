@@ -1,4 +1,4 @@
-const session = JSON.parse(localStorage.getItem('drivelink-session') || 'null');
+const session = DriveLinkStorage.read('drivelink-session', null);
 if (!session || !['admin', 'employee'].includes(session.role)) window.location.replace('auth.html');
 else document.getElementById('adminName').textContent = session.name || 'Admin';
 
@@ -249,7 +249,7 @@ window.addEventListener('pagehide', () => {
 });
 
 function readBookings() {
-  return serverBookings || JSON.parse(localStorage.getItem('drivelink-bookings') || '[]');
+  return serverBookings || DriveLinkStorage.read('drivelink-bookings', []);
 }
 
 function updateBodyNoteRequirement() {
@@ -261,24 +261,24 @@ function updateBodyNoteRequirement() {
 
 function saveBookings(bookings) {
   if (window.DriveLinkAPI) serverBookings = bookings;
-  else localStorage.setItem('drivelink-bookings', JSON.stringify(bookings));
+  else DriveLinkStorage.write('drivelink-bookings', bookings);
 }
 
 function saveConditions(conditions) {
   serverUnitConditions = conditions;
   if (window.DriveLinkAPI) return;
-  localStorage.setItem('drivelink-unit-conditions', JSON.stringify(conditions));
+  DriveLinkStorage.write('drivelink-unit-conditions', conditions);
 }
 
 function readVehicleUnits() {
   if (serverVehicleUnits) return serverVehicleUnits;
-  return JSON.parse(localStorage.getItem('drivelink-vehicle-units') || '[]');
+  return DriveLinkStorage.read('drivelink-vehicle-units', []);
 }
 
 function saveVehicleUnits(units) {
   serverVehicleUnits = units;
   if (window.DriveLinkAPI) return;
-  localStorage.setItem('drivelink-vehicle-units', JSON.stringify(units));
+  DriveLinkStorage.write('drivelink-vehicle-units', units);
 }
 
 function renderInspectionHistory() {
@@ -630,7 +630,7 @@ function appendStatus(booking, status) {
 }
 
 function renderCondition() {
-  const conditions = serverUnitConditions || JSON.parse(localStorage.getItem('drivelink-unit-conditions') || '{}');
+  const conditions = serverUnitConditions || DriveLinkStorage.read('drivelink-unit-conditions', {});
   const condition = conditions[conditionForm.elements.carType.value];
   conditionForm.elements.notes.value = condition?.notes || '';
   const gallery = document.getElementById('savedConditionPhotos');
@@ -645,7 +645,7 @@ function renderCondition() {
 
 function renderVehicleOptions() {
   const select = conditionForm.elements.carType;
-  const fleet = serverFleet || JSON.parse(localStorage.getItem('drivelink-fleet') || '[]');
+  const fleet = serverFleet || DriveLinkStorage.read('drivelink-fleet', []);
   if (!fleet.length) return;
   const selected = select.value;
   select.replaceChildren(...fleet.map((vehicle) => {
@@ -867,7 +867,7 @@ conditionForm.addEventListener('submit', async (event) => {
     if (window.DriveLinkAPI && !serverUnitConditions) {
       throw new Error('Data kondisi unit belum termuat dari server. Muat ulang halaman, lalu coba lagi.');
     }
-    const conditions = serverUnitConditions || JSON.parse(localStorage.getItem('drivelink-unit-conditions') || '{}');
+    const conditions = serverUnitConditions || DriveLinkStorage.read('drivelink-unit-conditions', {});
     const carType = conditionForm.elements.carType.value;
     const oldPhotos = conditions[carType]?.photos || [];
     const photos = files.length
@@ -928,7 +928,14 @@ const requestedInspectionBooking = new URLSearchParams(window.location.search).g
 if (requestedInspectionBooking) {
   inspectionForm.elements.bookingId.value = requestedInspectionBooking.trim().toUpperCase();
 }
-document.getElementById('logoutButton').addEventListener('click', () => {
+document.getElementById('logoutButton').addEventListener('click', async () => {
+  if (window.DriveLinkAPI) {
+    try {
+      await DriveLinkAPI.post('/api/auth/logout', {});
+    } catch (error) {
+      console.error('Sesi server gagal diakhiri.', error);
+    }
+  }
   localStorage.removeItem('drivelink-session');
   window.location.href = 'auth.html';
 });

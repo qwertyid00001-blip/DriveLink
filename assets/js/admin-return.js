@@ -160,7 +160,14 @@ inspectionForm.addEventListener('submit', async (event) => {
 document.getElementById('todayLabel').textContent = new Intl.DateTimeFormat('id-ID', {
   weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
 }).format(new Date());
-document.getElementById('logoutButton').addEventListener('click', () => {
+document.getElementById('logoutButton').addEventListener('click', async () => {
+  if (window.DriveLinkAPI) {
+    try {
+      await DriveLinkAPI.post('/api/auth/logout', {});
+    } catch (error) {
+      console.error('Sesi server gagal diakhiri.', error);
+    }
+  }
   localStorage.removeItem('drivelink-session');
   window.location.href = 'auth.html';
 });

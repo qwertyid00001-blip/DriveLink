@@ -7,7 +7,7 @@ document.getElementById('loginForm').addEventListener('submit', (event) => {
 
   DriveLinkAPI.post('/api/auth/login', { username, password })
     .then(async (session) => {
-      localStorage.setItem('drivelink-session', JSON.stringify(session));
+      DriveLinkStorage.write('drivelink-session', session);
       message.classList.remove('is-error');
       const destinations = {
         overview: 'admin.html',

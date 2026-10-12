@@ -476,7 +476,7 @@ profileForm.addEventListener('submit', async (event) => {
       currentPassword: String(form.get('currentPassword') || ''),
       newPassword,
     });
-    localStorage.setItem('drivelink-session', JSON.stringify(session));
+    DriveLinkStorage.write('drivelink-session', session);
     document.getElementById('adminName').textContent = session.name;
     profileForm.elements.name.value = session.name;
     profileForm.elements.username.value = session.username;

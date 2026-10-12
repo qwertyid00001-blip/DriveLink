@@ -64,4 +64,34 @@
       ...(body ? { body: JSON.stringify(body) } : {}),
     }),
   };
+
+  // Pembacaan dan penulisan localStorage yang aman. Semua skrip adalah skrip klasik,
+  // jadi satu JSON rusak di localStorage akan menghentikan seluruh file ini.
+  window.DriveLinkStorage = {
+    read(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (raw === null || raw === undefined) return fallback;
+        return JSON.parse(raw);
+      } catch (error) {
+        console.warn(`Data local "${key}" rusak, dibersihkan.`, error);
+        try { localStorage.removeItem(key); } catch { /* abaikan */ }
+        return fallback;
+      }
+    },
+    write(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+        return true;
+      } catch (error) {
+        // QuotaExceededError: cache lokal penuh. Hapus cache terbesar lalu coba lagi sekali.
+        console.warn(`Cache local "${key}" gagal disimpan.`, error);
+        try { localStorage.removeItem(key); } catch { /* abaikan */ }
+        return false;
+      }
+    },
+    remove(key) {
+      try { localStorage.removeItem(key); } catch { /* abaikan */ }
+    },
+  };
 })();

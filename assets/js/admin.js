@@ -1,4 +1,4 @@
-const session = JSON.parse(localStorage.getItem('drivelink-session') || 'null');
+const session = DriveLinkStorage.read('drivelink-session', null);
 const currentPage = window.location.pathname.split('/').pop();
 let fleetCategories = ['MPV', 'SUV', 'Electric'];
 let serviceCategories = ['Oli', 'Ban', 'Cat', 'Salon mobil'];
@@ -15,8 +15,24 @@ if (!session || !['admin', 'employee'].includes(session.role)) {
   if (welcomeNameElement) welcomeNameElement.textContent = adminName.split(' ')[0];
 }
 
+// Cache lokal hanya untuk merender tabel. Foto identitas (base64) dibuang supaya cache
+// tidak melebihi kuota localStorage browser; detail lengkap diambil dari server saat dibutuhkan.
+function lightweightBookingCache(bookings) {
+  if (!Array.isArray(bookings)) return [];
+  return bookings.map((booking) => {
+    if (!booking?.documents) return booking;
+    const documents = {};
+    for (const [key, value] of Object.entries(booking.documents)) {
+      documents[key] = value && typeof value === 'object'
+        ? { name: value.name || '' }
+        : Boolean(value);
+    }
+    return { ...booking, documents };
+  });
+}
+
 function readBookings() {
-  const saved = JSON.parse(localStorage.getItem('drivelink-bookings') || '[]');
+  const saved = DriveLinkStorage.read('drivelink-bookings', []);
   if (window.DriveLinkAPI && currentPage.startsWith('admin')) return saved;
   if (saved.length) {
     let migrated = false;
@@ -63,7 +79,7 @@ function readBookings() {
 }
 
 function saveBookings(bookings) {
-  localStorage.setItem('drivelink-bookings', JSON.stringify(bookings));
+  DriveLinkStorage.write('drivelink-bookings', bookings);
 }
 
 const DEFAULT_FLEET = [
@@ -95,7 +111,7 @@ function readFleet() {
     return fleet;
   }
   const fleet = DEFAULT_FLEET.map((vehicle) => ({ ...vehicle }));
-  const reservations = JSON.parse(localStorage.getItem('drivelink-bookings') || '[]')
+  const reservations = DriveLinkStorage.read('drivelink-bookings', [])
     .filter((booking) => booking.stockReserved);
   reservations.forEach((booking) => {
     const vehicle = fleet.find((item) => item.name === booking.carType);
@@ -112,10 +128,10 @@ function saveFleet(fleet) {
 let serverVehicleUnits = null;
 
 function cacheFleet(fleet) {
-  localStorage.setItem('drivelink-fleet', JSON.stringify(fleet.map(({ photos, ...vehicle }) => ({
+  DriveLinkStorage.write('drivelink-fleet', fleet.map(({ photos, ...vehicle }) => ({
     ...vehicle,
     photoCount: Array.isArray(photos) ? photos.length : Number(vehicle.photoCount) || 0,
-  }))));
+  })));
 }
 
 function escapeHtml(value) {
@@ -218,8 +234,18 @@ function appendDetailField(list, label, value) {
   list.append(row);
 }
 
-function openCustomerDetails(bookingId) {
-  const booking = readBookings().find((item) => item.id === bookingId);
+async function openCustomerDetails(bookingId) {
+  // Dokumen identitas/base64 tidak lagi disimpan di cache browser. Ambil dari server saat tombol ditekan.
+  const cached = readBookings().find((item) => item.id === bookingId);
+  let booking = cached;
+  if (window.DriveLinkAPI) {
+    try {
+      booking = await DriveLinkAPI.get(`/api/admin/bookings/${encodeURIComponent(bookingId)}`);
+    } catch (error) {
+      if (!cached) return;
+      console.warn('Detail booking gagal dimuat dari server, memakai cache lokal.', error);
+    }
+  }
   if (!booking) return;
   const dialog = document.getElementById('customerDetailsDialog');
   const content = document.getElementById('customerDetailsContent');
@@ -736,13 +762,13 @@ async function addPhysicalFleetUnit(event) {
 
 function readVehicleUnits() {
   if (serverVehicleUnits) return serverVehicleUnits;
-  return JSON.parse(localStorage.getItem('drivelink-vehicle-units') || '[]');
+  return DriveLinkStorage.read('drivelink-vehicle-units', []);
 }
 
 function saveVehicleUnits(units) {
   serverVehicleUnits = units;
   if (window.DriveLinkAPI) return;
-  localStorage.setItem('drivelink-vehicle-units', JSON.stringify(units));
+  DriveLinkStorage.write('drivelink-vehicle-units', units);
 }
 
 function formatServiceDate(value) {
@@ -1170,7 +1196,7 @@ async function saveVehicleService(event) {
       });
       serverVehicleUnits = await DriveLinkAPI.get('/api/admin/vehicle-services');
     } else {
-      localStorage.setItem('drivelink-vehicle-units', JSON.stringify(nextUnits));
+      DriveLinkStorage.write('drivelink-vehicle-units', nextUnits);
       serverVehicleUnits = nextUnits;
     }
     message.classList.remove('is-error');
@@ -1209,7 +1235,7 @@ async function updateBookingApproval(bookingId, action, reason = '') {
         ...(action === 'reject' ? { reason } : {}),
       });
       const serverBookings = await DriveLinkAPI.get('/api/admin/bookings');
-      localStorage.setItem('drivelink-bookings', JSON.stringify(serverBookings));
+      DriveLinkStorage.write('drivelink-bookings', serverBookings);
       if (session?.role === 'admin' || session?.permissions?.includes('fleet')) {
         const serverFleet = await DriveLinkAPI.get('/api/admin/fleet');
         cacheFleet(serverFleet);
@@ -1266,7 +1292,7 @@ async function updateBookingPayment(bookingId, action, stage = 'rental') {
     try {
       await DriveLinkAPI.patch(`/api/admin/bookings/${encodeURIComponent(bookingId)}/payment`, { action, stage });
       const serverBookings = await DriveLinkAPI.get('/api/admin/bookings');
-      localStorage.setItem('drivelink-bookings', JSON.stringify(serverBookings));
+      DriveLinkStorage.write('drivelink-bookings', serverBookings);
       message.classList.remove('is-error');
       const stageLabel = stage === 'deposit' ? 'deposit' : 'pembayaran sewa';
       message.textContent = action === 'approve'
@@ -1495,11 +1521,14 @@ if (allBookingsBody) allBookingsBody.addEventListener('click', (event) => {
   if (!(target instanceof Element)) return;
   const detailsButton = target.closest('[data-customer-details]');
   if (detailsButton) {
-    openCustomerDetails(detailsButton.dataset.customerDetails);
+    openCustomerDetails(detailsButton.dataset.customerDetails).catch(() => {});
     return;
   }
   const button = target.closest('[data-booking-action]');
-  if (button) updateBookingApproval(button.dataset.bookingId, button.dataset.bookingAction);
+  if (button) {
+    if (button.dataset.bookingAction === 'reject') openBookingRejectionDialog(button.dataset.bookingId);
+    else updateBookingApproval(button.dataset.bookingId, button.dataset.bookingAction);
+  }
 });
 const bookingPaymentReviewList = document.getElementById('bookingPaymentReviewList');
 if (bookingPaymentReviewList) bookingPaymentReviewList.addEventListener('click', (event) => {
@@ -1720,8 +1749,6 @@ if (vehicleServiceForm) {
     }
 
     receiptInput.setCustomValidity('Tunggu sampai kompresi foto nota selesai.');
-  if (button?.dataset.bookingAction === 'reject') openBookingRejectionDialog(button.dataset.bookingId);
-  else if (button) updateBookingApproval(button.dataset.bookingId, button.dataset.bookingAction);
     try {
       const { sizeBytes } = await compressServiceReceipt(file);
       if (receiptInput.files[0] !== file) return;
@@ -1758,7 +1785,7 @@ if (vehicleServiceForm) {
 
 const rentalLocationForm = document.getElementById('rentalLocationForm');
 if (rentalLocationForm) {
-  const savedLocation = JSON.parse(localStorage.getItem('drivelink-location') || 'null');
+  const savedLocation = DriveLinkStorage.read('drivelink-location', null);
   rentalLocationForm.elements.address.value = window.DriveLinkAPI ? '' : savedLocation?.address || '';
   rentalLocationForm.elements.mapsUrl.value = window.DriveLinkAPI ? '' : savedLocation?.mapsUrl || '';
   rentalLocationForm.elements.reviewUrl.value = window.DriveLinkAPI ? '' : savedLocation?.reviewUrl || '';
@@ -1803,7 +1830,7 @@ if (rentalLocationForm) {
     try {
       const location = { address, mapsUrl, reviewUrl };
       if (window.DriveLinkAPI) await DriveLinkAPI.put('/api/admin/location', location);
-      else localStorage.setItem('drivelink-location', JSON.stringify(location));
+      else DriveLinkStorage.write('drivelink-location', location);
       message.classList.remove('is-error');
       message.textContent = 'Lokasi rental berhasil disimpan. Perubahan tampil di beranda website.';
     } catch (error) {
@@ -1845,7 +1872,7 @@ if (window.DriveLinkAPI && currentPage.startsWith('admin')) {
     try {
       if (currentPage === 'admin.html') {
         const overview = await DriveLinkAPI.get('/api/admin/overview');
-        localStorage.setItem('drivelink-bookings', JSON.stringify(overview.bookings));
+        DriveLinkStorage.write('drivelink-bookings', lightweightBookingCache(overview.bookings));
         renderBookings();
         document.getElementById('totalBookings').textContent = String(overview.totalBookings);
         document.getElementById('pendingBookings').textContent = String(overview.pendingBookings);
@@ -1857,7 +1884,7 @@ if (window.DriveLinkAPI && currentPage.startsWith('admin')) {
         renderOverviewCharts(overview);
       } else if (currentPage === 'admin-bookings.html') {
         const bookings = await DriveLinkAPI.get('/api/admin/bookings');
-        localStorage.setItem('drivelink-bookings', JSON.stringify(bookings));
+        DriveLinkStorage.write('drivelink-bookings', lightweightBookingCache(bookings));
         renderBookings();
       } else if (currentPage === 'admin-fleet.html') {
         const [fleet, categories] = await Promise.all([

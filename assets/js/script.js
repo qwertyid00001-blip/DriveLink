@@ -82,21 +82,21 @@ if (rentalLocationLink) {
       footerLocation.rel = 'noopener noreferrer';
     }
   }
-  const cachedLocation = JSON.parse(localStorage.getItem('drivelink-location') || 'null');
+  const cachedLocation = DriveLinkStorage.read('drivelink-location', null);
   renderRentalLocation(cachedLocation);
   if (window.DriveLinkAPI) {
     DriveLinkAPI.get('/api/location').then((location) => {
       renderRentalLocation(location);
-      if (location) localStorage.setItem('drivelink-location', JSON.stringify(location));
+      if (location) DriveLinkStorage.write('drivelink-location', location);
     }).catch((error) => console.error('Lokasi rental gagal dimuat dari server.', error));
   }
 }
 
 function cacheFleetMetadata(fleet) {
-  localStorage.setItem('drivelink-fleet', JSON.stringify(fleet.map(({ photos, ...vehicle }) => ({
+  DriveLinkStorage.write('drivelink-fleet', fleet.map(({ photos, ...vehicle }) => ({
     ...vehicle,
     photoCount: Array.isArray(photos) ? photos.length : Number(vehicle.photoCount) || 0,
-  }))));
+  })));
 }
 
 function createVehicleCarousel(container, photos, vehicleName) {
@@ -302,7 +302,7 @@ if (window.DriveLinkAPI) {
     }
   });
 } else {
-  const publicFleet = JSON.parse(localStorage.getItem('drivelink-fleet') || 'null');
+  const publicFleet = DriveLinkStorage.read('drivelink-fleet', null);
   if (Array.isArray(publicFleet)) renderPublicFleet(publicFleet);
 }
 
@@ -343,11 +343,11 @@ if (bookingForm) {
     { name: 'BR-V Family', category: 'SUV', totalCount: 5, availableCount: 5, priceNoDriver: 520000, priceWithDriverFuel: 520000, priceWithDriverNoFuel: 520000 },
     { name: 'EV CityX', category: 'Electric', totalCount: 5, availableCount: 5, priceNoDriver: 680000, priceWithDriverFuel: 680000, priceWithDriverNoFuel: 680000 },
   ];
-  let fleet = JSON.parse(localStorage.getItem('drivelink-fleet') || 'null');
+  let fleet = DriveLinkStorage.read('drivelink-fleet', null);
   let fleetLoaded = false;
   if (!Array.isArray(fleet)) {
     fleet = initialFleet;
-    localStorage.setItem('drivelink-fleet', JSON.stringify(fleet));
+    DriveLinkStorage.write('drivelink-fleet', fleet);
   }
   const carSelect = bookingForm.elements.carType;
   const colorSelect = bookingForm.elements.vehicleColor;
@@ -450,7 +450,7 @@ if (bookingForm) {
 
   function updatePriceQuote() {
     if (!window.DriveLinkAPI) {
-      const currentFleet = JSON.parse(localStorage.getItem('drivelink-fleet') || '[]');
+      const currentFleet = DriveLinkStorage.read('drivelink-fleet', []);
       if (Array.isArray(currentFleet)) fleet = currentFleet;
     }
     renderVehicleColors();

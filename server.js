@@ -344,9 +344,10 @@ function createDatabase(databasePath, adminUsername, adminPassword) {
       INSERT INTO admins (username, password_hash, name, role, email, position, active)
       VALUES (?, ?, ?, 'admin', 'admin@drivelink.id', 'Administrator', 1)
     `).run(adminUsername, passwordHash(adminPassword), 'Admin DriveLink');
+  } else if (adminUsername && !db.prepare('SELECT 1 FROM admins WHERE username = ?').get(adminUsername)) {
+    // Peringatan saja: nilai dari environment tidak boleh menaikkan role atau mengubah akun mana pun.
+    console.warn(`ADMIN_USERNAME "${adminUsername}" tidak ada di database. Akun yang ada tidak diubah.`);
   }
-  db.prepare("UPDATE admins SET role = 'admin', email = CASE WHEN email = '' THEN 'admin@drivelink.id' ELSE email END, position = CASE WHEN position = '' THEN 'Administrator' ELSE position END WHERE username = ?")
-    .run(adminUsername);
 
   const insertFleet = db.prepare(`
     INSERT OR IGNORE INTO fleet
@@ -2915,6 +2916,12 @@ function createApp(options = {}) {
   app.get('/api/admin/bookings', requireFeature('bookings'), (req, res) => {
     const bookings = db.prepare('SELECT * FROM bookings ORDER BY created_at DESC').all().map(bookingRecord);
     res.json(bookings);
+  });
+
+  app.get('/api/admin/bookings/:id', requireFeature('bookings'), (req, res) => {
+    const booking = getBooking(String(req.params.id).toUpperCase());
+    if (!booking) return fail(res, 404, 'Booking tidak ditemukan.');
+    res.json(booking);
   });
 
   app.patch('/api/admin/bookings/:id/approval', requireFeature('bookings'), (req, res) => {

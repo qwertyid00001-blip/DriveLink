@@ -17,11 +17,11 @@ function paymentReady(booking) {
 }
 
 function loadBookings() {
-  return JSON.parse(localStorage.getItem('drivelink-bookings') || '[]');
+  return DriveLinkStorage.read('drivelink-bookings', []);
 }
 
 function saveBookings(bookings) {
-  localStorage.setItem('drivelink-bookings', JSON.stringify(bookings));
+  DriveLinkStorage.write('drivelink-bookings', bookings);
 }
 
 function findLocalBooking() {
