@@ -3298,7 +3298,7 @@ function createApp(options = {}) {
     if (req.method !== 'GET' && req.method !== 'HEAD') return fail(res, 405, 'Metode tidak diizinkan.');
     const relative = safeDecodePath(req.path).replace(/^\/+/, '');
     const isPage = !relative || /^[^/]+\.html$/i.test(relative);
-    const isAsset = /^assets\/(?:css\/[^/]+\.css|js\/[^/]+\.js)$/i.test(relative);
+    const isAsset = /^assets\/(?:css\/[^/]+\.css|js\/[^/]+\.js|[^/]+\.svg)$/i.test(relative);
     const resolved = isPage
       ? path.join(ROOT, 'pages', relative || 'index.html')
       : path.resolve(ROOT, relative);

@@ -316,13 +316,17 @@ if (bookingForm) {
     const localDate = new Date(timestamp - new Date().getTimezoneOffset() * 60000);
     return localDate.toISOString().slice(0, 16);
   }
-  function updateArrivalSchedule() {
+  // Aturan jenis pemesanan diisi oleh assets/js/booking-types.js. Halaman seperti
+// beranda dan daftar armada memakai script.js tanpa modul itu, jadi nilainya
+// dibaca secara aman dan jatuh ke perilaku bawaan bila modul belum termuat.
+function knownBookingTypes() {
+  return Array.isArray(window.bookingTypeRules) ? window.bookingTypeRules : [];
+}
+
+function updateArrivalSchedule() {
     const selected = bookingForm.querySelector('[name="bookingType"]:checked');
-    // Aturan per jenis pemesanan berasal dari server (dikelola admin di halaman Reservasi).
     const label = selected?.value || 'Reservasi';
-    const rule = Array.isArray(bookingTypeRules)
-      ? bookingTypeRules.find((type) => type.label === label)
-      : null;
+    const rule = knownBookingTypes().find((type) => type.label === label) || null;
     const requiresFuture = rule ? Boolean(rule.requiresFutureArrival) : label === 'Reservasi';
     if (arrivalField) arrivalField.hidden = !requiresFuture;
     if (arrivalHeading) arrivalHeading.hidden = !requiresFuture;
@@ -595,10 +599,8 @@ if (bookingForm) {
     const message = document.getElementById('bookingSubmitMessage');
     const arrivalAt = String(formData.get('arrivalAt') || '');
     const arrivalTime = new Date(arrivalAt);
-    // Aturan "wajib jadwal masa depan" mengikuti jenis pemesanan dari server.
-    const selectedTypeRule = Array.isArray(bookingTypeRules)
-      ? bookingTypeRules.find((type) => type.label === bookingType)
-      : null;
+    const selectedTypeRule = knownBookingTypes()
+      .find((type) => type.label === bookingType) || null;
     const arrivalMustBeFuture = selectedTypeRule
       ? Boolean(selectedTypeRule.requiresFutureArrival)
       : bookingType === 'Reservasi';

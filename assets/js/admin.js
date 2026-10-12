@@ -1554,6 +1554,100 @@ if (vehicleServiceForm) {
     }
     updateServiceExpenseTotal();
   });
+  async function saveVehicleService(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const message = document.getElementById('vehicleServiceMessage');
+    const data = new FormData(form);
+    const plate = String(data.get('plate') || '').trim().toUpperCase();
+    const lastServiceKm = Number(data.get('lastServiceKm'));
+    const nextServiceKm = Number(data.get('nextServiceKm'));
+    const receiptFile = data.get('receipt');
+    const lastServiceDate = String(data.get('lastServiceDate') || '');
+    const nextServiceDate = String(data.get('nextServiceDate') || '');
+    const items = [...document.querySelectorAll('#serviceExpenseItems .service-expense-row')].map((row) => ({
+      category: row.querySelector('[name="serviceCategory"]').value,
+      part: row.querySelector('[name="servicePart"]').value.trim(),
+      details: row.querySelector('[name="serviceDetails"]').value.trim(),
+      cost: Number(row.querySelector('[name="serviceCost"]').value),
+    }));
+    if (!plate || !data.get('engine') || !data.get('workshop')
+      || !Number.isInteger(lastServiceKm) || lastServiceKm < 0
+      || !Number.isInteger(nextServiceKm) || nextServiceKm <= lastServiceKm
+      || !lastServiceDate || !nextServiceDate || nextServiceDate <= lastServiceDate
+      || !items.length || items.length > 20
+      || items.some((item) => !serviceCategories.includes(item.category) || !item.part
+        || !Number.isSafeInteger(item.cost) || item.cost < 0 || item.cost > 1_000_000_000)
+      || items.reduce((sum, item) => sum + item.cost, 0) > 1_000_000_000
+      || !(receiptFile instanceof File) || !receiptFile.size
+      || receiptFile.size > MAX_SERVICE_RECEIPT_INPUT_BYTES || !['image/jpeg', 'image/png'].includes(receiptFile.type)) {
+      message.textContent = 'Lengkapi data servis, minimal satu rincian biaya, jadwal berikutnya, dan nota JPG/PNG maksimal 20 MB sebelum kompresi.';
+      message.classList.add('is-error');
+      return;
+    }
+    try {
+      const { dataUrl: receipt } = await compressServiceReceipt(receiptFile);
+      const units = readVehicleUnits();
+      const existing = units.find((unit) => unit.plate.toUpperCase() === plate);
+      const service = {
+        plate,
+        carType: String(data.get('carType')),
+        date: lastServiceDate,
+        km: lastServiceKm,
+        workshop: String(data.get('workshop')).trim(),
+        receipt,
+        items,
+        totalCost: items.reduce((sum, item) => sum + item.cost, 0),
+        nextServiceKm,
+        nextServiceDate,
+      };
+      const unit = {
+        ...(existing || {}),
+        plate,
+        carType: String(data.get('carType')),
+        engine: String(data.get('engine')).trim(),
+        workshop: service.workshop,
+        lastServiceDate,
+        lastServiceKm,
+        currentKm: Math.max(Number(existing?.currentKm) || 0, lastServiceKm),
+        nextServiceKm,
+        nextServiceDate,
+        receipt,
+        serviceHistory: [...(existing?.serviceHistory || []), service],
+      };
+      const nextUnits = existing
+        ? units.map((item) => item.plate.toUpperCase() === plate ? unit : item)
+        : [...units, unit];
+      if (window.DriveLinkAPI) {
+        await DriveLinkAPI.post('/api/admin/vehicle-services', {
+          plate: unit.plate,
+          carType: unit.carType,
+          engine: unit.engine,
+          workshop: unit.workshop,
+          lastServiceDate: unit.lastServiceDate,
+          lastServiceKm: unit.lastServiceKm,
+          nextServiceKm: unit.nextServiceKm,
+          nextServiceDate: unit.nextServiceDate,
+          receipt: unit.receipt,
+          items: service.items,
+        });
+        serverVehicleUnits = await DriveLinkAPI.get('/api/admin/vehicle-services');
+      } else {
+        localStorage.setItem('drivelink-vehicle-units', JSON.stringify(nextUnits));
+        serverVehicleUnits = nextUnits;
+      }
+      message.classList.remove('is-error');
+      message.textContent = `Data servis unit ${plate} berhasil disimpan.`;
+      form.reset();
+      document.getElementById('addServiceExpense').disabled = false;
+      document.getElementById('serviceExpenseItems').replaceChildren(createServiceExpenseRow());
+      renderVehicleService();
+    } catch (error) {
+      console.error('Tidak dapat menyimpan data servis unit.', error);
+      message.textContent = `Data servis atau nota gagal disimpan: ${error.message}`;
+      message.classList.add('is-error');
+    }
+  }
   vehicleServiceForm.addEventListener('submit', saveVehicleService);
   renderVehicleService();
 }

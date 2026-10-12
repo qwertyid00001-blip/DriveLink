@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="DriveLink">
+  <defs>
+    <linearGradient id="dl" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#476eff"/>
+      <stop offset="1" stop-color="#1837d1"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#dl)"/>
+  <path fill="#fff" d="M20 17h9.6c9.4 0 15.4 5.6 15.4 15s-6 15-15.4 15H20V17zm9.3 23.4c5 0 8-2.7 8-8.4s-3-8.4-8-8.4h-2.3v16.8h2.3z"/>
+</svg>
