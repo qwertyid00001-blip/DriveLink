@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Atur Checklist | DriveLink Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/styles.css?v=theme-aware-animations-1" />
+  </head>
+  <body class="admin-page">
+    <div class="admin-layout">
+      <aside class="admin-sidebar">
+        <a href="index.html" class="brand"><span class="brand-mark">D</span><span>DriveLink</span></a>
+        <span class="sidebar-label">MENU ADMIN</span>
+        <nav class="admin-nav" aria-label="Navigasi dashboard">
+          <a class="admin-nav-link" href="admin.html">◫ <span>Ringkasan</span></a>
+          <a class="admin-nav-link" href="admin-bookings.html">▤ <span>Booking</span></a>
+          <a class="admin-nav-link" href="admin-fleet.html">▣ <span>Armada</span></a>
+          <a class="admin-nav-link" href="admin-vehicle-service.html">⚙ <span>Kontrol unit & servis</span></a>
+          <a class="admin-nav-link" href="admin-location.html">⌖ <span>Lokasi rental</span></a>
+          <a class="admin-nav-link" href="admin-rental-settings.html">◷ <span>Pengaturan sewa</span></a>
+          <a class="admin-nav-link" href="admin-travel-packages.html">✦ <span>Paket perjalanan & promo</span></a>
+          <a class="admin-nav-link" href="admin-monitoring.html">⌁ <span>Monitoring IoT</span></a>
+          <a class="admin-nav-link" href="admin-payments.html">＄ <span>Pembayaran</span></a>
+          <a class="admin-nav-link" href="admin-handover.html">✓ <span>Serah-terima</span></a>
+          <a class="admin-nav-link is-active" href="admin-checklist.html">☷ <span>Atur checklist</span></a>
+          <a class="admin-nav-link" href="admin-handover-archive.html">▤ <span>Arsip checklist</span></a>
+          <a class="admin-nav-link" href="admin-return.html">↩ <span>Pengembalian unit</span></a>
+          <a class="admin-nav-link" href="admin-rental-archive.html">▤ <span>Arsip penyewaan</span></a>
+          <a class="admin-nav-link" href="admin-accounts.html">♙ <span>Akun & karyawan</span></a>
+          <a class="admin-nav-link" href="admin-settings.html">⚙ <span>Pengaturan admin</span></a>
+        </nav>
+        <div class="sidebar-bottom"><div class="sidebar-help"><strong>DriveLink Admin</strong><span>Pengaturan operasional</span></div><button class="logout-button" id="logoutButton">Keluar</button></div>
+      </aside>
+      <main class="admin-main">
+        <header class="admin-header"><div><span class="admin-date" id="todayLabel"></span><h1>Atur checklist</h1></div><div class="admin-user"><span class="admin-avatar">AD</span><span><strong id="adminName">Admin</strong><small>Administrator</small></span></div></header>
+        <div class="admin-welcome compact-welcome"><div><span class="eyebrow">Serah-terima kendaraan</span><h2>Susun pemeriksaan unit</h2><p>Buat kategori pemeriksaan dan pilih satu atau beberapa jenis isian yang perlu dilengkapi petugas.</p></div></div>
+        <section class="admin-panel checklist-list-panel">
+          <div class="panel-heading"><div><h2>Kategori kendaraan</h2><p>Kelola kategori yang digunakan armada, paket perjalanan, dan formulir booking. Saat kategori dihapus, kendaraan dan paket akan dialihkan ke kategori aktif pertama.</p></div><span class="checklist-category-count" id="fleetCategoryCount">0 kategori</span></div>
+          <form id="fleetCategoryForm" class="fleet-category-form">
+            <label for="fleetCategoryLabel">Nama kategori baru</label>
+            <div class="fleet-category-add-row"><input id="fleetCategoryLabel" name="label" type="text" maxlength="40" placeholder="Contoh: MPV Premium" required /><button class="btn btn-primary" type="submit">Tambah kategori</button></div>
+          </form>
+          <div id="fleetCategoryList" class="fleet-category-list"></div>
+          <p class="workflow-message" id="fleetCategoryMessage" aria-live="polite"></p>
+        </section>
+        <section class="admin-panel checklist-list-panel">
+          <div class="panel-heading"><div><h2>Kategori servis kendaraan</h2><p>Kelola jenis perawatan dan suku cadang, misalnya oli, ban, cat, atau salon mobil. Jika kategori dihapus, rincian servis lama akan dipindahkan ke kategori aktif pertama.</p></div><span class="checklist-category-count" id="serviceCategoryCount">0 kategori</span></div>
+          <form id="serviceCategoryForm" class="fleet-category-form">
+            <label for="serviceCategoryLabel">Nama kategori baru</label>
+            <div class="fleet-category-add-row"><input id="serviceCategoryLabel" name="label" type="text" maxlength="60" placeholder="Contoh: Aki" required /><button class="btn btn-primary" type="submit">Tambah kategori</button></div>
+          </form>
+          <div id="serviceCategoryList" class="fleet-category-list"></div>
+          <p class="workflow-message" id="serviceCategoryMessage" aria-live="polite"></p>
+        </section>
+        <section class="admin-panel checklist-builder-panel">
+          <div class="panel-heading"><div><h2>Tambah kategori checklist</h2><p>Contoh: “Cek body depan” dengan checklist, pilihan kondisi, catatan, dan foto.</p></div></div>
+          <form id="checklistCategoryForm" class="admin-settings-form checklist-category-form">
+            <label>Nama kategori<input type="text" name="label" maxlength="80" placeholder="Contoh: Cek body depan" required /></label>
+            <fieldset class="checklist-types-fieldset">
+              <legend>Jenis isian <span>Pilih satu atau beberapa</span></legend>
+              <div class="checklist-type-options">
+                <label><input type="checkbox" name="types" value="check" /><span>Checklist</span></label>
+                <label><input type="checkbox" name="types" value="choice" /><span>Pilihan</span></label>
+                <label><input type="checkbox" name="types" value="note" /><span>Catatan</span></label>
+                <label><input type="checkbox" name="types" value="photo" /><span>Foto</span></label>
+              </div>
+            </fieldset>
+            <label id="checklistOptionsField" hidden>Opsi pilihan <small>Pisahkan setiap opsi dengan baris baru (2–10 opsi).</small><textarea name="options" rows="4" placeholder="Baik&#10;Ada lecet&#10;Perlu diperiksa"></textarea></label>
+            <label class="checklist-required-toggle"><input type="checkbox" name="required" /><span><strong>Wajib diisi</strong><small>Petugas harus melengkapi kategori ini sebelum menyimpan.</small></span></label>
+            <button class="btn btn-primary" type="submit">Tambah kategori</button>
+            <p class="workflow-message" id="checklistConfigMessage" aria-live="polite"></p>
+          </form>
+        </section>
+        <section class="admin-panel checklist-list-panel">
+          <div class="panel-heading"><div><h2>Kategori aktif</h2><p>Daftar ini langsung digunakan pada formulir serah-terima petugas. Maksimal 40 kategori dan 10 kategori foto.</p></div><span class="checklist-category-count" id="checklistCategoryCount">0 kategori</span></div>
+          <div id="checklistCategoryList" class="checklist-category-list"></div>
+          <p class="empty-state" id="checklistCategoryEmpty">Belum ada kategori tambahan. Checklist inti kendaraan tetap tersedia.</p>
+          <div class="checklist-save-actions"><button class="btn btn-primary" id="saveChecklistConfig" type="button">Simpan perubahan</button></div>
+        </section>
+      </main>
+    </div>
+    <script src="assets/js/api-client.js?v=lan-realtime-1"></script>
+    <script src="assets/js/admin-access.js?v=admin-action-badges-1"></script>
+    <script src="assets/js/admin-checklist.js?v=service-categories-1"></script>
+    <script src="assets/js/responsive-nav.js?v=5"></script>
+  </body>
+</html>

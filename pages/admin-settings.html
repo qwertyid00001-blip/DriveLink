@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Atur keamanan akun dan tema DriveLink." />
+    <title>Pengaturan Admin | DriveLink</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="assets/css/styles.css?v=site-contact-settings-1" />
+  </head>
+  <body class="admin-page">
+    <div class="admin-layout">
+      <aside class="admin-sidebar">
+        <a href="index.html" class="brand"><span class="brand-mark">D</span><span>DriveLink</span></a>
+        <span class="sidebar-label">MENU ADMIN</span>
+        <nav class="admin-nav" aria-label="Navigasi dashboard">
+          <a class="admin-nav-link" href="admin.html">◫ <span>Ringkasan</span></a>
+          <a class="admin-nav-link" href="admin-bookings.html">▤ <span>Booking</span></a>
+          <a class="admin-nav-link" href="admin-fleet.html">▣ <span>Armada</span></a>
+          <a class="admin-nav-link" href="admin-vehicle-service.html">⚙ <span>Kontrol unit & servis</span></a>
+          <a class="admin-nav-link" href="admin-location.html">⌖ <span>Lokasi rental</span></a>
+          <a class="admin-nav-link" href="admin-rental-settings.html">◷ <span>Pengaturan sewa</span></a>
+          <a class="admin-nav-link" href="admin-travel-packages.html">✦ <span>Paket perjalanan & promo</span></a>
+          <a class="admin-nav-link" href="admin-monitoring.html">⌁ <span>Monitoring IoT</span></a>
+          <a class="admin-nav-link" href="admin-payments.html">＄ <span>Pembayaran</span></a>
+          <a class="admin-nav-link" href="admin-handover.html">✓ <span>Serah-terima</span></a>
+          <a class="admin-nav-link" href="admin-checklist.html">☷ <span>Atur checklist</span></a>
+          <a class="admin-nav-link" href="admin-handover-archive.html">▤ <span>Arsip checklist</span></a>
+          <a class="admin-nav-link" href="admin-return.html">↩ <span>Pengembalian unit</span></a>
+          <a class="admin-nav-link" href="admin-rental-archive.html">▤ <span>Arsip penyewaan</span></a>
+          <a class="admin-nav-link" href="admin-accounts.html">♙ <span>Akun & karyawan</span></a>
+          <a class="admin-nav-link is-active" href="admin-settings.html">⚙ <span>Pengaturan admin</span></a>
+        </nav>
+        <div class="sidebar-bottom">
+          <div class="sidebar-help"><strong>DriveLink Admin</strong><span>Pengaturan sistem</span></div>
+          <button class="logout-button" id="logoutButton">Keluar</button>
+        </div>
+      </aside>
+      <main class="admin-main">
+        <header class="admin-header">
+          <div><span class="admin-date" id="todayLabel"></span><h1>Pengaturan admin</h1></div>
+          <div class="admin-user"><span class="admin-avatar">AD</span><span><strong id="adminName">Admin</strong><small>Administrator</small></span></div>
+        </header>
+        <div class="admin-welcome compact-welcome">
+          <div><span class="eyebrow">Preferensi DriveLink</span><h2>Atur akun dan tampilan</h2><p>Kelola keamanan akun, konten beranda, dan warna website. Setiap bagian disimpan melalui tombolnya masing-masing.</p></div>
+        </div>
+        <nav class="admin-settings-jump" aria-label="Pintasan pengaturan">
+          <a href="#accountSettings"><span>01</span><strong>Akun & keamanan</strong><small>Nama masuk dan password</small></a>
+          <a href="#logoSettings"><span>02</span><strong>Logo website</strong><small>Unggah logo identitas</small></a>
+          <a href="#posterSettings"><span>03</span><strong>Poster beranda</strong><small>Gambar dan visibilitas</small></a>
+          <a href="#offerSettings"><span>04</span><strong>Iklan penawaran</strong><small>Teks promo dan tombol</small></a>
+          <a href="#homeHeroSettings"><span>05</span><strong>Teks utama beranda</strong><small>Judul, deskripsi, dan efek</small></a>
+          <a href="#contactSettings"><span>06</span><strong>Kontak & media sosial</strong><small>Nomor, email, dan profil</small></a>
+          <a href="#themeSettings"><span>07</span><strong>Tema warna</strong><small>Warna dan gradasi</small></a>
+        </nav>
+        <div class="account-management-grid admin-preferences-grid">
+          <section class="admin-panel" id="homeHeroSettings">
+            <div class="panel-heading"><div><h2>Teks utama beranda</h2><p>Ubah tulisan besar di beranda dan pilih animasi tampilannya.</p></div></div>
+            <form id="adminHomeHeroForm" class="admin-settings-form">
+              <label>Teks label kecil<input type="text" name="eyebrow" maxlength="40" required placeholder="#MobilCerdas" /></label>
+              <label>Judul utama<input type="text" name="title" maxlength="140" required placeholder="Sewa mobil pintar untuk perjalanan aman, cepat, dan nyaman." /></label>
+              <label>Deskripsi<input type="text" name="description" maxlength="400" required placeholder="Teks pendukung judul di beranda." /></label>
+              <label>Efek judul
+                <select name="effect">
+                  <option value="static">Diam / tanpa animasi</option>
+                  <option value="fade">Muncul perlahan</option>
+                  <option value="slide-up">Geser naik</option>
+                  <option value="slide-left">Geser dari kanan</option>
+                  <option value="slide-right">Geser dari kiri</option>
+                  <option value="zoom">Zoom lembut</option>
+                  <option value="typewriter">Mesin ketik</option>
+                  <option value="marquee">Teks berjalan</option>
+                  <option value="bounce">Pantul lembut</option>
+                  <option value="pulse">Denyut lembut</option>
+                  <option value="gradient">Gradasi bergerak</option>
+                </select>
+                <small class="file-name">Efek otomatis menjadi diam jika perangkat memilih pengurangan animasi.</small>
+              </label>
+              <div class="home-hero-preview-wrap">
+                <small class="file-name">Pratinjau judul</small>
+                <div class="home-hero-preview">
+                  <span class="eyebrow" id="homeHeroPreviewEyebrow">#MobilCerdas</span>
+                  <h2 id="homeHeroPreviewTitle" class="home-hero-title" data-effect="static"><span class="home-hero-title-track"><span class="home-hero-title-copy">Sewa mobil pintar untuk perjalanan aman, cepat, dan nyaman.</span></span></h2>
+                  <p id="homeHeroPreviewDescription">Teks pendukung judul di beranda.</p>
+                </div>
+              </div>
+              <small class="file-name">Efek hanya berlaku pada judul utama beranda. Pilih “Diam” untuk tampilan tanpa animasi.</small>
+              <div class="review-actions"><button class="btn btn-primary" type="submit">Simpan teks beranda</button></div>
+              <p class="workflow-message" id="homeHeroMessage" aria-live="polite"></p>
+            </form>
+          </section>
+          <section class="admin-panel" id="contactSettings">
+            <div class="panel-heading"><div><h2>Kontak dan media sosial</h2><p>Informasi ini tampil di footer website. Alamat tetap mengikuti pengaturan lokasi rental.</p></div></div>
+            <form id="adminContactForm" class="admin-settings-form">
+              <label>Judul kolom kontak<input name="heading" type="text" maxlength="40" required /></label>
+              <div class="field-row two-col">
+                <label>Nomor telepon<input name="phone" type="tel" maxlength="30" placeholder="+62 812-3456-789" /></label>
+                <label>Email<input name="email" type="email" maxlength="254" placeholder="halo@contoh.id" /></label>
+              </div>
+              <label>Nomor WhatsApp<input name="whatsapp" type="tel" maxlength="30" placeholder="+62 812-3456-789" /><small class="file-name">Nomor digunakan untuk tautan chat WhatsApp di footer.</small></label>
+              <div class="admin-social-settings">
+                <div class="admin-social-heading"><div><strong>Media sosial</strong><small>Pilih jaringan dan masukkan tautan profil yang benar-benar digunakan.</small></div><button id="addSocialLink" class="btn btn-secondary" type="button">Tambah media sosial</button></div>
+                <div id="socialLinkRows" class="social-link-rows"></div>
+              </div>
+              <div class="home-hero-preview-wrap">
+                <small class="file-name">Pratinjau ikon media sosial</small>
+                <div id="adminSocialPreview" class="footer-socials admin-social-preview" aria-label="Pratinjau media sosial"></div>
+              </div>
+              <small class="file-name">Tautan media sosial harus memakai HTTPS dan domain resmi platform. Maksimal enam profil, satu untuk setiap platform.</small>
+              <div class="review-actions"><button class="btn btn-primary" type="submit">Simpan kontak</button></div>
+              <p class="workflow-message" id="adminContactMessage" aria-live="polite"></p>
+            </form>
+          </section>
+          <section class="admin-panel" id="accountSettings">
+            <div class="panel-heading"><div><h2>Username dan keamanan</h2><p>Verifikasi dengan password saat ini untuk menyimpan perubahan akun.</p></div></div>
+            <form id="adminProfileForm" class="admin-settings-form">
+              <div class="admin-profile-section">
+                <div class="admin-setting-subsection">
+                  <span class="admin-profile-step">01 · PROFIL</span>
+                  <h3>Informasi akun</h3>
+                  <p>Nama dan username yang digunakan untuk akun admin.</p>
+                </div>
+                <div class="field-row two-col admin-account-fields">
+                  <label>Nama tampilan<input type="text" name="name" maxlength="100" required /></label>
+                  <label>Username admin<input type="text" name="username" maxlength="40" autocomplete="username" required /><small class="file-name">3–40 karakter: huruf, angka, titik, garis bawah, atau tanda hubung.</small></label>
+                </div>
+              </div>
+              <div class="admin-profile-section admin-password-section">
+                <div class="admin-setting-subsection">
+                  <span class="admin-profile-step">02 · PASSWORD</span>
+                  <h3>Ubah password</h3>
+                  <p>Password saat ini wajib diisi untuk mengonfirmasi penyimpanan. Kosongkan password baru jika tidak ingin menggantinya.</p>
+                </div>
+                <div class="admin-password-fields">
+                  <label>Password saat ini<input type="password" name="currentPassword" autocomplete="current-password" required /></label>
+                  <div class="admin-new-password-fields">
+                    <label>Password baru (opsional)<input type="password" name="newPassword" minlength="12" maxlength="256" autocomplete="new-password" /><small class="file-name">Minimal 12 karakter.</small></label>
+                    <label>Ulangi password baru<input type="password" name="confirmPassword" minlength="12" maxlength="256" autocomplete="new-password" /></label>
+                  </div>
+                </div>
+              </div>
+              <div class="admin-profile-actions"><button class="btn btn-primary" type="submit">Simpan perubahan akun</button><small>Perubahan disimpan dengan aman setelah verifikasi password.</small></div>
+              <p class="workflow-message" id="adminProfileMessage" aria-live="polite"></p>
+            </form>
+          </section>
+          <section class="admin-panel" id="logoSettings">
+            <div class="panel-heading"><div><h2>Logo website</h2><p>Unggah logo untuk menggantikan ikon DriveLink di navigasi seluruh halaman.</p></div></div>
+            <form id="adminLogoForm" class="admin-settings-form">
+              <label>Unggah logo (JPG/PNG, maksimal 1 MB)
+                <input type="file" name="image" accept="image/jpeg,image/png" />
+                <small class="file-name" id="brandLogoFileName">Memuat logo tersimpan...</small>
+              </label>
+              <div class="brand-logo-preview" id="brandLogoPreviewWrap" hidden>
+                <img id="brandLogoPreview" alt="Pratinjau logo DriveLink" />
+                <span>Pratinjau logo pada navigasi</span>
+              </div>
+              <div class="review-actions">
+                <button class="btn btn-primary" type="submit">Simpan logo</button>
+                <button class="btn btn-secondary" id="removeBrandLogo" type="button" hidden>Gunakan logo bawaan</button>
+              </div>
+              <p class="workflow-message" id="brandLogoMessage" aria-live="polite"></p>
+            </form>
+          </section>
+          <section class="admin-panel" id="posterSettings">
+            <div class="panel-heading"><div><h2>Poster beranda ukuran A4</h2><p>Unggah poster portrait untuk ditampilkan di beranda. Pengunjung dapat menutup poster dengan tombol silang.</p></div></div>
+            <form id="adminHomeBannerForm" class="admin-settings-form">
+              <label class="choice-option permission-option poster-toggle-option">
+                <input type="checkbox" name="enabled" />
+                <span class="permission-option-icon" aria-hidden="true">▧</span>
+                <span class="permission-option-copy"><strong>Tampilkan poster di beranda</strong><small>Centang untuk menampilkan poster setelah disimpan. Hapus centang untuk menyembunyikan poster tanpa menghapus gambarnya.</small></span>
+                <span class="permission-check" aria-hidden="true">✓</span>
+              </label>
+              <p class="poster-toggle-status" id="homeBannerToggleStatus" aria-live="polite">Dipilih: poster disembunyikan, gambar tetap tersimpan.</p>
+              <label>Unggah gambar poster (JPG/PNG, maksimal 3 MB)
+                <input type="file" name="image" accept="image/jpeg,image/png" />
+                <small class="file-name" id="homeBannerFileName">Belum ada gambar poster.</small>
+              </label>
+              <div class="home-poster-admin-preview" id="homeBannerPreviewWrap" hidden>
+                <img id="homeBannerPreview" alt="Pratinjau poster beranda" />
+              </div>
+              <div class="review-actions">
+                <button class="btn btn-primary" type="submit">Simpan poster</button>
+                <button class="btn btn-secondary" id="removeHomeBanner" type="button" hidden>Hapus poster</button>
+              </div>
+              <p class="workflow-message" id="homeBannerMessage" aria-live="polite"></p>
+            </form>
+          </section>
+          <section class="admin-panel" id="offerSettings">
+            <div class="panel-heading"><div><h2>Iklan penawaran beranda</h2><p>Atur promo yang tampil di bawah bagian utama beranda.</p></div></div>
+            <form id="adminOfferForm" class="admin-settings-form">
+              <label class="choice-option">
+                <input type="checkbox" name="enabled" />
+                <span><strong>Tampilkan iklan penawaran</strong><small>Matikan kapan saja tanpa menghapus isi iklan.</small></span>
+              </label>
+              <label>Teks label<input type="text" name="badge" maxlength="40" placeholder="Contoh: Penawaran spesial" /></label>
+              <label>Judul penawaran<input type="text" name="title" maxlength="100" placeholder="Contoh: Siap berangkat? Hemat untuk perjalanan Anda" required /></label>
+              <label>Deskripsi<textarea name="description" rows="3" maxlength="240" placeholder="Jelaskan penawaran yang ingin ditampilkan." required></textarea></label>
+              <div class="field-row two-col">
+                <label>Teks tombol<input type="text" name="buttonLabel" maxlength="40" placeholder="Lihat penawaran" required /></label>
+                <label>Tujuan tombol
+                  <select name="buttonUrl" required>
+                    <option value="booking.html">Halaman booking</option>
+                    <option value="fleet.html">Daftar armada</option>
+                    <option value="pricing.html">Halaman harga</option>
+                    <option value="features.html">Halaman fitur</option>
+                    <option value="orders.html">Pesanan saya</option>
+                  </select>
+                </label>
+              </div>
+              <div class="home-offer-preview-wrap">
+                <small class="file-name">Pratinjau iklan</small>
+                <div class="home-offer-card home-offer-preview">
+                  <div class="home-offer-copy">
+                    <span class="home-offer-badge" id="offerPreviewBadge">Penawaran spesial</span>
+                    <h2 id="offerPreviewTitle">Judul penawaran</h2>
+                    <p id="offerPreviewDescription">Deskripsi penawaran akan tampil di sini.</p>
+                  </div>
+                  <span class="btn btn-primary" id="offerPreviewButton">Lihat penawaran</span>
+                </div>
+              </div>
+              <small class="file-name">Teks pada iklan otomatis mengikuti warna aksen tema. Tautan tombol dibatasi ke halaman website DriveLink.</small>
+              <div class="review-actions"><button class="btn btn-primary" type="submit">Simpan iklan</button></div>
+              <p class="workflow-message" id="adminOfferMessage" aria-live="polite"></p>
+            </form>
+          </section>
+          <section class="admin-panel" id="themeSettings">
+            <div class="panel-heading"><div><h2>Tema warna website</h2><p>Pilih warna aksen untuk tombol, tautan, dan menu admin.</p></div></div>
+            <form id="adminThemeForm" class="admin-settings-form">
+              <div class="theme-swatches" aria-label="Pilihan warna tema">
+                <button type="button" class="theme-swatch" data-theme-color="#1837d1" aria-label="Indigo" title="Indigo"></button>
+                <button type="button" class="theme-swatch" data-theme-color="#1d4ed8" aria-label="Biru" title="Biru"></button>
+                <button type="button" class="theme-swatch" data-theme-color="#0369a1" aria-label="Biru laut" title="Biru laut"></button>
+                <button type="button" class="theme-swatch" data-theme-color="#0e7490" aria-label="Cyan" title="Cyan"></button>
+                <button type="button" class="theme-swatch" data-theme-color="#0f766e" aria-label="Teal" title="Teal"></button>
+                <button type="button" class="theme-swatch" data-theme-color="#087f5b" aria-label="Hijau" title="Hijau"></button>
+                <button type="button" class="theme-swatch" data-theme-color="#15803d" aria-label="Hijau daun" title="Hijau daun"></button>
+                <button type="button" class="theme-swatch" data-theme-color="#4d7c0f" aria-label="Olive" title="Olive"></button>
+                <button type="button" class="theme-swatch" data-theme-color="#b45309" aria-label="Amber" title="Amber"></button>
+                <button type="button" class="theme-swatch" data-theme-color="#c2410c" aria-label="Oranye" title="Oranye"></button>
+                <button type="button" class="theme-swatch" data-theme-color="#b42318" aria-label="Merah" title="Merah"></button>
+                <button type="button" class="theme-swatch" data-theme-color="#be123c" aria-label="Rose" title="Rose"></button>
+                <button type="button" class="theme-swatch" data-theme-color="#a21caf" aria-label="Fuchsia" title="Fuchsia"></button>
+                <button type="button" class="theme-swatch" data-theme-color="#6d28d9" aria-label="Ungu" title="Ungu"></button>
+                <button type="button" class="theme-swatch" data-theme-color="#4338ca" aria-label="Violet" title="Violet"></button>
+                <button type="button" class="theme-swatch" data-theme-color="#475569" aria-label="Slate" title="Slate"></button>
+              </div>
+              <fieldset class="theme-combination-group">
+                <legend>Gradasi siap pakai</legend>
+                <p>Pilih dua warna dan arah gradasi untuk tombol serta aksen.</p>
+                <div class="theme-combination-grid">
+                  <button type="button" class="theme-combination" data-theme-primary="#1837d1" data-theme-end="#0e7490" data-theme-angle="135deg" aria-pressed="false">
+                    <span class="theme-combination-preview" aria-hidden="true"></span><span>Samudra</span>
+                  </button>
+                  <button type="button" class="theme-combination" data-theme-primary="#b42318" data-theme-end="#b45309" data-theme-angle="45deg" aria-pressed="false">
+                    <span class="theme-combination-preview" aria-hidden="true"></span><span>Senja</span>
+                  </button>
+                  <button type="button" class="theme-combination" data-theme-primary="#087f5b" data-theme-end="#0e7490" data-theme-angle="135deg" aria-pressed="false">
+                    <span class="theme-combination-preview" aria-hidden="true"></span><span>Aurora</span>
+                  </button>
+                  <button type="button" class="theme-combination" data-theme-primary="#6d28d9" data-theme-end="#be123c" data-theme-angle="90deg" aria-pressed="false">
+                    <span class="theme-combination-preview" aria-hidden="true"></span><span>Amethyst</span>
+                  </button>
+                  <button type="button" class="theme-combination" data-theme-primary="#4338ca" data-theme-end="#6d28d9" data-theme-angle="135deg" aria-pressed="false">
+                    <span class="theme-combination-preview" aria-hidden="true"></span><span>Galaxy</span>
+                  </button>
+                  <button type="button" class="theme-combination" data-theme-primary="#14532d" data-theme-end="#0f766e" data-theme-angle="45deg" aria-pressed="false">
+                    <span class="theme-combination-preview" aria-hidden="true"></span><span>Hutan</span>
+                  </button>
+                  <button type="button" class="theme-combination" data-theme-primary="#be123c" data-theme-end="#a21caf" data-theme-angle="90deg" aria-pressed="false">
+                    <span class="theme-combination-preview" aria-hidden="true"></span><span>Flamingo</span>
+                  </button>
+                  <button type="button" class="theme-combination" data-theme-primary="#b45309" data-theme-end="#4d7c0f" data-theme-angle="135deg" aria-pressed="false">
+                    <span class="theme-combination-preview" aria-hidden="true"></span><span>Keemasan</span>
+                  </button>
+                </div>
+              </fieldset>
+              <fieldset class="theme-combination-group">
+                <legend>Pasangan dua warna serasi</legend>
+                <p>Warna pertama menjadi aksen utama, warna kedua melengkapi gradasi tombol.</p>
+                <div class="theme-combination-grid">
+                  <button type="button" class="theme-combination" data-theme-primary="#1837d1" data-theme-end="#6d28d9" data-theme-angle="135deg" aria-pressed="false">
+                    <span class="theme-combination-preview" aria-hidden="true"></span><span>Biru &amp; ungu</span>
+                  </button>
+                  <button type="button" class="theme-combination" data-theme-primary="#0369a1" data-theme-end="#0f766e" data-theme-angle="135deg" aria-pressed="false">
+                    <span class="theme-combination-preview" aria-hidden="true"></span><span>Biru laut &amp; teal</span>
+                  </button>
+                  <button type="button" class="theme-combination" data-theme-primary="#0f766e" data-theme-end="#15803d" data-theme-angle="135deg" aria-pressed="false">
+                    <span class="theme-combination-preview" aria-hidden="true"></span><span>Teal &amp; hijau</span>
+                  </button>
+                  <button type="button" class="theme-combination" data-theme-primary="#15803d" data-theme-end="#b45309" data-theme-angle="135deg" aria-pressed="false">
+                    <span class="theme-combination-preview" aria-hidden="true"></span><span>Hijau &amp; amber</span>
+                  </button>
+                  <button type="button" class="theme-combination" data-theme-primary="#c2410c" data-theme-end="#be123c" data-theme-angle="135deg" aria-pressed="false">
+                    <span class="theme-combination-preview" aria-hidden="true"></span><span>Oranye &amp; rose</span>
+                  </button>
+                  <button type="button" class="theme-combination" data-theme-primary="#b42318" data-theme-end="#6d28d9" data-theme-angle="135deg" aria-pressed="false">
+                    <span class="theme-combination-preview" aria-hidden="true"></span><span>Merah &amp; violet</span>
+                  </button>
+                  <button type="button" class="theme-combination" data-theme-primary="#475569" data-theme-end="#4338ca" data-theme-angle="135deg" aria-pressed="false">
+                    <span class="theme-combination-preview" aria-hidden="true"></span><span>Slate &amp; indigo</span>
+                  </button>
+                  <button type="button" class="theme-combination" data-theme-primary="#0e7490" data-theme-end="#1d4ed8" data-theme-angle="135deg" aria-pressed="false">
+                    <span class="theme-combination-preview" aria-hidden="true"></span><span>Cyan &amp; biru</span>
+                  </button>
+                </div>
+              </fieldset>
+              <label>Warna aksen kustom<input id="themeColor" type="color" name="primary" value="#1837d1" /></label>
+              <div class="theme-preview" id="themePreview"><strong>Pratinjau tema DriveLink</strong><a href="#">Tautan contoh</a><button class="btn btn-primary" type="button">Tombol contoh</button></div>
+              <small class="file-name">Gunakan warna yang cukup gelap agar teks dan tombol tetap mudah dibaca. Tema disimpan di server dan berlaku untuk semua perangkat.</small>
+              <div class="review-actions"><button class="btn btn-primary" type="submit">Terapkan tema</button></div>
+              <p class="workflow-message" id="adminThemeMessage" aria-live="polite"></p>
+            </form>
+          </section>
+        </div>
+      </main>
+    </div>
+    <script src="assets/js/api-client.js?v=lan-realtime-1"></script>
+    <script src="assets/js/social-icons.js?v=1"></script>
+    <script src="assets/js/admin-access.js?v=admin-action-badges-1"></script>
+    <script src="assets/js/admin-settings.js?v=site-contact-settings-1"></script>
+    <script src="assets/js/responsive-nav.js?v=5"></script>
+  </body>
+</html>

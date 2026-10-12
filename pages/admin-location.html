@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lokasi Rental | DriveLink Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/styles.css?v=theme-aware-animations-1" />
+  </head>
+  <body class="admin-page">
+    <div class="admin-layout">
+      <aside class="admin-sidebar">
+        <a href="index.html" class="brand"><span class="brand-mark">D</span><span>DriveLink</span></a>
+        <span class="sidebar-label">MENU ADMIN</span>
+        <nav class="admin-nav" aria-label="Navigasi dashboard">
+          <a class="admin-nav-link" href="admin.html">◫ <span>Ringkasan</span></a>
+          <a class="admin-nav-link" href="admin-bookings.html">▤ <span>Booking</span></a>
+          <a class="admin-nav-link" href="admin-fleet.html">▣ <span>Armada</span></a>
+          <a class="admin-nav-link" href="admin-vehicle-service.html">⚙ <span>Kontrol unit & servis</span></a>
+          <a class="admin-nav-link is-active" href="admin-location.html">⌖ <span>Lokasi rental</span></a>
+          <a class="admin-nav-link" href="admin-rental-settings.html">◷ <span>Pengaturan sewa</span></a>
+          <a class="admin-nav-link" href="admin-travel-packages.html">✦ <span>Paket perjalanan & promo</span></a>
+          <a class="admin-nav-link" href="admin-monitoring.html">⌁ <span>Monitoring IoT</span></a>
+          <a class="admin-nav-link" href="admin-payments.html">＄ <span>Pembayaran</span></a>
+          <a class="admin-nav-link" href="admin-handover.html">✓ <span>Serah-terima</span></a>
+          <a class="admin-nav-link" href="admin-checklist.html">☷ <span>Atur checklist</span></a>
+          <a class="admin-nav-link" href="admin-handover-archive.html">▤ <span>Arsip checklist</span></a>
+          <a class="admin-nav-link" href="admin-return.html">↩ <span>Pengembalian unit</span></a>
+          <a class="admin-nav-link" href="admin-rental-archive.html">▤ <span>Arsip penyewaan</span></a>
+          <a class="admin-nav-link" href="admin-accounts.html">♙ <span>Akun & karyawan</span></a>
+          <a class="admin-nav-link" href="admin-settings.html">⚙ <span>Pengaturan admin</span></a>
+        </nav>
+        <div class="sidebar-bottom"><div class="sidebar-help"><strong>DriveLink Admin</strong><span>Prototipe dashboard</span></div><button class="logout-button" id="logoutButton">Keluar</button></div>
+      </aside>
+      <main class="admin-main">
+        <header class="admin-header"><div><span class="admin-date" id="todayLabel"></span><h1>Lokasi rental</h1></div><div class="admin-user"><span class="admin-avatar">AD</span><span><strong id="adminName">Admin</strong><small>Administrator</small></span></div></header>
+        <div class="admin-welcome compact-welcome"><div><span class="eyebrow">Informasi lokasi</span><h2>Atur lokasi rental untuk pelanggan</h2><p>Alamat dan tautan peta ini akan tampil di beranda dan mengarahkan pelanggan ke Google Maps.</p></div><a class="btn btn-secondary" href="index.html">Lihat beranda</a></div>
+        <section class="admin-panel">
+          <div class="panel-heading"><div><h2>Alamat dan peta</h2><p>Gunakan alamat lengkap dan tautan Google Maps untuk lokasi rental yang benar.</p></div></div>
+          <form class="admin-settings-form" id="rentalLocationForm">
+            <label>Alamat lengkap lokasi rental
+              <textarea name="address" rows="3" maxlength="240" placeholder="Jalan, nomor, kelurahan, kecamatan, kota" required></textarea>
+            </label>
+            <label>Link Google Maps
+              <input type="url" name="mapsUrl" placeholder="https://maps.app.goo.gl/..." required />
+              <small>Masukkan tautan Google Maps HTTPS untuk lokasi rental.</small>
+            </label>
+            <label>Link untuk memberi ulasan di Google Maps
+              <input type="url" name="reviewUrl" placeholder="https://search.google.com/local/writereview?placeid=..." />
+              <small>Masukkan tautan langsung formulir ulasan DriveLink di Google Maps. Tautan ini ditampilkan pada halaman Ulasan pelanggan.</small>
+            </label>
+            <p class="workflow-message" id="rentalLocationMessage" aria-live="polite"></p>
+            <button class="btn btn-primary" type="submit">Simpan lokasi dan tautan ulasan</button>
+          </form>
+        </section>
+        <p class="prototype-note admin-prototype-note">Lokasi tersimpan di server dan ditampilkan pada beranda pelanggan.</p>
+      </main>
+    </div>
+    <script src="assets/js/api-client.js?v=lan-realtime-1"></script>
+    <script src="assets/js/admin-access.js?v=admin-action-badges-1"></script>
+    <script src="assets/js/admin.js?v=admin-ops-sync-2"></script>
+    <script src="assets/js/admin-notifications.js?v=server-notification-data-2"></script>
+    <script src="assets/js/responsive-nav.js?v=5"></script>
+  </body>
+</html>

@@ -1,0 +1,90 @@
+================================================================================
+DOKUMEN PERSYARATAN PRODUK (PRD)
+SISTEM WEB RENTAL MOBIL TERINTEGRASI IoT
+================================================================================
+
+1. RINGKASAN PRODUK
+-------------------
+Platform web manajemen rental mobil terpadu yang terhubung langsung dengan
+perangkat keras IoT pada setiap armada kendaraan. Sistem ini mengotomatiskan
+siklus penyewaan, pemantauan kondisi fisik dan lokasi kendaraan secara langsung,
+penyediaan akses pintu tanpa kunci fisik, serta penghentian mesin jarak jauh
+untuk meningkatkan keamanan operasional.
+
+2. TUJUAN BISNIS
+----------------
+- Efisiensi Operasional: Memangkas waktu proses penyerahan dan pengembalian unit
+  hingga 70% melalui otomasi akses digital.
+- Keamanan Armada: Meminimalkan risiko pencurian dengan pemantauan lokasi
+  terus-menerus, pembatasan wilayah geografis (geofencing), dan relai pemutus
+  pengapian jarak jauh.
+- Penghematan Perawatan: Mengurangi risiko kerusakan berat melalui pemantauan
+  indikator kesehatan mesin secara awal (diagnostik OBD-II).
+- Transparansi Layanan: Menyajikan data tingkat bahan bakar, jarak tempuh,
+  dan status kendaraan secara akurat kepada pengguna dan pengelola.
+
+3. PERAN PENGGUNA
+-----------------
+- Penyewa: Mencari kendaraan, melakukan pembayaran, melacak posisi mobil,
+  mengunci/membuka pintu melalui antarmuka web, serta melihat riwayat transaksi.
+- Petugas Lapangan: Memeriksa kondisi fisik kendaraan, mengelola kesiapan unit,
+  dan menangani pemeliharaan berkala.
+- Administrator: Memantau seluruh aktivitas armada melalui dasbor terpusat,
+  mengelola tarif, menganalisis performa bisnis, dan menangani situasi darurat.
+
+4. ARSITEKTUR & DATA TELEMETRI IoT
+----------------------------------
+Setiap kendaraan dilengkapi modul IoT yang terdiri dari pelacak GPS, pemindai
+diagnostik mesin (OBD-II), pengendali kunci pintu, dan relai pemutus pengapian.
+Modul terhubung ke server web melalui protokol komunikasi seluler berdaya rendah
+(MQTT / HTTPS via 4G/LTE/NB-IoT).
+
+Data telemetri yang dikirimkan meliputi:
+- Koordinat lokasi (GPS) dan kecepatan kendaraan.
+- Kode status kesehatan mesin (DTC) dan suhu sistem pendingin.
+- Tingkat bahan bakar atau kapasitas baterai.
+- Pembacaan jarak tempuh pada odometer.
+- Status pengapian mesin dan status penguncian pintu.
+
+5. PERSYARATAN FUNGSIONAL
+-------------------------
+[Portal Penyewa]
+- Pemesanan & Pencarian: Pencarian unit berdasarkan lokasi penjemputan, jenis mobil,
+  dan jadwal ketersediaan.
+- Verifikasi Identitas: Pengunggahan dokumen resmi (KTP/SIM) disertai pemindaian
+  wajah untuk validasi identitas otomatis.
+- Kunci Digital Web: Tombol pengendali pada dasbor web penyewa untuk mengunci
+  dan membuka pintu mobil yang hanya aktif selama durasi sewa berjalan.
+- Pemantauan Sewa: Tampilan lokasi kendaraan, sisa bahan bakar, dan batas waktu pengembalian.
+
+[Dasbor Administrator]
+- Pemantauan Armada: Peta interaktif real-time yang menampilkan posisi seluruh armada
+  beserta status operasional tiap unit.
+- Pembatasan Wilayah (Geofencing): Peringatan otomatis jika kendaraan keluar dari area
+  yang diizinkan atau terdeteksi mengalami benturan keras.
+- Imobilisasi Mesin Jarak Jauh: Perintah khusus untuk mematikan pengapian kendaraan
+  secara aman ketika terdeteksi indikasi pelanggaran atau kecurian.
+- Jadwal Pemeliharaan Otomatis: Notifikasi servis berdasarkan ambang batas jarak
+  tempuh atau munculnya kode kerusakan mesin.
+- Laporan & Analitik: Data tingkat okupansi armada, pendapatan, konsumsi bahan bakar
+  rata-rata, serta pola mengemudi penyewa.
+
+6. PERSYARATAN NON-FUNGSIONAL
+-----------------------------
+- Keamanan: Enkripsi end-to-end (TLS/SSL) untuk data telemetri, otentikasi ganda (2FA)
+  untuk eksekusi perintah sensitif (seperti pemutusan mesin).
+- Kecepatan Respon (Latency): Waktu tanggap eksekusi perintah pembukaan pintu kendaraan
+  di bawah 2 detik pada kondisi jaringan normal.
+- Ketersediaan Sistem (Availability): Tingkat ketersediaan server minimal 99,9%
+  untuk pemantauan tanpa henti (24/7).
+- Skalabilitas: Arsitektur backend berbasis microservices yang mampu menangani
+  ribuan pengiriman data telemetri secara bersamaan.
+
+7. TAHAPAN PENGEMBANGAN (ROADMAP)
+---------------------------------
+- Tahap 1 (MVP): Pembangunan sistem pemesanan web dasar, manajemen pengguna,
+  verifikasi dokumen, dan pelacakan lokasi GPS kendaraan.
+- Tahap 2: Integrasi pengendali pintu digital, pembacaan data telemetri mesin,
+  dan sistem geofencing.
+- Tahap 3: Pengembangan analitik perilaku mengemudi, otomasi imobilisasi mesin,
+  dan sistem laporan keuangan/operasional mendalam.

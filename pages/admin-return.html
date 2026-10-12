@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pengembalian Unit | DriveLink Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/styles.css?v=theme-aware-animations-1" />
+  </head>
+  <body class="admin-page">
+    <div class="admin-layout">
+      <aside class="admin-sidebar">
+        <a href="index.html" class="brand"><span class="brand-mark">D</span><span>DriveLink</span></a>
+        <span class="sidebar-label">MENU ADMIN</span>
+        <nav class="admin-nav" aria-label="Navigasi dashboard">
+          <a class="admin-nav-link" href="admin.html">◫ <span>Ringkasan</span></a>
+          <a class="admin-nav-link" href="admin-bookings.html">▤ <span>Booking</span></a>
+          <a class="admin-nav-link" href="admin-fleet.html">▣ <span>Armada</span></a>
+          <a class="admin-nav-link" href="admin-vehicle-service.html">⚙ <span>Kontrol unit & servis</span></a>
+          <a class="admin-nav-link" href="admin-location.html">⌖ <span>Lokasi rental</span></a>
+          <a class="admin-nav-link" href="admin-rental-settings.html">◷ <span>Pengaturan sewa</span></a>
+          <a class="admin-nav-link" href="admin-travel-packages.html">✦ <span>Paket perjalanan & promo</span></a>
+          <a class="admin-nav-link" href="admin-monitoring.html">⌁ <span>Monitoring IoT</span></a>
+          <a class="admin-nav-link" href="admin-payments.html">＄ <span>Pembayaran</span></a>
+          <a class="admin-nav-link" href="admin-handover.html">✓ <span>Serah-terima</span></a>
+          <a class="admin-nav-link" href="admin-checklist.html">☷ <span>Atur checklist</span></a>
+          <a class="admin-nav-link" href="admin-handover-archive.html">▤ <span>Arsip checklist</span></a>
+          <a class="admin-nav-link is-active" href="admin-return.html">↩ <span>Pengembalian unit</span></a>
+          <a class="admin-nav-link" href="admin-rental-archive.html">▤ <span>Arsip penyewaan</span></a>
+          <a class="admin-nav-link" href="admin-accounts.html">♙ <span>Akun & karyawan</span></a>
+          <a class="admin-nav-link" href="admin-settings.html">⚙ <span>Pengaturan admin</span></a>
+        </nav>
+        <div class="sidebar-bottom"><div class="sidebar-help"><strong>DriveLink Admin</strong><span>Pemeriksaan unit kembali</span></div><button class="logout-button" id="logoutButton">Keluar</button></div>
+      </aside>
+      <main class="admin-main">
+        <header class="admin-header"><div><span class="admin-date" id="todayLabel"></span><h1>Pengembalian unit</h1></div><div class="admin-user"><span class="admin-avatar">AD</span><span><strong id="adminName">Admin</strong><small>Administrator</small></span></div></header>
+        <div class="admin-welcome compact-welcome"><div><span class="eyebrow">Pemeriksaan akhir rental</span><h2>Periksa kondisi kendaraan saat kembali</h2><p>Masukkan kode booking untuk membandingkan checklist awal dengan kondisi unit yang dikembalikan. Setelah disimpan, status booking menjadi “Dikembalikan”.</p></div></div>
+        <section class="admin-panel">
+          <div class="panel-heading"><div><h2>Cari booking untuk pengembalian</h2><p>Hanya kode booking yang diperlukan.</p></div></div>
+          <form id="returnLookupForm" class="admin-settings-form">
+            <div class="field-row two-col">
+              <label>Kode booking<input type="text" name="bookingId" maxlength="27" placeholder="Contoh: DL-A1B2C3D4E5F60718293A4B5C" autocomplete="off" required /></label>
+              <button class="btn btn-secondary inspection-load-button" type="submit">Muat booking</button>
+            </div>
+          </form>
+          <p class="workflow-message" id="returnLookupMessage" aria-live="polite"></p>
+          <section class="inspection-booking-details" id="returnBookingSummary" hidden></section>
+        </section>
+        <section class="admin-panel" id="returnInspectionPanel" hidden>
+          <div class="panel-heading"><div><h2>Perbandingan kondisi unit</h2><p>Checklist awal ditampilkan di samping kondisi kendaraan saat kembali.</p></div></div>
+          <div class="table-scroll">
+            <table class="admin-table return-comparison-table">
+              <thead><tr><th>Bagian</th><th>Saat unit keluar</th><th>Saat unit kembali</th><th>Perbandingan</th></tr></thead>
+              <tbody id="returnComparisonBody"></tbody>
+            </table>
+          </div>
+          <p class="workflow-message" id="returnComparisonStatus" aria-live="polite"></p>
+          <form id="returnInspectionForm" class="admin-settings-form" hidden>
+            <h3>Checklist kondisi saat kembali</h3>
+            <div class="field-row two-col">
+              <label>Plat kendaraan<input type="text" name="plate" maxlength="30" required /></label>
+              <label>Odometer saat kembali (KM)<input type="number" name="odometerKm" min="0" step="1" required /></label>
+              <label>Kondisi bensin
+                <select name="fuelLevel" required><option value="">Pilih kondisi/level bensin</option><option>E (kosong)</option><option>1/4 tangki</option><option>1/2 tangki</option><option>3/4 tangki</option><option>F (penuh)</option></select>
+              </label>
+              <label>Kondisi bodi
+                <select name="bodyCondition" required><option value="">Pilih kondisi</option><option>Baik, tidak ada lecet</option><option>Ada lecet / penyok (catat lokasi)</option><option>Perlu pemeriksaan lanjutan</option></select>
+              </label>
+              <label>Lokasi lecet / penyok dan catatan bodi<textarea name="bodyNotes" rows="2" placeholder="Catat kondisi atau kerusakan baru"></textarea></label>
+              <label>Kondisi interior
+                <select name="interiorCondition" required><option value="">Pilih kondisi</option><option>Baik dan bersih</option><option>Ada kerusakan (jelaskan)</option><option>Perlu dibersihkan / diperiksa</option></select>
+              </label>
+              <label>Kondisi lampu
+                <select name="lightsCondition" required><option value="">Pilih kondisi</option><option>Semua lampu berfungsi</option><option>Ada lampu tidak berfungsi</option><option>Perlu pemeriksaan</option></select>
+              </label>
+              <label>Kondisi ban
+                <select name="tiresCondition" required><option value="">Pilih kondisi</option><option>Baik dan tekanan sesuai</option><option>Ada ban aus / kempis (jelaskan)</option><option>Perlu pemeriksaan</option></select>
+              </label>
+              <label>Kondisi mesin dan indikator
+                <select name="engineCondition" required><option value="">Pilih kondisi</option><option>Normal, tidak ada indikator menyala</option><option>Ada catatan / indikator menyala</option><option>Perlu pemeriksaan lanjutan</option></select>
+              </label>
+              <label>Kelengkapan kendaraan
+                <select name="equipmentCondition" required><option value="">Pilih kondisi</option><option>STNK, kunci, dongkrak, dan perlengkapan lengkap</option><option>Ada perlengkapan yang kurang (jelaskan)</option></select>
+              </label>
+              <label>Catatan tambahan<textarea name="notes" rows="2" placeholder="Catatan pengembalian lain"></textarea></label>
+            </div>
+            <button class="btn btn-primary" type="submit" id="returnInspectionSubmit">Simpan checklist & tandai dikembalikan</button>
+          </form>
+        </section>
+      </main>
+    </div>
+    <script src="assets/js/api-client.js?v=lan-realtime-1"></script>
+    <script src="assets/js/admin-access.js?v=admin-action-badges-1"></script>
+    <script src="assets/js/admin-return.js?v=return-inspection-2"></script>
+    <script src="assets/js/responsive-nav.js?v=5"></script>
+  </body>
+</html>

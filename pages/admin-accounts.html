@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Akun & Karyawan | DriveLink Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/styles.css?v=theme-aware-animations-1" />
+  </head>
+  <body class="admin-page">
+    <div class="admin-layout">
+      <aside class="admin-sidebar">
+        <a href="index.html" class="brand"><span class="brand-mark">D</span><span>DriveLink</span></a>
+        <span class="sidebar-label">MENU ADMIN</span>
+        <nav class="admin-nav" aria-label="Navigasi dashboard">
+          <a class="admin-nav-link" href="admin.html">◫ <span>Ringkasan</span></a>
+          <a class="admin-nav-link" href="admin-bookings.html">▤ <span>Booking</span></a>
+          <a class="admin-nav-link" href="admin-fleet.html">▣ <span>Armada</span></a>
+          <a class="admin-nav-link" href="admin-vehicle-service.html">⚙ <span>Kontrol unit & servis</span></a>
+          <a class="admin-nav-link" href="admin-location.html">⌖ <span>Lokasi rental</span></a>
+          <a class="admin-nav-link" href="admin-rental-settings.html">◷ <span>Pengaturan sewa</span></a>
+          <a class="admin-nav-link" href="admin-travel-packages.html">✦ <span>Paket perjalanan & promo</span></a>
+          <a class="admin-nav-link" href="admin-monitoring.html">⌁ <span>Monitoring IoT</span></a>
+          <a class="admin-nav-link" href="admin-payments.html">＄ <span>Pembayaran</span></a>
+          <a class="admin-nav-link" href="admin-handover.html">✓ <span>Serah-terima</span></a>
+          <a class="admin-nav-link" href="admin-checklist.html">☷ <span>Atur checklist</span></a>
+          <a class="admin-nav-link" href="admin-handover-archive.html">▤ <span>Arsip checklist</span></a>
+          <a class="admin-nav-link" href="admin-return.html">↩ <span>Pengembalian unit</span></a>
+          <a class="admin-nav-link" href="admin-rental-archive.html">▤ <span>Arsip penyewaan</span></a>
+          <a class="admin-nav-link is-active" href="admin-accounts.html">♙ <span>Akun & karyawan</span></a>
+          <a class="admin-nav-link" href="admin-settings.html">⚙ <span>Pengaturan admin</span></a>
+        </nav>
+        <div class="sidebar-bottom"><div class="sidebar-help"><strong>DriveLink Admin</strong><span>Manajemen karyawan</span></div><button class="logout-button" id="logoutButton">Keluar</button></div>
+      </aside>
+      <main class="admin-main">
+        <header class="admin-header">
+          <div><span class="admin-date" id="todayLabel"></span><h1>Akun & karyawan</h1></div>
+          <div class="admin-user"><span class="admin-avatar">AD</span><span><strong id="adminName">Admin</strong><small>Administrator</small></span></div>
+        </header>
+        <div class="admin-welcome compact-welcome">
+          <div><span class="eyebrow">Manajemen akses</span><h2>Akun khusus untuk setiap karyawan</h2><p>Buat akun login sendiri dan atur akses menu sesuai tanggung jawabnya. Akun yang dinonaktifkan langsung kehilangan akses.</p></div>
+        </div>
+        <div class="account-management-grid">
+          <section class="admin-panel">
+            <div class="panel-heading"><div><h2 id="accountFormTitle">Tambah karyawan</h2><p>Username menjadi identitas login dan tidak dapat diubah setelah dibuat.</p></div></div>
+            <form id="employeeForm" class="admin-settings-form" novalidate>
+              <div class="field-row two-col">
+                <label>Nama lengkap<input type="text" name="name" maxlength="100" required /></label>
+                <label>Username login<input type="text" name="username" minlength="3" maxlength="40" pattern="[A-Za-z0-9._\-]+" autocomplete="off" required /></label>
+                <label>Email<input type="email" name="email" maxlength="254" required /></label>
+                <label>Nomor telepon<input type="tel" name="phone" maxlength="30" /></label>
+                <label>ID karyawan<input type="text" name="employeeCode" maxlength="40" /></label>
+                <label>Jabatan<input type="text" name="position" maxlength="100" placeholder="Contoh: Petugas lapangan" /></label>
+              </div>
+              <label>Password awal / password baru<input type="password" name="password" minlength="12" autocomplete="new-password" required /><small id="employeePasswordHint" class="file-name">Wajib saat membuat akun. Masukkan minimal 12 karakter; jika kurang, pesan kesalahan akan tampil di sini tanpa memindahkan halaman.</small></label>
+              <fieldset class="choice-field account-permissions">
+                <legend class="sr-only">Batasi akses fitur</legend>
+                <div class="permission-heading">
+                  <div><h3>Batasi akses fitur</h3><p>Pilih menu sidebar yang diperlukan karyawan ini.</p></div>
+                  <span class="permission-selection-count" id="permissionSelectionCount" aria-live="polite">0 dari 14 fitur dipilih</span>
+                </div>
+                <div class="permission-tools">
+                  <button class="permission-tool" id="selectAllPermissions" type="button">Pilih semua</button>
+                  <button class="permission-tool" id="clearPermissions" type="button">Hapus pilihan</button>
+                </div>
+                <div class="permission-options">
+                  <label class="permission-option"><input type="checkbox" name="permissions" value="overview" /><span class="permission-option-icon" aria-hidden="true">◫</span><span class="permission-option-copy"><strong>Ringkasan</strong><small>Statistik dan booking terbaru</small></span><span class="permission-check" aria-hidden="true">✓</span></label>
+                  <label class="permission-option"><input type="checkbox" name="permissions" value="bookings" /><span class="permission-option-icon" aria-hidden="true">▤</span><span class="permission-option-copy"><strong>Booking</strong><small>Pengajuan dan verifikasi pembayaran</small></span><span class="permission-check" aria-hidden="true">✓</span></label>
+                  <label class="permission-option"><input type="checkbox" name="permissions" value="fleet" /><span class="permission-option-icon" aria-hidden="true">▣</span><span class="permission-option-copy"><strong>Armada</strong><small>Tarif, stok, dan foto kendaraan</small></span><span class="permission-check" aria-hidden="true">✓</span></label>
+                  <label class="permission-option"><input type="checkbox" name="permissions" value="vehicle-service" /><span class="permission-option-icon" aria-hidden="true">⚙</span><span class="permission-option-copy"><strong>Kontrol unit & servis</strong><small>Data kendaraan dan jadwal servis</small></span><span class="permission-check" aria-hidden="true">✓</span></label>
+                  <label class="permission-option"><input type="checkbox" name="permissions" value="location" /><span class="permission-option-icon" aria-hidden="true">⌖</span><span class="permission-option-copy"><strong>Lokasi rental</strong><small>Alamat dan informasi lokasi</small></span><span class="permission-check" aria-hidden="true">✓</span></label>
+                  <label class="permission-option"><input type="checkbox" name="permissions" value="rental-settings" /><span class="permission-option-icon" aria-hidden="true">◷</span><span class="permission-option-copy"><strong>Pengaturan sewa</strong><small>Aturan dan pengaturan penyewaan</small></span><span class="permission-check" aria-hidden="true">✓</span></label>
+                  <label class="permission-option"><input type="checkbox" name="permissions" value="travel-packages" /><span class="permission-option-icon" aria-hidden="true">✦</span><span class="permission-option-copy"><strong>Paket perjalanan & promo</strong><small>Paket, fasilitas, dan promosi</small></span><span class="permission-check" aria-hidden="true">✓</span></label>
+                  <label class="permission-option"><input type="checkbox" name="permissions" value="monitoring" /><span class="permission-option-icon" aria-hidden="true">⌁</span><span class="permission-option-copy"><strong>Monitoring IoT</strong><small>Pemantauan perangkat kendaraan</small></span><span class="permission-check" aria-hidden="true">✓</span></label>
+                  <label class="permission-option"><input type="checkbox" name="permissions" value="payments" /><span class="permission-option-icon" aria-hidden="true">＄</span><span class="permission-option-copy"><strong>Pembayaran</strong><small>QRIS dan informasi rekening</small></span><span class="permission-check" aria-hidden="true">✓</span></label>
+                  <label class="permission-option"><input type="checkbox" name="permissions" value="handover" /><span class="permission-option-icon" aria-hidden="true">✓</span><span class="permission-option-copy"><strong>Serah-terima</strong><small>Checklist dan konfirmasi serah-terima</small></span><span class="permission-check" aria-hidden="true">✓</span></label>
+                  <label class="permission-option"><input type="checkbox" name="permissions" value="checklist" /><span class="permission-option-icon" aria-hidden="true">☷</span><span class="permission-option-copy"><strong>Atur checklist</strong><small>Mengelola kategori checklist petugas</small></span><span class="permission-check" aria-hidden="true">✓</span></label>
+                  <label class="permission-option"><input type="checkbox" name="permissions" value="handover-archive" /><span class="permission-option-icon" aria-hidden="true">▤</span><span class="permission-option-copy"><strong>Arsip checklist</strong><small>Melihat arsip dan detail checklist yang tersimpan</small></span><span class="permission-check" aria-hidden="true">✓</span></label>
+                  <label class="permission-option"><input type="checkbox" name="permissions" value="return" /><span class="permission-option-icon" aria-hidden="true">↩</span><span class="permission-option-copy"><strong>Pengembalian unit</strong><small>Pemeriksaan dan pencatatan pengembalian</small></span><span class="permission-check" aria-hidden="true">✓</span></label>
+                  <label class="permission-option"><input type="checkbox" name="permissions" value="rental-archive" /><span class="permission-option-icon" aria-hidden="true">▤</span><span class="permission-option-copy"><strong>Arsip penyewaan</strong><small>Melihat riwayat penyewaan yang sudah dikembalikan</small></span><span class="permission-check" aria-hidden="true">✓</span></label>
+                </div>
+                <small class="permission-admin-note">Akun & karyawan dan Pengaturan admin hanya tersedia untuk administrator.</small>
+              </fieldset>
+              <div class="review-actions">
+                <button class="btn btn-primary" type="submit" id="employeeSubmit">Buat akun karyawan</button>
+                <button class="btn btn-secondary" type="button" id="cancelEmployeeEdit" hidden>Batal edit</button>
+              </div>
+              <p class="workflow-message" id="employeeFormMessage" aria-live="polite"></p>
+            </form>
+          </section>
+          <section class="admin-panel account-list-panel">
+            <div class="panel-heading"><div><h2>Daftar akun</h2><p>Administrator utama dikelola melalui konfigurasi server.</p></div></div>
+            <div class="table-scroll">
+              <table class="admin-table">
+                <thead><tr><th>Karyawan</th><th>Jabatan / ID</th><th>Akses fitur</th><th>Status</th><th>Aksi</th></tr></thead>
+                <tbody id="employeeAccountsBody"></tbody>
+              </table>
+            </div>
+            <p class="empty-state" id="employeeAccountsEmpty" hidden>Belum ada akun karyawan.</p>
+          </section>
+        </div>
+        <p class="prototype-note admin-prototype-note">Password disimpan dalam bentuk hash. Penonaktifan akun mencabut sesi login karyawan.</p>
+      </main>
+    </div>
+    <script src="assets/js/api-client.js?v=lan-realtime-1"></script>
+    <script src="assets/js/admin-access.js?v=admin-action-badges-1"></script>
+    <script src="assets/js/admin-accounts.js?v=account-list-layout-1"></script>
+    <script src="assets/js/responsive-nav.js?v=5"></script>
+  </body>
+</html>

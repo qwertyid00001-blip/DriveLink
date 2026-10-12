@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ajukan Booking | DriveLink</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/styles.css?v=site-contact-settings-1" />
+  </head>
+  <body class="booking-page">
+    <header class="topbar"><div class="container nav-wrap">
+      <a href="index.html" class="brand"><span class="brand-mark">D</span><span>DriveLink</span></a>
+      <nav class="nav" aria-label="Navigasi utama">
+        <a href="index.html">Beranda</a><a href="fleet.html">Harga Unit</a><a href="features.html">Fitur</a><a href="pricing.html">Paket Perjalanan</a><a href="reviews.html">Ulasan</a><a class="current-page" href="booking.html">Booking</a><a href="orders.html">Pesanan Saya</a>
+      </nav><div class="nav-actions"><a href="fleet.html" class="btn btn-secondary">Lihat harga unit</a></div>
+    </div></header>
+    <main class="inner-page">
+      <section class="page-hero"><div class="container">
+        <span class="eyebrow">Booking tanpa akun</span><h1>Ajukan kendaraan untuk perjalanan Anda.</h1>
+        <p>Isi data perjalanan dan persyaratan. Setelah pengajuan booking disetujui admin, Anda dapat memilih metode pembayaran.</p>
+      </div></section>
+      <section class="container booking-page-wrap">
+        <form class="booking-form booking-page-form" id="bookingForm">
+          <div class="booking-form-heading"><h2>Data pemesan</h2><p>Lengkapi informasi kontak dan alamat.</p></div>
+          <div class="field-row"><label><span>Nama</span><input type="text" name="name" autocomplete="name" placeholder="Masukkan nama Anda" required /></label></div>
+          <div class="field-row two-col">
+            <label><span>Email</span><input type="email" name="email" autocomplete="email" placeholder="contoh@email.com" required /></label>
+            <label><span>Telepon</span><input type="tel" name="phone" autocomplete="tel" placeholder="08xxxxxxxxxx" required /></label>
+          </div>
+          <div class="field-row"><label><span>Alamat lengkap</span><textarea name="address" autocomplete="street-address" rows="3" placeholder="Jalan, nomor rumah, kelurahan, kecamatan, kota, dan kode pos" required></textarea></label></div>
+          <div class="booking-form-heading"><h2>Jenis pemesanan</h2><p>Pilih reservasi untuk tanggal mendatang atau sewa langsung hari ini.</p></div>
+          <fieldset class="choice-field">
+            <legend>Pilih jenis pemesanan</legend>
+            <label class="choice-option"><input type="radio" name="bookingType" value="Reservasi" checked required /><span><strong>Reservasi</strong><small>Tentukan tanggal dan waktu kedatangan yang akan datang.</small></span></label>
+            <label class="choice-option"><input type="radio" name="bookingType" value="Sewa langsung hari ini" required /><span><strong>Sewa langsung hari ini</strong><small>Datang ke lokasi rental hari ini untuk mengambil kendaraan.</small></span></label>
+          </fieldset>
+          <div class="booking-form-heading" id="arrivalScheduleHeading"><h2>Jadwal datang ke lokasi</h2><p>Pilih tanggal dan waktu kedatangan untuk reservasi.</p></div>
+          <div class="field-row" id="arrivalScheduleField">
+            <label><span>Tanggal dan waktu kedatangan <b>*</b></span><input type="datetime-local" name="arrivalAt" required /><small class="file-name">Pilih jadwal kedatangan ke lokasi rental.</small></label>
+          </div>
+          <div class="booking-form-heading"><h2>Detail rental</h2><p>Pilih kendaraan, durasi, layanan, dan metode deposit.</p></div>
+          <div class="field-row two-col">
+            <label><span>Jenis mobil</span><select name="carType"><option>Avanza Smart</option><option>BR-V Family</option><option>EV CityX</option></select><small class="file-name" id="bookingPriceQuote" aria-live="polite"></small></label>
+            <label><span>Durasi</span><select name="duration"><option>1 hari</option><option>3 hari</option><option>7 hari</option><option>1 bulan</option></select></label>
+          </div>
+          <div class="field-row" id="bookingColorField" hidden>
+            <label><span>Warna kendaraan</span><select name="vehicleColor"><option value="">Pilih warna</option></select><small class="file-name" id="bookingColorAvailability">Pilih jenis mobil untuk melihat warna yang tersedia.</small></label>
+          </div>
+          <div class="field-row two-col">
+            <label><span>Paket perjalanan (opsional)</span><select name="packageId" id="bookingPackage"><option value="">Tanpa paket</option></select><small class="file-name" id="bookingPackageDetails">Pilih kendaraan untuk melihat paket yang sesuai kategorinya.</small></label>
+            <label><span>Promo event (opsional)</span><select name="promotionId" id="bookingPromotion"><option value="">Tanpa promo</option></select><small class="file-name" id="bookingPromotionDetails">Promo mengikuti tanggal perjalanan dan paket yang dipilih.</small></label>
+          </div>
+          <fieldset class="choice-field">
+            <legend>Pilihan layanan</legend>
+            <label class="choice-option"><input type="radio" name="driverOption" value="Pakai driver" checked required /><span><strong>Pakai driver</strong><small>Kendaraan digunakan bersama pengemudi dari DriveLink.</small></span></label>
+            <label class="choice-option"><input type="radio" name="driverOption" value="Lepas kunci" required /><span><strong>Lepas kunci</strong><small>Kendaraan digunakan sendiri oleh penyewa yang memenuhi persyaratan.</small></span></label>
+          </fieldset>
+          <fieldset class="choice-field driver-fuel-options" id="driverFuelOptions">
+            <legend>Paket BBM untuk layanan driver</legend>
+            <label class="choice-option"><input type="radio" name="fuelPackage" value="Termasuk BBM" checked required /><span><strong>Termasuk BBM</strong><small>Biaya BBM sudah termasuk dalam tarif driver.</small></span></label>
+            <label class="choice-option"><input type="radio" name="fuelPackage" value="Belum termasuk BBM" required /><span><strong>Belum termasuk BBM</strong><small>BBM ditanggung terpisah oleh penyewa.</small></span></label>
+          </fieldset>
+          <fieldset class="choice-field">
+            <legend>Pilihan deposit</legend>
+            <div id="rentalDepositOptions" class="rental-deposit-options"><p class="file-name">Memuat pilihan deposit...</p></div>
+          </fieldset>
+          <div class="booking-collateral-note" id="rentalCollateralNote" hidden><strong>Barang jaminan yang perlu dititipkan</strong><ul id="rentalCollateralItems"></ul></div>
+          <div class="booking-form-heading"><h2>Dokumen persyaratan</h2><p>Pilih foto JPG/PNG hingga 10 MB. Foto akan otomatis dikompresi maksimal 300 KB sebelum dikirim.</p></div>
+          <div class="field-row two-col">
+            <label><span>Jenis identitas <b>*</b></span><select name="identityType" id="identityType" required><option value="KTP">KTP</option><option value="Paspor">Paspor</option></select></label>
+            <label class="upload-field" id="ktpUpload"><span>Foto KTP <b>*</b></span><input type="file" name="ktp" accept="image/jpeg,image/png" required /><small class="file-name" data-file-for="ktp">Belum ada file dipilih</small></label>
+          </div>
+          <div class="field-row two-col">
+            <label class="upload-field"><span>Foto SIM A <b>*</b></span><input type="file" name="simA" accept="image/jpeg,image/png" required /><small class="file-name" data-file-for="simA">Belum ada file dipilih</small></label>
+            <label><span>Asal dan tempat tinggal <b>*</b></span><select name="residencyType" id="residencyType" required><option value="Menetap di kota ini">Menetap di kota ini</option><option value="Mengontrak di kota ini">Mengontrak di kota ini</option><option value="Dari luar kota">Dari luar kota</option></select></label>
+          </div>
+          <div class="field-row" id="residencyDaysField" hidden>
+            <label><span>Berapa hari menetap di kota ini? <b>*</b></span><input type="number" name="residencyDays" id="residencyDays" min="1" max="365" step="1" inputmode="numeric" placeholder="Masukkan jumlah hari" /><small class="file-name">Wajib diisi jika memilih asal dari luar kota.</small></label>
+          </div>
+          <div class="conditional-documents" id="nonResidentDocuments" hidden>
+            <p id="travelDocumentsDescription">Unggah foto tiket pesawat dan bukti booking hotel sesuai persyaratan.</p>
+            <div class="field-row two-col">
+              <label class="upload-field"><span>Foto tiket pesawat <b>*</b></span><input type="file" name="ticket" accept="image/jpeg,image/png" /><small class="file-name" data-file-for="ticket">Belum ada file dipilih</small></label>
+              <label class="upload-field"><span>Foto booking hotel <b>*</b></span><input type="file" name="hotel" accept="image/jpeg,image/png" /><small class="file-name" data-file-for="hotel">Belum ada file dipilih</small></label>
+            </div>
+          </div>
+          <section class="conditional-documents" id="passportDocuments" hidden>
+            <h3>Verifikasi paspor</h3>
+            <p>Unggah foto halaman identitas paspor.</p>
+            <label class="upload-field"><span>Foto halaman identitas paspor <b>*</b></span><input type="file" name="passport" accept="image/jpeg,image/png" /><small class="file-name" data-file-for="passport">Belum ada file dipilih</small></label>
+          </section>
+          <section class="conditional-documents live-selfie-section">
+            <h3>Foto selfie pelanggan <b>*</b></h3>
+            <p>Unggah foto selfie JPG/PNG dari galeri atau ambil foto dengan kamera depan ponsel.</p>
+            <label class="upload-field">
+              <span>Pilih atau ambil foto selfie <b>*</b></span>
+              <input type="file" name="selfie" accept="image/jpeg,image/png" capture="user" required />
+              <small class="file-name" data-file-for="selfie">Belum ada file dipilih</small>
+            </label>
+            <div class="live-selfie">
+              <img id="selfiePreview" alt="Pratinjau foto selfie" hidden />
+            </div>
+          </section>
+          <p class="upload-privacy-note">Foto dokumen dan selfie dikirim ke server DriveLink agar dapat diperiksa admin. Unggah foto yang jelas dan pastikan Anda menggunakan situs DriveLink yang benar.</p>
+          <p class="workflow-message" id="bookingSubmitMessage" aria-live="polite"></p>
+          <button type="submit" class="btn btn-primary full-width">Lanjutkan ke pembayaran</button>
+        </form>
+        <aside class="booking-side-note"><span class="feature-icon">🗓️</span><h2>Langkah selanjutnya</h2><p>Admin akan meninjau booking dan ketersediaan unit. Setelah disetujui, pilih QRIS, transfer, atau cash ke petugas.</p><p><strong>Belum perlu login.</strong> Siapkan alamat lengkap dan dokumen yang diperlukan.</p></aside>
+      </section>
+    </main>
+    <footer class="site-footer"><div class="container footer-wrap"><div><a href="index.html" class="brand brand-footer"><span class="brand-mark">D</span><span>DriveLink</span></a><p>Rental mobil pintar, tanpa perlu login pelanggan.</p></div><div class="footer-links"><div><h4>Jelajahi</h4><a href="fleet.html">Harga Unit</a><a href="features.html">Fitur</a><a href="pricing.html">Paket Perjalanan</a></div><div><h4 id="siteContactHeading">Kontak</h4><a id="rentalFooterPhone" href="tel:+628123456789">+62 812-3456-789</a><a id="rentalFooterEmail" href="mailto:hello@drivelink.id">hello@drivelink.id</a><a id="rentalFooterWhatsapp" href="#" hidden></a><a id="rentalFooterLocation" href="#" hidden></a><div class="footer-socials" id="footerSocialLinks" aria-label="Media sosial" hidden></div><a href="auth.html">Admin</a></div></div></div></footer>
+    <script src="assets/js/api-client.js?v=lan-realtime-1"></script>
+    <script src="assets/js/social-icons.js?v=1"></script>
+    <script src="assets/js/site-contact.js?v=1"></script>
+    <script src="assets/js/script.js?v=per-unit-transmission-1"></script>
+    <script src="assets/js/rental-policy.js?v=1"></script>
+    <script src="assets/js/customer-animations.js?v=5"></script>
+    <script src="assets/js/responsive-nav.js?v=1"></script>
+    <script>
+      const selectedCar = new URLSearchParams(window.location.search).get('car');
+      const carSelect = document.querySelector('[name="carType"]');
+      if (selectedCar && [...carSelect.options].some((option) => option.value === selectedCar || option.text === selectedCar)) {
+        carSelect.value = selectedCar;
+      }
+      const bookingDraft = JSON.parse(sessionStorage.getItem('drivelink-booking-draft') || 'null');
+      if (bookingDraft) {
+        ['name', 'email', 'phone', 'carType', 'duration', 'arrivalAt'].forEach((name) => {
+          const field = document.querySelector(`[name="${name}"]`);
+          if (field && bookingDraft[name]) field.value = bookingDraft[name];
+        });
+        const bookingTypeOption = [...document.querySelectorAll('[name="bookingType"]')]
+          .find((option) => option.value === bookingDraft.bookingType);
+        if (bookingTypeOption) {
+          bookingTypeOption.checked = true;
+          bookingTypeOption.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      }
+
+      const identityType = document.getElementById('identityType');
+      const ktpUpload = document.getElementById('ktpUpload');
+      const passportDocuments = document.getElementById('passportDocuments');
+      const passportInput = document.querySelector('[name="passport"]');
+      const residencyType = document.getElementById('residencyType');
+      const residencyDaysField = document.getElementById('residencyDaysField');
+      const residencyDaysInput = document.getElementById('residencyDays');
+      const nonResidentDocuments = document.getElementById('nonResidentDocuments');
+      const travelDocumentsDescription = document.getElementById('travelDocumentsDescription');
+      const travelDocumentInputs = nonResidentDocuments.querySelectorAll('input[type="file"]');
+      function updateDocumentRequirements() {
+        const usesPassport = identityType.value === 'Paspor';
+        const isOutOfTown = residencyType.value === 'Dari luar kota';
+        const residencyDays = Number(residencyDaysInput.value);
+        const stayIsOverTwoDays = Number.isInteger(residencyDays) && residencyDays > 2;
+        const requiresTravelDocuments = usesPassport || (isOutOfTown && stayIsOverTwoDays);
+        ktpUpload.hidden = usesPassport;
+        ktpUpload.querySelector('input').required = !usesPassport;
+        passportDocuments.hidden = !usesPassport;
+        passportInput.required = usesPassport;
+        residencyDaysField.hidden = !isOutOfTown;
+        residencyDaysInput.required = isOutOfTown;
+        nonResidentDocuments.hidden = !requiresTravelDocuments;
+        travelDocumentsDescription.textContent = usesPassport
+          ? 'Pengguna paspor wajib melampirkan tiket pesawat dan bukti booking hotel.'
+          : 'Karena lama menetap di kota ini lebih dari 2 hari, lampirkan tiket pesawat dan bukti booking hotel.';
+        travelDocumentInputs.forEach((input) => {
+          input.required = requiresTravelDocuments;
+          if (!requiresTravelDocuments) {
+            input.value = '';
+            input.setCustomValidity('');
+            document.querySelector(`[data-file-for="${input.name}"]`).textContent = 'Belum ada file dipilih';
+          }
+        });
+        if (usesPassport) {
+          const ktpInput = ktpUpload.querySelector('input');
+          ktpInput.value = '';
+          ktpInput.setCustomValidity('');
+          document.querySelector('[data-file-for="ktp"]').textContent = 'Belum ada file dipilih';
+        } else {
+          passportInput.value = '';
+          passportInput.setCustomValidity('');
+          document.querySelector('[data-file-for="passport"]').textContent = 'Belum ada file dipilih';
+        }
+        if (isOutOfTown) {
+          residencyDaysInput.setCustomValidity(
+            residencyDaysInput.value && (!Number.isInteger(residencyDays) || residencyDays < 1 || residencyDays > 365)
+              ? 'Masukkan jumlah hari antara 1 sampai 365.'
+              : '',
+          );
+        } else {
+          residencyDaysInput.value = '';
+          residencyDaysInput.setCustomValidity('');
+        }
+      }
+      identityType.addEventListener('change', updateDocumentRequirements);
+      residencyType.addEventListener('change', updateDocumentRequirements);
+      residencyDaysInput.addEventListener('input', updateDocumentRequirements);
+
+      document.querySelectorAll('.upload-field input[type="file"]').forEach((input) => {
+        const fileName = document.querySelector(`[data-file-for="${input.name}"]`);
+        const preview = input.name === 'selfie' ? document.getElementById('selfiePreview') : null;
+        let previewUrl = '';
+        input.addEventListener('change', () => {
+          const file = input.files[0];
+          if (file && (file.size > 10 * 1024 * 1024 || !['image/jpeg', 'image/png'].includes(file.type))) {
+            input.setCustomValidity('Pilih foto JPG/PNG dengan ukuran asli maksimal 10 MB.');
+            fileName.textContent = 'Format foto tidak sesuai atau ukuran lebih dari 10 MB';
+            if (preview) preview.hidden = true;
+            return;
+          }
+          input.setCustomValidity('');
+          fileName.textContent = file
+            ? `${file.name} · akan dikompresi otomatis`
+            : 'Belum ada file dipilih';
+          if (preview) {
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
+            preview.hidden = !file;
+            if (file) {
+              previewUrl = URL.createObjectURL(file);
+              preview.src = previewUrl;
+            } else {
+              preview.removeAttribute('src');
+            }
+          }
+        });
+      });
+      updateDocumentRequirements();
+    </script>
+  </body>
+</html>

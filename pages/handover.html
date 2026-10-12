@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Serah Terima Unit | DriveLink</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/styles.css?v=site-contact-settings-1" />
+  </head>
+  <body>
+    <header class="topbar"><div class="container nav-wrap">
+      <a href="index.html" class="brand"><span class="brand-mark">D</span><span>DriveLink</span></a>
+      <nav class="nav" aria-label="Navigasi utama">
+        <a href="index.html">Beranda</a><a href="fleet.html">Harga Unit</a><a href="features.html">Fitur</a><a href="pricing.html">Paket Perjalanan</a><a href="reviews.html">Ulasan</a><a href="booking.html">Booking</a><a href="orders.html">Pesanan Saya</a>
+      </nav>
+      <div class="nav-actions"><a href="booking.html" class="btn btn-secondary">Booking baru</a></div>
+    </div></header>
+    <main class="inner-page">
+      <section class="page-hero"><div class="container">
+        <span class="eyebrow">Tahap 3 dari 4 · Serah-terima</span>
+        <h1>Cek kondisi unit sebelum kendaraan digunakan.</h1>
+        <p>Periksa catatan unit, lalu selesaikan konfirmasi serah-terima.</p>
+      </div></section>
+      <section class="container workflow-page-wrap">
+        <div class="workflow-card">
+          <div class="workflow-booking-summary" id="handoverSummary"></div>
+          <section class="unit-inspection" id="unitInspection">
+            <h2>Kondisi unit menurut pemeriksaan admin</h2>
+            <p id="unitConditionNotes">Admin belum menambahkan catatan pemeriksaan.</p>
+            <div id="bookingVehicleInspection"></div>
+            <div class="photo-grid" id="unitConditionPhotos"></div>
+          </section>
+          <form id="handoverForm">
+            <h2>Konfirmasi serah-terima</h2>
+            <p>Checklist kendaraan dan foto bagian depan sudah disiapkan oleh petugas. Setelah memeriksa unit, membayar tunai jika memilih metode cash, dan menerima kendaraan, tekan Selesai untuk memulai masa sewa.</p>
+            <p class="workflow-message" id="handoverMessage" aria-live="polite"></p>
+            <button class="btn btn-primary full-width" type="submit" id="handoverSubmit">Selesai</button>
+          </form>
+          <section class="handover-rental-status" id="handoverRentalStatus" aria-live="polite" hidden>
+            <div class="handover-thanks-icon" aria-hidden="true">✓</div>
+            <span class="eyebrow">Serah-terima pelanggan selesai</span>
+            <h2>Terima kasih, selamat menikmati perjalanan!</h2>
+            <p>Serah-terima selesai. Nota dapat diunduh di bawah ini dan sisa waktu sewa tampil pada halaman ini serta Pesanan Saya.</p>
+            <figure class="handover-staff-photo" id="handoverStaffPhoto" hidden><img id="handoverStaffFrontPhoto" alt="Foto langsung bagian depan unit oleh karyawan" /><figcaption>Foto langsung bagian depan unit oleh karyawan yang melayani.</figcaption></figure>
+            <section class="handover-receipt" id="handoverReceipt" aria-labelledby="handoverReceiptTitle" hidden>
+              <h3 id="handoverReceiptTitle">Nota konfirmasi serah-terima</h3>
+              <p>Rincian booking dan konfirmasi serah-terima kendaraan.</p>
+              <dl id="handoverReceiptDetails"></dl>
+              <button class="btn btn-primary" id="downloadHandoverReceipt" type="button">Unduh nota</button>
+            </section>
+            <div class="handover-countdown" aria-live="off">
+              <span>Waktu sewa tersisa</span>
+              <strong id="handoverCountdown">Menghitung...</strong>
+              <small id="handoverCountdownMessage"></small>
+            </div>
+          </section>
+          <p class="workflow-demo-note">Pastikan kendaraan dan perlengkapannya sudah diterima sebelum menekan Selesai. Waktu sewa dimulai saat Anda mengonfirmasi serah-terima.</p>
+        </div>
+        <aside class="booking-side-note"><span class="feature-icon">🔍</span><h2 id="handoverSideTitle">Pemeriksaan unit</h2><p id="handoverSideMessage">Petugas menyiapkan checklist dan foto unit. Setelah unit diterima, konfirmasi serah-terima untuk memulai waktu sewa.</p></aside>
+      </section>
+    </main>
+    <footer class="site-footer"><div class="container footer-wrap"><div><a href="index.html" class="brand brand-footer"><span class="brand-mark">D</span><span>DriveLink</span></a><p>Rental mobil pintar, tanpa perlu login pelanggan.</p></div><div class="footer-links"><div><h4>Jelajahi</h4><a href="fleet.html">Harga Unit</a><a href="booking.html">Booking</a></div><div><h4 id="siteContactHeading">Kontak</h4><a id="rentalFooterPhone" href="tel:+628123456789">+62 812-3456-789</a><a id="rentalFooterEmail" href="mailto:hello@drivelink.id">hello@drivelink.id</a><a id="rentalFooterWhatsapp" href="#" hidden></a><a id="rentalFooterLocation" href="#" hidden></a><div class="footer-socials" id="footerSocialLinks" aria-label="Media sosial" hidden></div><a href="auth.html">Admin</a></div></div></div></footer>
+    <script src="assets/js/api-client.js?v=lan-realtime-1"></script>
+    <script src="assets/js/social-icons.js?v=1"></script>
+    <script src="assets/js/site-contact.js?v=1"></script>
+    <script src="assets/js/handover.js?v=customer-handover-custom-checklist-1"></script>
+    <script src="assets/js/customer-animations.js?v=5"></script>
+    <script src="assets/js/responsive-nav.js?v=1"></script>
+  </body>
+</html>

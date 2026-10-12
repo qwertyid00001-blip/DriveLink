@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kelola Armada | DriveLink Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/styles.css?v=theme-aware-animations-1" />
+  </head>
+  <body class="admin-page fleet-admin-page">
+    <div class="admin-layout">
+      <aside class="admin-sidebar">
+        <a href="index.html" class="brand"><span class="brand-mark">D</span><span>DriveLink</span></a>
+        <span class="sidebar-label">MENU ADMIN</span>
+        <nav class="admin-nav" aria-label="Navigasi dashboard">
+          <a class="admin-nav-link" href="admin.html">◫ <span>Ringkasan</span></a>
+          <a class="admin-nav-link" href="admin-bookings.html">▤ <span>Booking</span></a>
+          <a class="admin-nav-link is-active" href="admin-fleet.html">▣ <span>Armada</span></a>
+          <a class="admin-nav-link" href="admin-fleet-deletions.html">✓ <span>Persetujuan hapus armada</span></a>
+          <a class="admin-nav-link" href="admin-vehicle-service.html">⚙ <span>Kontrol unit & servis</span></a>
+          <a class="admin-nav-link" href="admin-location.html">⌖ <span>Lokasi rental</span></a>
+          <a class="admin-nav-link" href="admin-rental-settings.html">◷ <span>Pengaturan sewa</span></a>
+          <a class="admin-nav-link" href="admin-travel-packages.html">✦ <span>Paket perjalanan & promo</span></a>
+          <a class="admin-nav-link" href="admin-monitoring.html">⌁ <span>Monitoring IoT</span></a>
+          <a class="admin-nav-link" href="admin-payments.html">＄ <span>Pembayaran</span></a>
+          <a class="admin-nav-link" href="admin-handover.html">✓ <span>Serah-terima</span></a>
+          <a class="admin-nav-link" href="admin-checklist.html">☷ <span>Atur checklist</span></a>
+          <a class="admin-nav-link" href="admin-handover-archive.html">▤ <span>Arsip checklist</span></a>
+          <a class="admin-nav-link" href="admin-return.html">↩ <span>Pengembalian unit</span></a>
+          <a class="admin-nav-link" href="admin-rental-archive.html">▤ <span>Arsip penyewaan</span></a>
+          <a class="admin-nav-link" href="admin-accounts.html">♙ <span>Akun & karyawan</span></a>
+          <a class="admin-nav-link" href="admin-settings.html">⚙ <span>Pengaturan admin</span></a>
+        </nav>
+        <div class="sidebar-bottom"><div class="sidebar-help"><strong>DriveLink Admin</strong><span>Prototipe dashboard</span></div><button class="logout-button" id="logoutButton">Keluar</button></div>
+      </aside>
+      <main class="admin-main">
+        <header class="admin-header"><div><span class="admin-date" id="todayLabel"></span><h1>Armada</h1></div><div class="admin-user"><span class="admin-avatar">AD</span><span><strong id="adminName">Admin</strong><small>Administrator</small></span></div></header>
+        <div class="admin-welcome compact-welcome"><div><span class="eyebrow">Manajemen armada</span><h2>Unit, tarif, dan ketersediaan</h2><p>Unit tersedia berkurang saat booking disetujui admin.</p></div></div>
+        <div class="fleet-summary-grid">
+          <article class="metric-card fleet-metric-card"><span class="fleet-metric-icon" aria-hidden="true">▣</span><span class="metric-label">Total unit</span><strong id="fleetTotalUnits">0</strong><small>Seluruh armada</small></article>
+          <article class="metric-card fleet-metric-card"><span class="fleet-metric-icon" aria-hidden="true">✓</span><span class="metric-label">Tersedia</span><strong id="fleetAvailableUnits">0</strong><small>Siap dibooking</small></article>
+          <article class="metric-card fleet-metric-card"><span class="fleet-metric-icon" aria-hidden="true">◷</span><span class="metric-label">Dipesan</span><strong id="fleetReservedUnits">0</strong><small>Booking disetujui</small></article>
+          <article class="metric-card fleet-metric-card"><span class="fleet-metric-icon" aria-hidden="true">⌑</span><span class="metric-label">Armada</span><strong id="fleetModelCount">0</strong><small>Jenis kendaraan</small></article>
+        </div>
+        <div class="fleet-management-grid">
+          <section class="admin-panel fleet-create-panel">
+            <div class="panel-heading"><div><span class="fleet-panel-kicker">Tambah kendaraan</span><h2>Tambahkan unit baru</h2><p>Lengkapi identitas, foto, tarif, dan jumlah unit.</p></div></div>
+            <p class="fleet-rate-note"><span aria-hidden="true">ⓘ</span> Unggah minimal dua foto kendaraan dari sudut berbeda, misalnya tampak depan dan samping.</p>
+            <form id="fleetUnitForm" class="admin-settings-form fleet-unit-form">
+              <div class="field-row two-col fleet-form-basics">
+                <label>Nama unit<input type="text" name="name" placeholder="Contoh: Avanza Smart" required /></label>
+                <label>Kategori kendaraan<select name="category" id="fleetCategorySelect" required><option value="MPV">MPV</option><option value="SUV">SUV</option><option value="Electric">Electric</option></select></label>
+                <label>Jumlah kursi<input type="number" name="seats" min="1" max="20" step="1" placeholder="Contoh: 7" required /></label>
+              </div>
+              <label class="fleet-photo-upload">Foto kendaraan <span>(2–6 JPG/PNG, maksimal 700 KB per foto dan 4 MB total setelah kompresi)</span><input type="file" name="photos" id="fleetPhotosInput" accept="image/jpeg,image/png" multiple required /><small id="fleetPhotosStatus" class="file-name">Pilih beberapa foto dari sudut yang berbeda. Foto akan dikompresi otomatis.</small></label>
+              <div class="fleet-photo-preview" id="fleetPhotoPreview" aria-live="polite"></div>
+              <div class="field-row two-col fleet-pricing-fields">
+                <label>Tarif lepas kunci / hari (Rp)<input type="number" name="priceNoDriver" min="1000" step="1000" required /></label>
+                <label>Tarif driver termasuk BBM / hari (Rp)<input type="number" name="priceWithDriverFuel" min="1000" step="1000" required /></label>
+                <label>Tarif driver belum termasuk BBM / hari (Rp)<input type="number" name="priceWithDriverNoFuel" min="1000" step="1000" required /></label>
+              </div>
+              <label class="fleet-unit-count">Jumlah unit awal<input type="number" name="totalCount" min="1" step="1" required /></label>
+              <button class="btn btn-primary fleet-create-submit" type="submit"><span aria-hidden="true">＋</span> Simpan unit</button>
+              <p class="workflow-message" id="fleetFormMessage" aria-live="polite"></p>
+            </form>
+          </section>
+          <section class="admin-panel fleet-inventory-panel">
+            <div class="panel-heading"><div><span class="fleet-panel-kicker">Inventaris kendaraan</span><h2>Daftar unit</h2><p>Perbarui tarif dan jumlah unit langsung pada baris kendaraan. Penghapusan diajukan untuk persetujuan admin utama.</p></div><a class="btn btn-secondary" href="admin-fleet-deletions.html">Lihat persetujuan hapus</a></div>
+            <label class="fleet-search"><span class="sr-only">Cari armada</span><span class="fleet-search-icon" aria-hidden="true">⌕</span><input type="search" id="fleetSearch" placeholder="Cari nama unit..." /></label>
+            <div class="table-scroll"><table class="admin-table"><thead><tr><th>Unit</th><th>Kategori</th><th>Kursi</th><th>Lepas kunci / hari</th><th>Driver + BBM / hari</th><th>Driver tanpa BBM / hari</th><th>Tersedia</th><th>Total unit</th><th>Foto kendaraan</th><th>Aksi</th></tr></thead><tbody id="fleetInventoryBody"></tbody></table></div>
+            <p class="empty-state" id="fleetEmpty" hidden>Belum ada unit aktif yang ditambahkan.</p>
+          </section>
+        </div>
+        <section class="admin-panel fleet-physical-units-panel">
+          <div class="panel-heading"><div><span class="fleet-panel-kicker">Detail unit fisik</span><h2>Tambah unit dengan beberapa plat</h2><p>Setelah kendaraan baru disimpan di form atas, kategori dan model akan otomatis dipilih di sini. Masukkan plat, warna, transmisi, dan odometer setiap unit; model lama tetap bisa dipilih untuk menambahkan plat.</p></div></div>
+          <form id="physicalFleetUnitForm" class="admin-settings-form">
+            <div class="field-row two-col">
+              <label>Kategori kendaraan<select name="category" required></select></label>
+              <label>Jenis / model kendaraan<select name="carType" required></select></label>
+            </div>
+            <datalist id="fleetColorOptions"><option value="Hitam"></option><option value="Putih"></option><option value="Silver"></option><option value="Abu-abu"></option><option value="Merah"></option><option value="Biru"></option></datalist>
+            <div class="physical-unit-draft-heading"><strong>Plat, warna, transmisi, dan odometer tiap unit</strong><button class="btn btn-secondary" id="addPhysicalFleetRow" type="button">+ Tambah plat</button></div>
+            <div id="physicalFleetDraftRows" class="physical-fleet-draft-rows"></div>
+            <button class="btn btn-primary" type="submit">Simpan semua unit</button>
+            <p class="workflow-message" id="physicalFleetUnitMessage" aria-live="polite"></p>
+          </form>
+          <div class="panel-heading"><div><h2>Inventaris per plat dan warna</h2><p>Ubah warna, transmisi, dan odometer langsung per plat. Unit yang sedang dipesan atau memiliki riwayat servis tidak dapat dihapus agar data tetap terjaga.</p></div></div>
+          <div class="table-scroll"><table class="admin-table"><thead><tr><th>Plat nomor</th><th>Jenis / model</th><th>Kategori</th><th>Warna</th><th>Transmisi</th><th>Odometer (km)</th><th>Status servis</th><th>Ketersediaan</th><th>Aksi</th></tr></thead><tbody id="physicalFleetUnitsBody"></tbody></table></div>
+          <p class="empty-state" id="physicalFleetUnitsEmpty">Belum ada unit fisik berplat yang didaftarkan.</p>
+        </section>
+        <dialog class="customer-details-dialog fleet-archive-dialog" id="fleetArchiveDialog" aria-labelledby="fleetArchiveTitle">
+          <div class="customer-details-heading">
+            <div><span class="eyebrow">Ajukan penghapusan</span><h2 id="fleetArchiveTitle">Ajukan penghapusan</h2></div>
+            <button class="dialog-close" id="closeFleetArchive" type="button" aria-label="Tutup konfirmasi">×</button>
+          </div>
+          <p id="fleetArchiveDescription">Permintaan akan ditinjau admin utama. Armada tetap aktif sampai disetujui.</p>
+          <form id="fleetArchiveForm">
+            <label for="fleetArchiveReason">Alasan penghapusan <span aria-hidden="true">*</span></label>
+            <textarea id="fleetArchiveReason" name="reason" rows="4" maxlength="500" required aria-describedby="fleetArchiveHint fleetArchiveCount"></textarea>
+            <small id="fleetArchiveHint">Alasan wajib diisi, maksimal 500 karakter.</small>
+            <small id="fleetArchiveCount" class="fleet-archive-count">0/500</small>
+            <p class="workflow-message" id="fleetArchiveMessage" aria-live="polite"></p>
+            <div class="fleet-archive-actions">
+              <button class="btn btn-secondary" id="cancelFleetArchive" type="button">Batal</button>
+              <button class="btn btn-primary fleet-archive-submit" type="submit">Kirim permintaan</button>
+            </div>
+          </form>
+        </dialog>
+        <p class="prototype-note admin-prototype-note">Stok, tarif, dan foto armada tersimpan di server.</p>
+      </main>
+    </div>
+    <script src="assets/js/api-client.js?v=lan-realtime-1"></script>
+    <script src="assets/js/admin-access.js?v=admin-action-badges-1"></script>
+    <script src="assets/js/admin.js?v=physical-fleet-delete-2"></script>
+    <script src="assets/js/admin-notifications.js?v=server-notification-data-2"></script>
+    <script src="assets/js/responsive-nav.js?v=5"></script>
+  </body>
+</html>

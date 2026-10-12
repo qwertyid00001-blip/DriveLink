@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ulasan Pelanggan | DriveLink</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/styles.css?v=site-contact-settings-1" />
+  </head>
+  <body>
+    <header class="topbar"><div class="container nav-wrap">
+      <a href="index.html" class="brand"><span class="brand-mark">D</span><span>DriveLink</span></a>
+      <nav class="nav" aria-label="Navigasi utama">
+        <a href="index.html">Beranda</a><a href="fleet.html">Harga Unit</a><a href="features.html">Fitur</a><a href="pricing.html">Paket Perjalanan</a><a class="current-page" href="reviews.html">Ulasan</a><a href="booking.html">Booking</a><a href="orders.html">Pesanan Saya</a>
+      </nav><div class="nav-actions"><a href="booking.html" class="btn btn-primary">Pesan Sekarang</a></div>
+    </div></header>
+    <main class="inner-page reviews-page">
+      <section class="page-hero reviews-hero"><div class="container reviews-hero-layout">
+        <div class="reviews-hero-copy">
+          <span class="eyebrow">Cerita dari perjalanan Anda</span>
+          <h1>Pengalaman baik layak dibagikan.</h1>
+          <p>Ulasan Anda membantu kami terus memberikan perjalanan yang nyaman dan membantu pelanggan lain memilih layanan DriveLink.</p>
+          <a class="btn btn-primary reviews-hero-cta" href="#customerReviewForm">Tulis ulasan <span aria-hidden="true">↓</span></a>
+        </div>
+        <aside class="reviews-hero-card" aria-label="Informasi ulasan pelanggan">
+          <span class="reviews-hero-icon" aria-hidden="true">“</span>
+          <div class="reviews-hero-stars">Skala rating 1–5 bintang</div>
+          <h2>Suara Anda berarti.</h2>
+          <p>Bagikan pengalaman secara jujur. Anda bisa mengirim ulasan di website atau memberi penilaian terpisah di Google Maps.</p>
+          <span class="reviews-hero-caption"><span aria-hidden="true">✓</span> Ulasan tampil untuk semua pelanggan</span>
+        </aside>
+      </div></section>
+      <section class="container section-space customer-reviews-section">
+        <div class="customer-review-summary">
+          <div><span class="eyebrow">Suara pelanggan</span><h2>Ulasan komunitas DriveLink</h2><p>Pengalaman nyata dari pelanggan kami.</p></div>
+          <div class="customer-review-average" id="reviewAverage" aria-live="polite">Belum ada penilaian</div>
+        </div>
+        <div class="customer-reviews-layout">
+          <form class="customer-review-form" id="customerReviewForm">
+            <span class="reviews-form-kicker">Ceritakan kepada kami</span>
+            <h3>Bagaimana perjalanan Anda?</h3>
+            <p>Ulasan akan langsung ditampilkan. Setiap IP hanya dapat mengirim satu ulasan di website.</p>
+            <label for="reviewerName">Nama Anda</label>
+            <input id="reviewerName" name="name" type="text" maxlength="60" autocomplete="name" required />
+            <fieldset class="customer-rating-fieldset">
+              <legend>Berikan rating</legend>
+              <div class="customer-rating-options">
+                <label><input type="radio" name="rating" value="5" /><span aria-hidden="true">★</span><span class="sr-only">5 bintang</span></label>
+                <label><input type="radio" name="rating" value="4" /><span aria-hidden="true">★</span><span class="sr-only">4 bintang</span></label>
+                <label><input type="radio" name="rating" value="3" /><span aria-hidden="true">★</span><span class="sr-only">3 bintang</span></label>
+                <label><input type="radio" name="rating" value="2" /><span aria-hidden="true">★</span><span class="sr-only">2 bintang</span></label>
+                <label><input type="radio" name="rating" value="1" required /><span aria-hidden="true">★</span><span class="sr-only">1 bintang</span></label>
+              </div>
+            </fieldset>
+            <label for="reviewComment">Ceritakan pengalaman Anda</label>
+            <textarea id="reviewComment" name="comment" rows="4" maxlength="600" placeholder="Apa yang paling berkesan dari perjalanan Anda?" required></textarea>
+            <button class="btn btn-primary" type="submit">Kirim ulasan <span aria-hidden="true">→</span></button>
+            <p class="workflow-message" id="customerReviewMessage" aria-live="polite"></p>
+            <a class="btn btn-secondary google-review-link" id="googleReviewLink" href="#" target="_blank" rel="noopener noreferrer" hidden>Nilai juga di Google Maps ↗</a>
+            <small class="customer-review-note" id="googleReviewNote">Penilaian website dan Google Maps dikirim secara terpisah. Tautan Google Maps belum diatur oleh admin.</small>
+          </form>
+          <div class="customer-review-results">
+            <div class="customer-review-list-heading">
+              <h3>Ulasan pelanggan</h3>
+              <span id="reviewCount">Memuat penilaian…</span>
+            </div>
+            <div class="customer-review-list" id="customerReviewList" aria-live="polite"></div>
+          </div>
+        </div>
+      </section>
+      <section class="container page-cta"><div><h2>Mulai rencanakan perjalanan Anda.</h2><p>Pelanggan dapat mengajukan booking langsung tanpa login.</p></div><a href="booking.html" class="btn btn-primary">Booking sekarang</a></section>
+    </main>
+    <footer class="site-footer"><div class="container footer-wrap"><div><a href="index.html" class="brand brand-footer"><span class="brand-mark">D</span><span>DriveLink</span></a><p>Rental mobil pintar, tanpa perlu login pelanggan.</p></div><div class="footer-links"><div><h4>Jelajahi</h4><a href="fleet.html">Harga Unit</a><a href="features.html">Fitur</a><a href="pricing.html">Paket Perjalanan</a></div><div><h4 id="siteContactHeading">Kontak</h4><a id="rentalFooterPhone" href="tel:+628123456789">+62 812-3456-789</a><a id="rentalFooterEmail" href="mailto:hello@drivelink.id">hello@drivelink.id</a><a id="rentalFooterWhatsapp" href="#" hidden></a><a id="rentalFooterLocation" href="#" hidden></a><div class="footer-socials" id="footerSocialLinks" aria-label="Media sosial" hidden></div><a href="auth.html">Admin</a></div></div></div></footer>
+    <script src="assets/js/api-client.js?v=lan-realtime-1"></script>
+    <script src="assets/js/social-icons.js?v=1"></script>
+    <script src="assets/js/site-contact.js?v=1"></script>
+    <script src="assets/js/customer-reviews.js?v=1"></script>
+    <script src="assets/js/customer-animations.js?v=5"></script>
+    <script src="assets/js/responsive-nav.js?v=1"></script>
+  </body>
+</html>

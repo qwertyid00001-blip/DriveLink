@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pesanan Saya | DriveLink</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/styles.css?v=site-contact-settings-1" />
+  </head>
+  <body class="orders-page">
+    <header class="topbar"><div class="container nav-wrap">
+      <a href="index.html" class="brand"><span class="brand-mark">D</span><span>DriveLink</span></a>
+      <nav class="nav" aria-label="Navigasi utama">
+        <a href="index.html">Beranda</a><a href="fleet.html">Harga Unit</a><a href="features.html">Fitur</a><a href="pricing.html">Paket Perjalanan</a><a href="reviews.html">Ulasan</a><a href="booking.html">Booking</a><a class="current-page" href="orders.html">Pesanan Saya</a>
+      </nav>
+      <div class="nav-actions"><a href="booking.html" class="btn btn-primary">Booking baru</a></div>
+    </div></header>
+    <main class="inner-page">
+      <section class="page-hero"><div class="container">
+        <span class="eyebrow">Lacak proses rental Anda</span>
+        <h1>Pesanan Saya</h1>
+        <p>Masukkan kode booking dari nota untuk melihat progres rental, nota, dan sisa waktu sewa.</p>
+      </div></section>
+      <section class="container orders-page-wrap">
+        <form class="workflow-card orders-search-card" id="orderLookupForm">
+          <div class="booking-form-heading"><h2>Cari pesanan</h2><p>Gunakan kode booking yang tertera di nota. Kode booking baru dapat dicari tanpa nomor telepon.</p></div>
+          <div class="field-row two-col">
+            <label><span>Kode booking</span><input name="bookingId" type="text" maxlength="27" autocomplete="off" placeholder="Contoh: DL-A1B2C3D4E5F60718293A4B5C" required /></label>
+            <label><span>Nomor telepon (opsional untuk kode lama)</span><input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="08xxxxxxxxxx" /></label>
+          </div>
+          <button class="btn btn-primary" type="submit">Tampilkan pesanan</button>
+          <p class="workflow-message" id="orderLookupMessage" aria-live="polite"></p>
+          <p class="workflow-demo-note">Jaga kerahasiaan ID booking dan nomor telepon Anda. Foto KTP, SIM, selfie, dan bukti pembayaran tidak ditampilkan di halaman ini.</p>
+        </form>
+        <section class="orders-result" id="orderResult" aria-live="polite" hidden>
+          <div class="orders-result-heading"><div><span class="eyebrow">Status pesanan</span><h2 id="orderTitle"></h2></div><span class="status-pill" id="orderStatus"></span></div>
+          <div class="orders-progress" id="orderProgress" aria-label="Tahapan pesanan"></div>
+          <section class="handover-rental-status" id="orderRentalReceipt" aria-live="polite" hidden>
+            <div class="handover-thanks-icon" aria-hidden="true">✓</div>
+            <span class="eyebrow">Nota dan status rental</span>
+            <h2>Serah-terima selesai</h2>
+            <p>Simpan kode booking ini untuk melihat kembali nota dan waktu sewa yang tersisa.</p>
+            <section class="handover-receipt" aria-labelledby="orderRentalReceiptTitle">
+              <h3 id="orderRentalReceiptTitle">Nota rental</h3>
+              <dl id="orderRentalReceiptDetails"></dl>
+            </section>
+            <div class="handover-countdown" aria-live="off">
+              <span>Waktu sewa tersisa</span>
+              <strong id="orderRentalCountdown">Menghitung...</strong>
+              <small id="orderRentalCountdownMessage"></small>
+            </div>
+          </section>
+          <section class="order-step-details" id="orderStepDetails" aria-live="polite" hidden>
+            <div class="order-step-details-heading">
+              <div><span class="eyebrow">Rincian tahap</span><h3 id="orderStepDetailsTitle"></h3></div>
+              <button class="order-step-details-close" id="closeOrderStepDetails" type="button" aria-label="Tutup rincian tahap">×</button>
+            </div>
+            <dl class="orders-detail-grid" id="orderStepDetailsList"></dl>
+            <div class="orders-next-step" id="orderStepNextStep"></div>
+          </section>
+        </section>
+      </section>
+    </main>
+    <footer class="site-footer"><div class="container footer-wrap"><div><a href="index.html" class="brand brand-footer"><span class="brand-mark">D</span><span>DriveLink</span></a><p>Rental mobil pintar, tanpa perlu login pelanggan.</p></div><div class="footer-links"><div><h4>Jelajahi</h4><a href="fleet.html">Harga Unit</a><a href="booking.html">Booking</a><a href="orders.html">Pesanan Saya</a></div><div><h4 id="siteContactHeading">Kontak</h4><a id="rentalFooterPhone" href="tel:+628123456789">+62 812-3456-789</a><a id="rentalFooterEmail" href="mailto:hello@drivelink.id">hello@drivelink.id</a><a id="rentalFooterWhatsapp" href="#" hidden></a><a id="rentalFooterLocation" href="#" hidden></a><div class="footer-socials" id="footerSocialLinks" aria-label="Media sosial" hidden></div><a href="auth.html">Admin</a></div></div></div></footer>
+    <script src="assets/js/api-client.js?v=lan-realtime-1"></script>
+    <script src="assets/js/social-icons.js?v=1"></script>
+    <script src="assets/js/site-contact.js?v=1"></script>
+    <script src="assets/js/orders.js?v=staged-deposit-admin-verification-1"></script>
+    <script src="assets/js/customer-animations.js?v=5"></script>
+    <script src="assets/js/responsive-nav.js?v=1"></script>
+  </body>
+</html>

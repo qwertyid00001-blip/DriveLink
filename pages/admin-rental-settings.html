@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pengaturan Sewa | DriveLink Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/styles.css?v=theme-aware-animations-1" />
+  </head>
+  <body class="admin-page rental-settings-page">
+    <div class="admin-layout">
+      <aside class="admin-sidebar">
+        <a href="index.html" class="brand"><span class="brand-mark">D</span><span>DriveLink</span></a>
+        <span class="sidebar-label">MENU ADMIN</span>
+        <nav class="admin-nav" aria-label="Navigasi dashboard">
+          <a class="admin-nav-link" href="admin.html">◫ <span>Ringkasan</span></a>
+          <a class="admin-nav-link" href="admin-bookings.html">▤ <span>Booking</span></a>
+          <a class="admin-nav-link" href="admin-fleet.html">▣ <span>Armada</span></a>
+          <a class="admin-nav-link" href="admin-vehicle-service.html">⚙ <span>Kontrol unit & servis</span></a>
+          <a class="admin-nav-link" href="admin-location.html">⌖ <span>Lokasi rental</span></a>
+          <a class="admin-nav-link" href="admin-rental-settings.html">◷ <span>Pengaturan sewa</span></a>
+          <a class="admin-nav-link" href="admin-travel-packages.html">✦ <span>Paket perjalanan & promo</span></a>
+          <a class="admin-nav-link" href="admin-monitoring.html">⌁ <span>Monitoring IoT</span></a>
+          <a class="admin-nav-link" href="admin-payments.html">＄ <span>Pembayaran</span></a>
+          <a class="admin-nav-link" href="admin-handover.html">✓ <span>Serah-terima</span></a>
+          <a class="admin-nav-link" href="admin-checklist.html">☷ <span>Atur checklist</span></a>
+          <a class="admin-nav-link" href="admin-handover-archive.html">▤ <span>Arsip checklist</span></a>
+          <a class="admin-nav-link" href="admin-return.html">↩ <span>Pengembalian unit</span></a>
+          <a class="admin-nav-link" href="admin-rental-archive.html">▤ <span>Arsip penyewaan</span></a>
+          <a class="admin-nav-link" href="admin-accounts.html">♙ <span>Akun & karyawan</span></a>
+          <a class="admin-nav-link" href="admin-settings.html">⚙ <span>Pengaturan admin</span></a>
+        </nav>
+        <div class="sidebar-bottom"><div class="sidebar-help"><strong>DriveLink Admin</strong><span>Prototipe dashboard</span></div><button class="logout-button" id="logoutButton">Keluar</button></div>
+      </aside>
+      <main class="admin-main">
+        <header class="admin-header"><div><span class="admin-date" id="todayLabel"></span><h1>Pengaturan sewa</h1></div><div class="admin-user"><span class="admin-avatar">AD</span><span><strong id="adminName">Admin</strong><small>Administrator</small></span></div></header>
+        <div class="admin-welcome compact-welcome rental-settings-welcome">
+          <div class="rental-settings-intro"><span class="eyebrow">Pengingat masa sewa</span><h2>Atur ritme pengingat rental</h2><p>Sesuaikan seberapa sering admin diingatkan untuk menghubungi penyewa. Durasi setiap hari booking tetap dihitung 24 jam.</p></div>
+          <div class="rental-settings-overview" aria-label="Informasi pengingat">
+            <span class="rental-settings-overview-icon" aria-hidden="true"><span class="rental-clock-glyph">◷</span></span>
+            <div><strong>Pengingat terjadwal</strong><span>Notifikasi tampil di dashboard admin</span></div>
+          </div>
+        </div>
+        <section class="admin-panel rental-reminder-settings">
+          <div class="panel-heading rental-settings-panel-heading"><div><span class="rental-settings-kicker">Preferensi notifikasi</span><h2>Siklus pengingat</h2><p>Pilih jeda pengingat yang paling sesuai dengan operasional rental.</p></div></div>
+          <form id="rentalReminderSettingsForm" class="admin-settings-form">
+            <fieldset class="choice-field rental-cycle-options">
+              <legend>Pilih frekuensi pengingat</legend>
+              <label class="choice-option rental-cycle-option">
+                <input type="radio" name="reminderCycleHours" value="12" required />
+                <span class="rental-cycle-icon" aria-hidden="true"><span class="rental-clock-glyph">◷</span></span>
+                <span class="rental-cycle-copy"><strong>Setiap 12 jam</strong><small>Pengingat muncul setiap setengah hari selama masa sewa.</small><span class="rental-cycle-example">Contoh: pagi dan malam</span></span>
+                <span class="rental-cycle-check" aria-hidden="true">✓</span>
+              </label>
+              <label class="choice-option rental-cycle-option">
+                <input type="radio" name="reminderCycleHours" value="24" required />
+                <span class="rental-cycle-icon" aria-hidden="true">▣</span>
+                <span class="rental-cycle-copy"><strong>Setiap 24 jam</strong><small>Pengingat muncul sekali sehari, sesuai siklus harian rental.</small><span class="rental-cycle-example">Contoh: satu kali per hari</span></span>
+                <span class="rental-cycle-check" aria-hidden="true">✓</span>
+              </label>
+            </fieldset>
+            <div class="rental-reminder-note"><span aria-hidden="true">i</span><p>Notifikasi dijadwalkan satu jam sebelum checkpoint. Pengingat terakhir bertepatan dengan akhir durasi booking.</p></div>
+            <div class="rental-settings-form-footer">
+              <p class="workflow-message" id="rentalReminderSettingsMessage" aria-live="polite"></p>
+              <button class="btn btn-primary" type="submit"><span aria-hidden="true">✓</span> Simpan pengaturan</button>
+            </div>
+          </form>
+        </section>
+        <section class="admin-panel rental-deposit-settings">
+          <div class="panel-heading rental-settings-panel-heading"><div><span class="rental-settings-kicker">Ketentuan booking</span><h2>Deposit dan barang jaminan</h2><p>Atur pilihan deposit yang tampil di formulir booking dan barang yang perlu dititipkan pelanggan.</p></div></div>
+          <form id="rentalPolicyForm" class="admin-settings-form">
+            <fieldset class="choice-field">
+              <legend>Pilihan deposit pelanggan</legend>
+              <div id="rentalDepositOptions" class="rental-deposit-options"></div>
+              <button class="btn btn-secondary" id="addRentalDepositOption" type="button">+ Tambah pilihan deposit</button>
+              <small class="file-name">Pelanggan akan memilih salah satu opsi ini. Isi nama dan keterangan, misalnya “Deposit Rp1.000.000” atau “Titip motor”.</small>
+            </fieldset>
+            <fieldset class="choice-field">
+              <legend>Barang jaminan yang dititipkan</legend>
+              <div id="rentalCollateralItems" class="rental-collateral-items"></div>
+              <button class="btn btn-secondary" id="addRentalCollateralItem" type="button">+ Tambah barang jaminan</button>
+              <small class="file-name">Daftar ini ditampilkan otomatis pada formulir booking pelanggan.</small>
+            </fieldset>
+            <div class="rental-settings-form-footer">
+              <p class="workflow-message" id="rentalPolicyMessage" aria-live="polite"></p>
+              <button class="btn btn-primary" type="submit"><span aria-hidden="true">✓</span> Simpan deposit & jaminan</button>
+            </div>
+          </form>
+        </section>
+        <div class="rental-settings-footnote"><span aria-hidden="true">🔒</span><p><strong>Tersimpan dengan aman</strong><br />Pengaturan tersimpan di server. Pengingat tampil saat dashboard admin terbuka; tautan WhatsApp membuka pesan untuk dikirim admin dan tidak mengirimnya otomatis.</p></div>
+      </main>
+    </div>
+    <script src="assets/js/api-client.js?v=lan-realtime-1"></script>
+    <script src="assets/js/admin-access.js?v=admin-action-badges-1"></script>
+    <script src="assets/js/admin.js?v=admin-ops-sync-2"></script>
+    <script src="assets/js/admin-notifications.js?v=server-notification-data-2"></script>
+    <script src="assets/js/admin-rental-policy.js?v=1"></script>
+    <script src="assets/js/responsive-nav.js?v=5"></script>
+  </body>
+</html>

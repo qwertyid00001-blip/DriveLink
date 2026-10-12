@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Persetujuan Hapus Armada | DriveLink Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/styles.css?v=fleet-deletion-approval-1" />
+  </head>
+  <body class="admin-page">
+    <div class="admin-layout">
+      <aside class="admin-sidebar">
+        <a href="index.html" class="brand"><span class="brand-mark">D</span><span>DriveLink</span></a>
+        <span class="sidebar-label">MENU ADMIN</span>
+        <nav class="admin-nav" aria-label="Navigasi dashboard">
+          <a class="admin-nav-link" href="admin.html">◫ <span>Ringkasan</span></a>
+          <a class="admin-nav-link" href="admin-bookings.html">▤ <span>Booking</span></a>
+          <a class="admin-nav-link" href="admin-fleet.html">▣ <span>Armada</span></a>
+          <a class="admin-nav-link is-active" href="admin-fleet-deletions.html">✓ <span>Persetujuan hapus armada</span></a>
+          <a class="admin-nav-link" href="admin-vehicle-service.html">⚙ <span>Kontrol unit & servis</span></a>
+          <a class="admin-nav-link" href="admin-location.html">⌖ <span>Lokasi rental</span></a>
+          <a class="admin-nav-link" href="admin-rental-settings.html">◷ <span>Pengaturan sewa</span></a>
+          <a class="admin-nav-link" href="admin-travel-packages.html">✦ <span>Paket perjalanan & promo</span></a>
+          <a class="admin-nav-link" href="admin-monitoring.html">⌁ <span>Monitoring IoT</span></a>
+          <a class="admin-nav-link" href="admin-payments.html">＄ <span>Pembayaran</span></a>
+          <a class="admin-nav-link" href="admin-handover.html">✓ <span>Serah-terima</span></a>
+          <a class="admin-nav-link" href="admin-checklist.html">☷ <span>Atur checklist</span></a>
+          <a class="admin-nav-link" href="admin-handover-archive.html">▤ <span>Arsip checklist</span></a>
+          <a class="admin-nav-link" href="admin-return.html">↩ <span>Pengembalian unit</span></a>
+          <a class="admin-nav-link" href="admin-rental-archive.html">▤ <span>Arsip penyewaan</span></a>
+          <a class="admin-nav-link" href="admin-accounts.html">♙ <span>Akun & karyawan</span></a>
+          <a class="admin-nav-link" href="admin-settings.html">⚙ <span>Pengaturan admin</span></a>
+        </nav>
+        <div class="sidebar-bottom"><div class="sidebar-help"><strong>DriveLink Admin</strong><span>Persetujuan penghapusan</span></div><button class="logout-button" id="logoutButton">Keluar</button></div>
+      </aside>
+      <main class="admin-main">
+        <header class="admin-header"><div><span class="admin-date" id="todayLabel"></span><h1>Persetujuan hapus armada</h1></div><div class="admin-user"><span class="admin-avatar">AD</span><span><strong id="adminName">Admin</strong><small>Administrator</small></span></div></header>
+        <div class="admin-welcome compact-welcome"><div><span class="eyebrow">Kontrol penghapusan</span><h2>Tinjau sebelum armada dihapus</h2><p>Periksa alasan dan data kendaraan. Model yang disetujui langsung disembunyikan dari pelanggan. Jika masih ada booking aktif, unitnya dipertahankan sementara dan dibersihkan setelah booking selesai. Riwayat permintaan tetap tersimpan di halaman ini.</p></div><a href="admin-fleet.html" class="btn btn-secondary">Kembali ke armada</a></div>
+        <section class="admin-panel fleet-deletion-panel">
+          <div class="panel-heading"><div><h2>Permintaan dan riwayat</h2><p id="fleetDeletionSummary">Memuat permintaan penghapusan...</p></div><button class="btn btn-secondary" id="refreshFleetDeletionRequests" type="button">Muat ulang</button></div>
+          <p class="workflow-message" id="fleetDeletionMessage" aria-live="polite"></p>
+          <div class="fleet-deletion-list" id="fleetDeletionRequests"></div>
+          <p class="empty-state" id="fleetDeletionEmpty" hidden>Belum ada permintaan penghapusan armada.</p>
+        </section>
+      </main>
+    </div>
+    <script src="assets/js/api-client.js?v=lan-realtime-1"></script>
+    <script src="assets/js/admin-access.js?v=fleet-deletion-approval-1"></script>
+    <script src="assets/js/admin.js?v=fleet-deletion-approval-1"></script>
+    <script src="assets/js/admin-fleet-deletions.js?v=1"></script>
+    <script src="assets/js/responsive-nav.js?v=5"></script>
+  </body>
+</html>

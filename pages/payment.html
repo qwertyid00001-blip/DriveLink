@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pembayaran Booking | DriveLink</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/styles.css?v=staged-deposit-admin-verification-1" />
+  </head>
+  <body>
+    <header class="topbar"><div class="container nav-wrap">
+      <a href="index.html" class="brand"><span class="brand-mark">D</span><span>DriveLink</span></a>
+      <nav class="nav" aria-label="Navigasi utama">
+        <a href="index.html">Beranda</a><a href="fleet.html">Harga Unit</a><a href="features.html">Fitur</a><a href="pricing.html">Paket Perjalanan</a><a href="reviews.html">Ulasan</a><a href="booking.html">Booking</a><a href="orders.html">Pesanan Saya</a>
+      </nav>
+      <div class="nav-actions"><a href="booking.html" class="btn btn-secondary">Booking baru</a></div>
+    </div></header>
+    <main class="inner-page">
+      <section class="page-hero"><div class="container">
+        <span class="eyebrow">Tahap 2 dari 4 · Pembayaran</span>
+        <h1>Lanjutkan pembayaran booking.</h1>
+        <p>Untuk deposit Rp1.000.000, selesaikan pembayaran deposit dan biaya sewa secara berurutan. Admin akan memverifikasi masing-masing bukti sebelum proses berlanjut.</p>
+      </div></section>
+      <section class="container workflow-page-wrap">
+        <div class="workflow-card">
+          <div class="workflow-booking-summary" id="bookingSummary"></div>
+          <form id="paymentForm">
+            <div class="payment-stage-details" id="paymentStageDetails" hidden></div>
+            <fieldset class="choice-field">
+              <legend id="paymentMethodLegend">Pilih metode pembayaran</legend>
+              <label class="choice-option"><input type="radio" name="paymentMethod" value="QRIS" required /><span><strong>QRIS</strong><small>Scan QRIS resmi DriveLink, lalu unggah bukti pembayaran.</small></span></label>
+              <label class="choice-option"><input type="radio" name="paymentMethod" value="Transfer bank" /><span><strong>Transfer bank</strong><small>Transfer ke rekening yang ditampilkan admin.</small></span></label>
+              <label class="choice-option"><input type="radio" name="paymentMethod" value="Cash ke petugas" /><span><strong>Tunai ke petugas</strong><small>Bayar tunai lalu unggah foto kuitansi atau bukti pembayaran untuk diverifikasi admin.</small></span></label>
+            </fieldset>
+            <div class="payment-instructions" id="paymentInstructions" hidden></div>
+            <label class="upload-field payment-proof" id="paymentProofWrap" hidden>
+              <span>Foto bukti pembayaran / kuitansi tunai <b>*</b></span>
+              <input type="file" id="paymentProof" accept="image/jpeg,image/png" />
+              <small class="file-name" id="paymentProofName">Belum ada file dipilih</small>
+              <small class="payment-file-warning">Bukti JPG/PNG maksimal 400 KB disimpan bersama data booking Anda.</small>
+            </label>
+            <button type="submit" class="btn btn-primary full-width" id="paymentSubmit" disabled>Kirim bukti pembayaran</button>
+          </form>
+          <p class="workflow-message" id="paymentMessage" aria-live="polite"></p>
+          <button type="button" class="btn btn-secondary full-width" id="refreshPaymentStatus" hidden>Periksa persiapan unit</button>
+          <p class="workflow-demo-note">Ini prototipe lokal: admin hanya dapat melihat perubahan dari browser yang sama. Jangan melakukan pembayaran nyata berdasarkan instruksi demo.</p>
+        </div>
+        <aside class="booking-side-note"><span class="feature-icon">🔐</span><h2>Pembayaran diverifikasi admin</h2><p>Jika memilih deposit Rp1.000.000, bayar dan kirim bukti deposit terlebih dahulu. Setelah deposit dikonfirmasi admin, lanjutkan pembayaran sewa dan kirim buktinya.</p><p>Pembayaran tunai maupun nontunai menunggu verifikasi admin. Persiapan unit dimulai setelah pembayaran sewa dikonfirmasi.</p></aside>
+      </section>
+    </main>
+    <footer class="site-footer"><div class="container footer-wrap"><div><a href="index.html" class="brand brand-footer"><span class="brand-mark">D</span><span>DriveLink</span></a><p>Rental mobil pintar, tanpa perlu login pelanggan.</p></div><div class="footer-links"><div><h4>Jelajahi</h4><a href="fleet.html">Harga Unit</a><a href="booking.html">Booking</a></div><div><h4 id="siteContactHeading">Kontak</h4><a id="rentalFooterPhone" href="tel:+628123456789">+62 812-3456-789</a><a id="rentalFooterEmail" href="mailto:hello@drivelink.id">hello@drivelink.id</a><a id="rentalFooterWhatsapp" href="#" hidden></a><a id="rentalFooterLocation" href="#" hidden></a><div class="footer-socials" id="footerSocialLinks" aria-label="Media sosial" hidden></div><a href="auth.html">Admin</a></div></div></div></footer>
+    <script src="assets/js/api-client.js?v=lan-realtime-1"></script>
+    <script src="assets/js/social-icons.js?v=1"></script>
+    <script src="assets/js/site-contact.js?v=1"></script>
+    <script src="assets/js/payment.js?v=staged-deposit-admin-verification-1"></script>
+    <script src="assets/js/customer-animations.js?v=5"></script>
+    <script src="assets/js/responsive-nav.js?v=1"></script>
+  </body>
+</html>

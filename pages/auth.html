@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Login admin DriveLink untuk mengelola booking dan memantau armada." />
+    <title>Login Admin | DriveLink</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css?v=theme-aware-animations-1" />
+  </head>
+  <body class="auth-page">
+    <main class="auth-layout">
+      <section class="auth-intro">
+        <a href="index.html" class="brand">
+          <span class="brand-mark">D</span>
+          <span>DriveLink</span>
+        </a>
+        <div>
+          <span class="eyebrow">Area administrator</span>
+          <h1>Kelola rental dan pantau operasional dalam satu tempat.</h1>
+          <p>Halaman pemesanan pelanggan tetap terbuka untuk umum. Login hanya diperlukan untuk mengakses dashboard pengelola.</p>
+        </div>
+        <a class="auth-back-link" href="index.html">← Kembali ke beranda</a>
+      </section>
+
+      <section class="auth-card" aria-labelledby="authTitle">
+        <h2 id="authTitle">Login admin</h2>
+        <p class="auth-description">Masuk untuk mengelola booking, armada, dan pemantauan.</p>
+        <form id="loginForm" class="auth-form">
+          <label>
+            <span>Username</span>
+            <input type="text" name="username" autocomplete="username" placeholder="Masukkan username admin" required />
+          </label>
+          <label>
+            <span>Password</span>
+            <input type="password" name="password" autocomplete="current-password" placeholder="Masukkan password admin" required />
+          </label>
+          <p class="form-message" id="loginMessage" aria-live="polite"></p>
+          <button class="btn btn-primary full-width" type="submit">Masuk ke dashboard</button>
+        </form>
+        <p class="prototype-note">Login diverifikasi oleh server DriveLink. Administrator dapat memperbarui username dan password dari menu Pengaturan admin.</p>
+      </section>
+    </main>
+    <script src="assets/js/api-client.js?v=lan-realtime-1"></script>
+    <script src="assets/js/auth.js?v=server-login-1"></script>
+  </body>
+</html>
