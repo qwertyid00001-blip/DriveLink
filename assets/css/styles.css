@@ -10,6 +10,7 @@
   --secondary: #eaf0ff;
   --text: #12223b;
   --muted: #5c6b83;
+  --ink: #12223b;
   --line: rgba(18, 34, 59, 0.08);
   --shadow: 0 28px 60px rgba(15, 42, 166, 0.12);
   --admin-sidebar: #101b37;
@@ -4781,6 +4782,15 @@ p {
   outline: none;
 }
 
+.admin-settings-form input:not([type="file"]):focus-visible,
+.admin-settings-form select:focus-visible,
+.admin-settings-form textarea:focus-visible,
+.review-card textarea:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+  border-color: var(--primary);
+}
+
 .admin-settings-form input[type="file"] {
   color: var(--muted);
   font-size: 0.78rem;
@@ -6681,22 +6691,29 @@ label span {
   margin-bottom: 8px;
 }
 
-input,
-select {
+/* Gaya ini hanya untuk form di dalam footer situs. Sebelumnya tidak di-scope sehingga
+  	input/select seluruh situs mendapat teks putih dan outline:none. */
+.site-footer input,
+.site-footer select {
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.05);
   color: white;
   border-radius: 12px;
   padding: 0.9rem 0.95rem;
-  outline: none;
 }
 
-input::placeholder {
+.site-footer input:focus-visible,
+.site-footer select:focus-visible {
+  outline: 2px solid var(--admin-sidebar-accent);
+  outline-offset: 2px;
+}
+
+.site-footer input::placeholder {
   color: rgba(255, 255, 255, 0.5);
 }
 
-select option {
+.site-footer select option {
   color: var(--text);
 }
 

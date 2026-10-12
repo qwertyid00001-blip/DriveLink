@@ -17,23 +17,8 @@ function normalizePhone(value) {
   return String(value).replace(/\D/g, '').replace(/^62/, '0');
 }
 
-function loadBookings() {
-  return DriveLinkStorage.read('drivelink-bookings', []);
-}
-
 function findBooking() {
   return currentBooking;
-}
-
-function saveBookings(bookings) {
-  DriveLinkStorage.write('drivelink-bookings', bookings);
-}
-
-function appendStatus(booking, status) {
-  if (booking.status === status) return;
-  booking.status = status;
-  booking.statusHistory = booking.statusHistory || [];
-  booking.statusHistory.push({ status, at: new Date().toISOString() });
 }
 
 function bookingApprovalStatus(booking) {

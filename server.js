@@ -131,6 +131,16 @@ function makeId() {
   return `DL-${crypto.randomBytes(12).toString('hex').toUpperCase()}`;
 }
 
+// decodeURIComponent melempar URIError untuk masukan seperti "%". Tanpa penanganan,
+// satu request rusak akan menjadi 500. Nilai mentah dipakai sebagai gantinya.
+function safeDecodePath(value) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 function paymentReady(booking) {
   if (booking.depositPaymentRequired) {
     return booking.depositPaymentStatus === 'Dikonfirmasi' && booking.paymentStatus === 'Dikonfirmasi';
@@ -192,6 +202,7 @@ function hasReadableContrast(hexColor) {
 function createDatabase(databasePath, adminUsername, adminPassword) {
   fs.mkdirSync(path.dirname(databasePath), { recursive: true });
   const db = new DatabaseSync(databasePath);
+  db.exec('PRAGMA busy_timeout = 5000');
   db.exec(`
     PRAGMA journal_mode = WAL;
     PRAGMA foreign_keys = ON;
@@ -359,12 +370,12 @@ function createDatabase(databasePath, adminUsername, adminPassword) {
       vehicle.priceNoDriver, vehicle.priceWithDriverFuel, vehicle.priceWithDriverNoFuel,
       vehicle.category, vehicle.transmission, vehicle.seats);
   }
-  db.prepare("UPDATE fleet SET transmission = ?, seats = ? WHERE id = ? AND transmission = 'Belum diisi' AND seats = 0")
-    .run('Otomatis', 7, 'avanza-smart');
-  db.prepare("UPDATE fleet SET transmission = ?, seats = ? WHERE id = ? AND transmission = 'Belum diisi' AND seats = 0")
-    .run('Otomatis', 7, 'br-v-family');
-  db.prepare("UPDATE fleet SET transmission = ?, seats = ? WHERE id = ? AND transmission = 'Belum diisi' AND seats = 0")
-    .run('Otomatis', 5, 'ev-cityx');
+  const backfillSpec = db.prepare(
+    "UPDATE fleet SET transmission = ?, seats = ? WHERE id = ? AND transmission = 'Belum diisi' AND seats = 0"
+  );
+  for (const [id, seats] of [['avanza-smart', 7], ['br-v-family', 7], ['ev-cityx', 5]]) {
+    backfillSpec.run('Otomatis', seats, id);
+  }
   return db;
 }
 
@@ -418,9 +429,15 @@ function createApp(options = {}) {
     req.cookies = Object.fromEntries(
       String(req.headers.cookie || '').split(';').map((part) => {
         const separator = part.indexOf('=');
-        return separator < 0
-          ? ['', '']
-          : [part.slice(0, separator).trim(), decodeURIComponent(part.slice(separator + 1).trim())];
+        if (separator < 0) return ['', ''];
+        const rawValue = part.slice(separator + 1).trim();
+        let value = '';
+        try {
+          value = decodeURIComponent(rawValue);
+        } catch {
+          value = rawValue;
+        }
+        return [part.slice(0, separator).trim(), value];
       }).filter(([name]) => name),
     );
     next();
@@ -899,13 +916,17 @@ function createApp(options = {}) {
     return next();
   }
 
-  function requirePrimaryAdmin(req, res, next) {
+  function requireAccountManager(req, res, next) {
     return requireAdmin(req, res, (error) => {
       if (error) return next(error);
-      if (req.admin.role !== 'admin') return fail(res, 403, 'Hanya admin utama yang dapat menyetujui penghapusan armada.');
+      if (req.admin.role !== 'admin') return fail(res, 403, 'Hanya administrator yang dapat mengelola akun.');
       return next();
     });
   }
+
+  // Nama ini hanya alias dari requireAccountManager, dipertahankan agar tempat
+  // persetujuan penghapusan armada tetap terbaca jelas.
+  const requirePrimaryAdmin = requireAccountManager;
 
   function requireFeature(feature) {
     return (req, res, next) => requireAdmin(req, res, (error) => {
@@ -923,14 +944,6 @@ function createApp(options = {}) {
       if (req.admin.role !== 'admin' && !features.some((feature) => req.admin.permissions.includes(feature))) {
         return fail(res, 403, 'Akun ini tidak memiliki izin untuk fitur tersebut.');
       }
-      return next();
-    });
-  }
-
-  function requireAccountManager(req, res, next) {
-    return requireAdmin(req, res, (error) => {
-      if (error) return next(error);
-      if (req.admin.role !== 'admin') return fail(res, 403, 'Hanya administrator yang dapat mengelola akun.');
       return next();
     });
   }
@@ -3153,7 +3166,7 @@ function createApp(options = {}) {
   app.use('/api', (req, res) => fail(res, 404, 'Endpoint API tidak ditemukan.'));
   app.use((req, res, next) => {
     if (req.method !== 'GET' && req.method !== 'HEAD') return fail(res, 405, 'Metode tidak diizinkan.');
-    const relative = decodeURIComponent(req.path).replace(/^\/+/, '');
+    const relative = safeDecodePath(req.path).replace(/^\/+/, '');
     const isPage = !relative || /^[^/]+\.html$/i.test(relative);
     const isAsset = /^assets\/(?:css\/[^/]+\.css|js\/[^/]+\.js)$/i.test(relative);
     const resolved = isPage
