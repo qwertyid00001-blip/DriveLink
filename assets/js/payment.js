@@ -274,10 +274,21 @@ form.querySelectorAll('input[name="paymentMethod"]').forEach((radio) => {
 });
 proofInput.addEventListener('change', () => {
   const file = proofInput.files[0];
-  document.getElementById('paymentProofName').textContent = file?.name || 'Belum ada file dipilih';
-  proofInput.setCustomValidity(file && (file.size > 400 * 1024 || !['image/jpeg', 'image/png'].includes(file.type))
-    ? 'Pilih foto JPG atau PNG maksimal 400 KB.'
-    : '');
+  const nameLabel = document.getElementById('paymentProofName');
+  // Ukuran mentah tidak lagi menjadi syarat: foto dikompresi otomatis saat dikirim,
+  // sehingga foto beresolusi tinggi dari kamera ponsel tetap bisa dipilih.
+  if (file && !['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+    proofInput.setCustomValidity('Pilih foto JPG, PNG, atau WebP.');
+  } else if (file && file.size > 20 * 1024 * 1024) {
+    proofInput.setCustomValidity('Ukuran file melebihi 20 MB.');
+  } else {
+    proofInput.setCustomValidity('');
+  }
+  if (nameLabel) {
+    nameLabel.textContent = file
+      ? `${file.name} · ${(file.size / 1024).toFixed(0)} KB → dikompresi otomatis`
+      : 'Belum ada file dipilih';
+  }
   updateSubmitAvailability();
 });
 

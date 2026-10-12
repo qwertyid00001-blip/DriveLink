@@ -961,9 +961,7 @@ function renderVehicleService() {
 
 // Batas sebelum kompresi dan batas total, mengikuti validasi server.
 const MAX_SERVICE_RECEIPT_INPUT_BYTES = 20 * 1024 * 1024;
-const MAX_SERVICE_RECEIPT_BYTES = 300 * 1024;
 const MAX_FLEET_PHOTO_INPUT_BYTES = 20 * 1024 * 1024;
-const MAX_FLEET_PHOTO_BYTES = 700 * 1024;
 const MAX_FLEET_PHOTO_TOTAL_BYTES = 4 * 1024 * 1024;
 
 // Nota servis dikompresi ke 290 KB (batas server 300 KB).

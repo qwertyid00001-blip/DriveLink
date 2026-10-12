@@ -542,7 +542,6 @@ function escapeHtml(value) {
 }
 
 const MAX_CONDITION_PHOTO_INPUT_BYTES = 20 * 1024 * 1024;
-const MAX_CONDITION_PHOTO_BYTES = 250 * 1024;
 
 // Foto kondisi dan foto depan dikompresi ke 240 KB (batas server 250 KB).
 function compressConditionPhoto(file) {

@@ -262,14 +262,25 @@ function applyLogoToCurrentPage(image) {
   });
 }
 
+let pendingLogoImage = '';
+
 logoFile.addEventListener('change', async () => {
   const file = logoFile.files[0];
-  if (!file) return;
+  if (!file) {
+    pendingLogoImage = '';
+    return;
+  }
+  const submitButton = logoForm.querySelector('[type="submit"]');
   if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
     logoFile.value = '';
+    pendingLogoImage = '';
     setFormMessage(logoMessage, 'Pilih logo JPG, PNG, atau WebP.', true);
     return;
   }
+  pendingLogoImage = '';
+  // Kunci tombol simpan sampai kompresi selesai, supaya logo lama tidak tersimpan
+  // ketika pengguna menekan Simpan terlalu cepat.
+  if (submitButton) submitButton.disabled = true;
   setFormMessage(logoMessage, 'Mengompresi logo...');
   try {
     // Logo dikompresi ke 900 KB (batas server 1 MB).
@@ -278,19 +289,24 @@ logoFile.addEventListener('change', async () => {
       maxEdge: 1200,
       label: 'Logo',
     });
+    pendingLogoImage = dataUrl;
     showLogoPreview(dataUrl, file.name);
     setFormMessage(logoMessage, `Logo siap · ${Math.ceil(sizeBytes / 1024)} KB setelah kompresi`);
   } catch (error) {
     logoFile.value = '';
     setFormMessage(logoMessage, error.message, true);
+  } finally {
+    if (submitButton) submitButton.disabled = false;
   }
 });
 
 logoForm.addEventListener('submit', async (event) => {
   event.preventDefault();
-  const image = logoFile.files.length
-    ? document.getElementById('brandLogoPreview').src
-    : savedLogoImage;
+  if (logoFile.files.length && !pendingLogoImage) {
+    setFormMessage(logoMessage, 'Tunggu sampai kompresi logo selesai.', true);
+    return;
+  }
+  const image = logoFile.files.length ? pendingLogoImage : savedLogoImage;
   const submitButton = logoForm.querySelector('[type="submit"]');
   submitButton.disabled = true;
   try {
@@ -335,14 +351,25 @@ function updateHomeBannerToggleStatus() {
 
 homeBannerEnabled.addEventListener('change', updateHomeBannerToggleStatus);
 
+let pendingHomeBannerImage = '';
+
 homeBannerFile.addEventListener('change', async () => {
   const file = homeBannerFile.files[0];
-  if (!file) return;
+  if (!file) {
+    pendingHomeBannerImage = '';
+    return;
+  }
+  const submitButton = homeBannerForm.querySelector('[type="submit"]');
   if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
     homeBannerFile.value = '';
+    pendingHomeBannerImage = '';
     setFormMessage(homeBannerMessage, 'Pilih poster JPG, PNG, atau WebP.', true);
     return;
   }
+  pendingHomeBannerImage = '';
+  // Kunci tombol simpan sampai kompresi selesai agar poster lama tidak tersimpan
+  // ketika pengguna menekan Simpan sebelum kompresi selesai.
+  if (submitButton) submitButton.disabled = true;
   setFormMessage(homeBannerMessage, 'Mengompresi poster...');
   try {
     // Poster dikompresi ke 2,6 MB (batas server 3 MB). Sisi terpanjang dibatasi
@@ -352,19 +379,24 @@ homeBannerFile.addEventListener('change', async () => {
       maxEdge: 2000,
       label: 'Poster',
     });
+    pendingHomeBannerImage = dataUrl;
     showHomeBannerPreview(dataUrl, file.name);
     setFormMessage(homeBannerMessage, `Poster siap · ${Math.ceil(sizeBytes / 1024)} KB setelah kompresi`);
   } catch (error) {
     homeBannerFile.value = '';
     setFormMessage(homeBannerMessage, error.message, true);
+  } finally {
+    if (submitButton) submitButton.disabled = false;
   }
 });
 
 homeBannerForm.addEventListener('submit', async (event) => {
   event.preventDefault();
-  const image = homeBannerFile.files.length
-    ? document.getElementById('homeBannerPreview').src
-    : savedHomeBannerImage;
+  if (homeBannerFile.files.length && !pendingHomeBannerImage) {
+    setFormMessage(homeBannerMessage, 'Tunggu sampai kompresi poster selesai.', true);
+    return;
+  }
+  const image = homeBannerFile.files.length ? pendingHomeBannerImage : savedHomeBannerImage;
   try {
     const banner = await DriveLinkAPI.put('/api/admin/settings/home-banner', {
       enabled: homeBannerEnabled.checked,
