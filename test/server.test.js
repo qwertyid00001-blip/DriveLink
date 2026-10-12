@@ -1090,7 +1090,8 @@ test('booking flow skips payment and handover admin confirmations and exposes re
   })).json();
   assert.ok(Number.isInteger(employeeNotificationData.actionCounts.bookings));
   assert.equal(employeeNotificationData.actionCounts.payments, 0);
-  assert.equal(employeeNotificationData.actionCounts.handover, 0);
+  // Alur persetujuan serah-terima oleh admin sudah dihapus, sehingga tidak ada lagi antrean handover.
+  assert.equal('handover' in employeeNotificationData.actionCounts, false);
   assert.equal(employeeNotificationData.actionCounts.returns, 0);
   assert.equal((await fetch(`${baseUrl}/admin-handover.html`, { headers: { cookie: employeeCookie } })).status, 403);
   assert.equal((await fetch(`${baseUrl}/admin-return.html`, { headers: { cookie: employeeCookie } })).status, 403);
@@ -1583,8 +1584,8 @@ test('booking flow skips payment and handover admin confirmations and exposes re
   assert.equal(notificationData.bookings[0].documents, undefined);
   assert.ok(Number.isInteger(notificationData.actionCounts.bookings));
   assert.ok(Number.isInteger(notificationData.actionCounts.payments));
-  assert.ok(Number.isInteger(notificationData.actionCounts.handover));
   assert.ok(Number.isInteger(notificationData.actionCounts.returns));
+  assert.equal('handover' in notificationData.actionCounts, false);
 
   const invalidFleetResponse = await fetch(`${baseUrl}/api/admin/fleet`, {
     method: 'POST',
@@ -1991,12 +1992,13 @@ test('booking flow skips payment and handover admin confirmations and exposes re
   assert.equal(repeatedHandoverResponse.status, 200);
   assert.equal((await repeatedHandoverResponse.json()).rentalStartedAt, submittedHandover.rentalStartedAt);
 
+  // Endpoint persetujuan serah-terima oleh admin sudah dihapus; tidak ada lagi antrean ini.
   const handoverApprovalResponse = await fetch(`${baseUrl}/api/admin/bookings/${booking.id}/handover`, {
     method: 'PATCH',
     headers: { 'content-type': 'application/json', cookie },
     body: JSON.stringify({ action: 'approve' }),
   });
-  assert.equal(handoverApprovalResponse.status, 409);
+  assert.equal(handoverApprovalResponse.status, 404);
   const rentalExtensionResponse = await fetch(`${baseUrl}/api/admin/bookings/${booking.id}/rental`, {
     method: 'PATCH',
     headers: { 'content-type': 'application/json', cookie },

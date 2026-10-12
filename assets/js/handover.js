@@ -88,9 +88,6 @@ function updateHandoverSideNote(status) {
   } else if (status === 'Ditolak') {
     title.textContent = 'Perlu pengecekan ulang';
     detail.textContent = 'Tinjau catatan admin dan hubungi karyawan yang melayani untuk pengecekan ulang.';
-  } else if (status === 'Menunggu konfirmasi admin') {
-    title.textContent = 'Pengecekan sedang ditinjau';
-    detail.textContent = 'Konfirmasi serah-terima Anda telah dikirim untuk ditinjau admin.';
   }
 }
 
@@ -248,10 +245,7 @@ function renderPage(booking) {
     (condition.photos || []).forEach((photo, index) => previewImage(gallery, photo, `Foto kondisi unit ${index + 1}`));
   }
 
-  if (booking.handoverStatus === 'Menunggu konfirmasi admin') {
-    form.hidden = true;
-    message.textContent = 'Konfirmasi serah-terima sudah dikirim dan menunggu persetujuan admin.';
-  } else if (booking.handoverStatus === 'Disetujui') {
+  if (booking.handoverStatus === 'Disetujui') {
     form.hidden = true;
     message.textContent = 'Serah-terima telah Anda selesaikan.';
   } else if (booking.handoverStatus === 'Ditolak') {
@@ -264,7 +258,7 @@ function renderPage(booking) {
     }
   }
 
-  if (booking.handoverStatus === 'Menunggu konfirmasi admin' || booking.handoverStatus === 'Disetujui') {
+  if (booking.handoverStatus === 'Disetujui') {
     form.hidden = true;
     submitButton.disabled = true;
     document.getElementById('handoverRentalStatus').hidden = false;

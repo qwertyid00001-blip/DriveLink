@@ -2459,9 +2459,6 @@ function createApp(options = {}) {
           ? actionRows.filter((booking) => booking.paymentStatus === 'Menunggu konfirmasi'
             || booking.depositPaymentRequired && booking.depositPaymentStatus === 'Menunggu konfirmasi').length
           : 0,
-        handover: canReadHandover
-          ? actionRows.filter((booking) => booking.handoverStatus === 'Menunggu konfirmasi admin').length
-          : 0,
         returns: overdueReturns,
       },
     });
@@ -3148,24 +3145,10 @@ function createApp(options = {}) {
     res.json(location);
   });
 
-  app.patch('/api/admin/bookings/:id/handover', requireFeature('handover'), (req, res) => {
-    const booking = getBooking(String(req.params.id).toUpperCase());
-    if (!booking) return fail(res, 404, 'Booking tidak ditemukan.');
-    if (booking.handoverStatus !== 'Menunggu konfirmasi admin') return fail(res, 409, 'Serah-terima tidak sedang menunggu persetujuan.');
-    const action = req.body?.action;
-    if (!['approve', 'reject'].includes(action)) return fail(res, 400, 'Aksi serah-terima tidak valid.');
-    booking.handoverStatus = action === 'approve' ? 'Disetujui' : 'Ditolak';
-    booking.handoverReviewedAt = new Date().toISOString();
-    if (action === 'approve') {
-      booking.handoverApprovedAt = booking.handoverReviewedAt;
-      booking.rentalStartedAt = booking.rentalStartedAt || booking.handoverReviewedAt;
-    }
-    booking.handoverAdminNote = action === 'reject' ? String(req.body.note || '').trim().slice(0, 500) : '';
-    if (action === 'approve') booking.status = 'Selesai';
-    booking.statusHistory.push({ status: booking.status, at: new Date().toISOString() });
-    saveBooking(booking);
-    res.json(booking);
-  });
+  // Catatan: tidak ada lagi endpoint persetujuan serah-terima oleh admin.
+  // Nilai 'Menunggu konfirmasi admin' tidak pernah ditulis di server, sehingga route
+  // tersebut selalu membalas 409. Alur yang berlaku: checklist petugas -> pelanggan
+  // menekan "Selesai" -> waktu sewa mulai (POST /api/bookings/:id/handover).
 
   app.use('/api', (req, res) => fail(res, 404, 'Endpoint API tidak ditemukan.'));
   app.use((req, res, next) => {

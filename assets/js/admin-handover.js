@@ -406,7 +406,6 @@ async function loadInspectionBooking() {
       renderVehicleOptions();
       renderCondition();
       renderInspectionHistory();
-      renderQueue();
     } catch (error) {
       setInspectionMessage(`Data booking gagal dimuat: ${error.message}`, true);
       return;
@@ -657,20 +656,6 @@ function renderVehicleOptions() {
   if (fleet.some((vehicle) => vehicle.name === selected)) select.value = selected;
 }
 
-function renderQueue() {
-  const pending = readBookings().filter((booking) => booking.handoverStatus === 'Menunggu konfirmasi admin');
-  document.getElementById('handoverReviewList').innerHTML = pending.map((booking) => `
-    <article class="review-card" data-handover-card="${escapeHtml(booking.id)}">
-      <div class="review-card-heading"><div><strong>${escapeHtml(booking.name)} · ${escapeHtml(booking.id)}</strong><small>${escapeHtml(booking.carType)}${booking.vehicleColor ? ` · ${escapeHtml(booking.vehicleColor)}` : ''} · ${escapeHtml(booking.driverOption)}${booking.fuelPackage ? ` · ${escapeHtml(booking.fuelPackage)}` : ''}</small></div><span class="status-pill status-active">Menunggu persetujuan</span></div>
-      ${booking.vehicleInspection ? `<p class="inspection-customer-summary">Checklist admin: ${escapeHtml(booking.vehicleInspection.plate)} · ${Number(booking.vehicleInspection.odometerKm).toLocaleString('id-ID')} km · bensin ${escapeHtml(booking.vehicleInspection.fuelLevel)} · bodi ${escapeHtml(booking.vehicleInspection.bodyCondition)}${booking.vehicleInspection.bodyNotes ? ` · ${escapeHtml(booking.vehicleInspection.bodyNotes)}` : ''}</p>` : '<p class="inspection-customer-summary">Checklist admin belum dicatat untuk booking ini.</p>'}
-      <div class="photo-grid">${booking.vehicleInspection?.frontPhoto ? `<figure><img src="${escapeHtml(booking.vehicleInspection.frontPhoto)}" alt="Foto langsung bagian depan unit oleh karyawan" /><figcaption>Foto langsung bagian depan unit oleh karyawan</figcaption></figure>` : ''}</div>
-      <label>Catatan admin<textarea data-admin-note rows="2" placeholder="Catatan jika pengecekan perlu diulang"></textarea></label>
-      <div class="review-actions"><button class="btn btn-primary" data-handover-action="approve" data-booking-id="${escapeHtml(booking.id)}">Setujui serah-terima</button><button class="btn btn-secondary" data-handover-action="reject" data-booking-id="${escapeHtml(booking.id)}">Tolak / minta ulang</button></div>
-    </article>
-  `).join('');
-  document.getElementById('handoverQueueEmpty').hidden = pending.length > 0;
-}
-
 document.getElementById('loadInspectionBooking').addEventListener('click', loadInspectionBooking);
 inspectionForm.elements.bookingId.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') {
@@ -819,7 +804,6 @@ inspectionForm.addEventListener('submit', async (event) => {
     message.classList.remove('is-error');
     message.textContent = `Checklist unit ${unit.plate} tersimpan dan odometer unit diperbarui ke ${odometerKm.toLocaleString('id-ID')} km.`;
     renderInspectionHistory();
-    renderQueue();
     window.location.assign(`admin-handover-archive.html?saved=${encodeURIComponent(booking.id)}`);
   } catch (error) {
     console.error('Tidak dapat menyimpan checklist kendaraan.', error);
@@ -888,39 +872,6 @@ conditionForm.addEventListener('submit', async (event) => {
   }
 });
 
-document.getElementById('handoverReviewList').addEventListener('click', async (event) => {
-  const button = event.target.closest('[data-handover-action]');
-  if (!button) return;
-  const bookings = readBookings();
-  const booking = bookings.find((item) => item.id === button.dataset.bookingId);
-  if (!booking || booking.handoverStatus !== 'Menunggu konfirmasi admin') return;
-  const approved = button.dataset.handoverAction === 'approve';
-  const note = approved ? '' : button.closest('[data-handover-card]').querySelector('[data-admin-note]').value.trim() || 'Mohon periksa kembali foto kondisi unit.';
-  if (window.DriveLinkAPI) {
-    try {
-      const updated = await DriveLinkAPI.patch(`/api/admin/bookings/${encodeURIComponent(booking.id)}/handover`, {
-        action: button.dataset.handoverAction,
-        note,
-      });
-      const index = bookings.findIndex((item) => item.id === booking.id);
-      if (index >= 0) bookings[index] = updated;
-      saveBookings(bookings);
-      renderQueue();
-    } catch (error) {
-      setInspectionMessage(`Status serah-terima gagal diperbarui: ${error.message}`, true);
-    }
-    return;
-  }
-  booking.handoverStatus = approved ? 'Disetujui' : 'Ditolak';
-  booking.handoverAdminNote = note;
-  if (approved) {
-    booking.rentalStartedAt = booking.rentalStartedAt || new Date().toISOString();
-    appendStatus(booking, 'Selesai');
-  }
-  saveBookings(bookings);
-  renderQueue();
-});
-
 document.getElementById('todayLabel').textContent = new Intl.DateTimeFormat('id-ID', {
   weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
 }).format(new Date());
@@ -941,7 +892,6 @@ document.getElementById('logoutButton').addEventListener('click', async () => {
 });
 renderVehicleOptions();
 renderCondition();
-renderQueue();
 renderInspectionHistory();
 
 if (window.DriveLinkAPI) {
@@ -957,7 +907,6 @@ if (window.DriveLinkAPI) {
       ]);
       renderVehicleOptions();
       renderCondition();
-      renderQueue();
       renderInspectionHistory();
       if (requestedInspectionBooking) await loadInspectionBooking();
     } catch (error) {

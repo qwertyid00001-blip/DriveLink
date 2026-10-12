@@ -226,9 +226,8 @@ function renderOrder(booking) {
     {
       key: 'handover',
       label: 'Serah-terima',
-      state: stageState(handoverDone, handover === 'Menunggu konfirmasi admin' ? 'Menunggu persetujuan admin' : handover === 'Ditolak' ? 'Ditolak · Perlu pengecekan ulang' : '', !inspectionDone),
+      state: stageState(handoverDone, handover === 'Ditolak' ? 'Ditolak · Perlu pengecekan ulang' : '', !inspectionDone),
       detail: handoverDone ? 'Anda sudah mengonfirmasi penerimaan unit; rental sedang berjalan.'
-        : handover === 'Menunggu konfirmasi admin' ? 'Foto kondisi sudah dikirim untuk diperiksa.'
           : handover === 'Ditolak' ? `Admin meminta pengecekan ulang${booking.handoverAdminNote ? `: ${booking.handoverAdminNote}` : '.'}`
             : inspectionDone ? 'Kirim foto kondisi kendaraan untuk ditinjau admin.' : 'Dimulai setelah checklist unit selesai.',
       completed: handoverDone,
@@ -267,8 +266,6 @@ function renderNextStep(key, booking, container) {
   } else if (key === 'payment' && paymentReady(booking)) {
     if (!booking.vehicleInspectionComplete) {
       statusMessage = 'Menunggu admin menyelesaikan persiapan unit.';
-    } else if (booking.handoverStatus === 'Menunggu konfirmasi admin') {
-      statusMessage = 'Serah-terima sedang diproses.';
     } else if (booking.handoverStatus !== 'Disetujui') {
       url = `handover.html?id=${encodeURIComponent(booking.id)}&phone=${encodeURIComponent(booking.phone)}`;
       label = booking.handoverStatus === 'Ditolak' ? 'Konfirmasi ulang serah-terima' : 'Lanjutkan ke serah-terima';
@@ -276,9 +273,7 @@ function renderNextStep(key, booking, container) {
       statusMessage = 'Serah-terima selesai. Rental sedang berjalan.';
     }
   } else if (key === 'inspection' && booking.vehicleInspectionComplete && paymentReady(booking)) {
-    if (booking.handoverStatus === 'Menunggu konfirmasi admin') {
-      statusMessage = 'Serah-terima sedang diproses.';
-    } else if (booking.handoverStatus === 'Disetujui') {
+    if (booking.handoverStatus === 'Disetujui') {
       statusMessage = 'Serah-terima selesai. Rental sedang berjalan.';
     } else {
       url = `handover.html?id=${encodeURIComponent(booking.id)}&phone=${encodeURIComponent(booking.phone)}`;
