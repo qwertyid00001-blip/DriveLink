@@ -1,7 +1,5 @@
 const { spawn } = require('node:child_process');
-const fs = require('node:fs');
-const os = require('node:os');
-const path = require('node:path');
+const { findCloudflared } = require('./cloudflared');
 
 const port = Number(process.env.PORT || 3000);
 if (!Number.isInteger(port) || port < 1 || port > 65535) {
@@ -9,20 +7,7 @@ if (!Number.isInteger(port) || port < 1 || port > 65535) {
 }
 
 const localUrl = `http://127.0.0.1:${port}`;
-const candidates = [
-  process.env.CLOUDFLARED_PATH,
-  path.join(os.homedir(), '.local', 'bin', 'cloudflared'),
-  'cloudflared',
-].filter(Boolean);
-const executable = candidates.find((candidate) => {
-  if (candidate === 'cloudflared') return true;
-  try {
-    fs.accessSync(candidate, fs.constants.X_OK);
-    return true;
-  } catch {
-    return false;
-  }
-});
+const executable = findCloudflared();
 
 async function startTunnel() {
   let response;

@@ -17,6 +17,8 @@ revisi server digunakan untuk mendeteksi dan memuat perubahan yang terlewat.
 - `pages/`: halaman HTML; server tetap menyediakan halaman pada URL root yang sama.
 - `docs/`: dokumen kebutuhan produk.
 - `test/`: tes backend.
+- `scripts/`: `online.js` (server + tunnel sekali jalan), `share.js` (tunnel saja),
+  dan `cloudflared.js` (pencarian binary cloudflared).
 - `server.js`, `package.json`, dan berkas konfigurasi tetap di root.
 - `data/` menyimpan database lokal; jangan pindahkan atau membagikannya saat server berjalan.
 
@@ -36,18 +38,51 @@ ketika database baru dibuat. Simpan cadangan database dan jangan bagikan `.env`.
 
 ## Akses sementara dari jaringan lain
 
-Untuk membuka website dari ponsel di jaringan berbeda, gunakan Cloudflare Quick
-Tunnel. Pasang `cloudflared` dari dokumentasi resmi Cloudflare, jalankan `npm
-start` di satu terminal, lalu jalankan `npm run share` di terminal lain. Perintah
-tersebut mencetak URL HTTPS sementara yang dapat dibuka dari ponsel; hentikan
-dengan Ctrl+C untuk menutup akses. Komputer harus tetap menyala dan terhubung ke
-internet.
+Untuk membuka website dari ponsel atau perangkat lain, gunakan **satu perintah**:
+
+```
+npm run online
+```
+
+Perintah itu menjalankan server dan Cloudflare Quick Tunnel sekaligus, lalu
+mencetak URL HTTPS sementara beserta kode QR. Arahkan kamera ponsel ke kode QR,
+atau salin URL-nya. Hentikan dengan Ctrl+C untuk menutup tunnel dan server.
+Tidak perlu dua terminal lagi.
+
+URL tunnel berlaku dari jaringan mana pun (4G, Wi-Fi lain, kantor), tidak harus
+satu Wi-Fi yang sama. Komputer harus tetap menyala dan terhubung ke internet.
+
+Bila hanya perlu akses dari perangkat pada Wi-Fi yang sama, cukup `npm start`
+lalu buka `http://<alamat-IP>:3127` yang tercetak di terminal.
+
+### Yang dibutuhkan
+
+`cloudflared` harus terpasang. `npm run online` dan `npm run share` sudah
+mencarinya otomatis di lokasi berikut:
+
+1. variabel `CLOUDFLARED_PATH` bila diisi
+2. `~/.local/bin/cloudflared`
+3. `/opt/homebrew/bin/cloudflared`
+4. `/usr/local/bin/cloudflared`
+5. `cloudflared` di PATH
+
+### Peringatan keamanan
 
 Tunnel membuat website dapat diakses publik selama aktif. Jangan membagikan URL
 secara terbuka; gunakan login admin yang kuat. Halaman admin tetap memerlukan
 autentikasi, tetapi halaman pelanggan dan endpoint publik dapat diakses siapa pun
 yang memiliki URL. Quick Tunnel tidak menyediakan URL tetap untuk penggunaan
-produksi.
+produksi, dan URL baru dibuat setiap kali perintah dijalankan.
+
+### Kalau bermasalah
+
+- **`cloudflared tidak ditemukan`** — pasang Cloudflare Tunnel, lalu ulangi.
+- **Server tidak merespons** — `npm run share` memerlukan `npm start` sudah jalan.
+- **Tunnel sering putus** — konektivitas ke Cloudflare sedang bermasalah; coba
+  lagi. Quick Tunnel tidak punya jaminan uptime.
+- **Halaman tidak terbuka di ponsel** — pastikan URL masih aktif (jendela
+  terminal tidak ditutup) dan ponsel memakai jaringan seluler, bukan Wi-Fi yang
+  sama dengan komputer.
 
 ## API utama
 
