@@ -35,30 +35,41 @@ document.getElementById('logoutButton').addEventListener('click', async () => {
   window.location.href = 'auth.html';
 });
 
-imageInput.addEventListener('change', () => {
+imageInput.addEventListener('change', async () => {
   const file = imageInput.files[0];
-  if (file && (file.size > 250 * 1024 || !['image/jpeg', 'image/png'].includes(file.type))) {
-    imageInput.setCustomValidity('Pilih gambar QR JPG atau PNG maksimal 250 KB.');
-    document.getElementById('qrImageStatus').textContent = 'Format atau ukuran gambar tidak sesuai.';
+  const status = document.getElementById('qrImageStatus');
+  if (!file) {
+    imageInput.setCustomValidity('');
+    qrImageData = '';
+    status.textContent = 'Belum ada gambar QRIS.';
+    return;
+  }
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+    imageInput.setCustomValidity('Pilih gambar QR JPG, PNG, atau WebP.');
+    status.textContent = 'Format gambar tidak sesuai.';
     return;
   }
   imageInput.setCustomValidity('');
-  if (!file) return;
-  const reader = new FileReader();
-  reader.addEventListener('load', () => {
-    qrImageData = String(reader.result);
-    document.getElementById('qrImageStatus').textContent = `Siap disimpan: ${file.name}`;
-  });
-  reader.addEventListener('error', () => {
-    settingsMessage.textContent = 'Gambar QR gagal dibaca. Pilih ulang file.';
-    settingsMessage.classList.add('is-error');
-  });
-  reader.readAsDataURL(file);
+  status.textContent = 'Mengompresi gambar QR...';
+  try {
+    // QRIS dikompresi ke 240 KB (batas server 250 KB).
+    const { dataUrl, sizeBytes } = await DriveLinkImages.compress(file, {
+      maxBytes: 240 * 1024,
+      maxEdge: 1200,
+      label: 'Gambar QR',
+    });
+    qrImageData = dataUrl;
+    status.textContent = `${file.name} · ${Math.ceil(sizeBytes / 1024)} KB setelah kompresi`;
+  } catch (error) {
+    qrImageData = '';
+    imageInput.setCustomValidity(error.message);
+    status.textContent = error.message;
+  }
 });
 
 settingsForm.addEventListener('submit', async (event) => {
   event.preventDefault();
-  if (imageInput.files[0] && (imageInput.files[0].size > 250 * 1024 || !['image/jpeg', 'image/png'].includes(imageInput.files[0].type))) return;
+  if (imageInput.files[0] && imageInput.validationMessage) return;
   const data = new FormData(settingsForm);
   const settings = {
     qrName: String(data.get('qrName')).trim(),

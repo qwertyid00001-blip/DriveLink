@@ -164,9 +164,29 @@ produksi, dan URL baru dibuat setiap kali perintah dijalankan.
   dokumen identitas (base64) tidak lagi disimpan di cache browser: cache lokal hanya
   menyimpan metadata dokumen, sedangkan foto aslinya diambil dari server saat tombol
   detail diklik. Ini menjaga cache tetap di bawah kuota localStorage browser (±5 MiB).
-- Pengelolaan foto armada: unggah 2–6 gambar JPG/PNG maksimal 700 KB per foto
-  (total maksimal 4 MB) saat menambah kendaraan atau mengganti galeri armada.
-  Foto ditampilkan sebagai slideshow pada kartu armada di halaman pelanggan.
+- Pengelolaan foto armada: unggah 2–6 gambar JPG/PNG saat menambah kendaraan atau
+  mengganti galeri armada. Foto ditampilkan sebagai slideshow pada kartu armada di
+  halaman pelanggan.
+- **Seluruh unggah foto dikompresi otomatis di perangkat.** Satu helper bersama
+  (`DriveLinkImages.compress` di `assets/js/api-client.js`) dipakai untuk dokumen
+  booking, bukti pembayaran, foto armada, nota servis, foto kondisi dan serah-terima,
+  logo, poster beranda, serta gambar QRIS. Foto diperkecil lalu kualitas JPEG
+  diturunkan berulang kali sampai ukurannya di bawah batas server, sehingga pengguna
+  dapat memilih foto beresolusi tinggi langsung dari kamera ponsel:
+
+  | Unggahan | Target kompresi | Batas server |
+  |---|---|---|
+  | Dokumen identitas | 360 KB | 400 KB |
+  | Bukti pembayaran | 360 KB | 400 KB |
+  | Foto armada | 680 KB/foto, total 4 MB | 700 KB/foto |
+  | Nota servis | 290 KB | 300 KB |
+  | Foto kondisi & serah-terima | 240 KB | 250 KB |
+  | Gambar QRIS | 240 KB | 250 KB |
+  | Logo navigasi | 900 KB | 1 MB |
+  | Poster beranda | 2,6 MB | 3 MB |
+
+  Foto dengan transparansi (PNG) disimpan sebagai JPEG dengan latar putih. Ukuran
+  sebelum kompresi dibatasi 20 MB per berkas.
 - Kategori armada bawaan (MPV, SUV, Electric) dapat ditambah, diganti nama, dan
   dihapus di halaman Atur checklist. Perubahan nama mengikuti data kendaraan dan
   paket; penghapusan mengalihkan referensi ke kategori aktif pertama. Kategori

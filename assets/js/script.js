@@ -557,57 +557,12 @@ if (bookingForm) {
   updatePriceQuote();
 
   function readImageFile(file) {
-    return (async () => {
-      if (!['image/jpeg', 'image/png'].includes(file.type) || file.size > 10 * 1024 * 1024) {
-        throw new Error(`Foto ${file.name} harus JPG/PNG dan maksimal 10 MB.`);
-      }
-      let bitmap;
-      try {
-        bitmap = await createImageBitmap(file);
-      } catch (error) {
-        throw new Error(`Foto ${file.name} tidak dapat dibuka: ${error.message}`);
-      }
-      const canvas = document.createElement('canvas');
-      const initialScale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
-      let width = Math.max(1, Math.round(bitmap.width * initialScale));
-      let height = Math.max(1, Math.round(bitmap.height * initialScale));
-      const context = canvas.getContext('2d');
-      if (!context) {
-        bitmap.close();
-        throw new Error('Browser tidak dapat menyiapkan kompresi foto.');
-      }
-
-      try {
-        for (let attempt = 0; attempt < 12; attempt += 1) {
-          canvas.width = width;
-          canvas.height = height;
-          context.drawImage(bitmap, 0, 0, width, height);
-          const quality = [0.86, 0.78, 0.7, 0.62, 0.54, 0.46][attempt % 6];
-          const blob = await new Promise((resolve, reject) => {
-            canvas.toBlob((result) => {
-              if (result) resolve(result);
-              else reject(new Error(`Foto ${file.name} gagal dikompresi.`));
-            }, 'image/jpeg', quality);
-          });
-          if (blob.size <= 300 * 1024) {
-            const dataUrl = await new Promise((resolve, reject) => {
-              const reader = new FileReader();
-              reader.addEventListener('load', () => resolve(reader.result));
-              reader.addEventListener('error', () => reject(new Error(`Foto ${file.name} gagal disiapkan.`)));
-              reader.readAsDataURL(blob);
-            });
-            return { name: file.name, dataUrl, sizeBytes: blob.size };
-          }
-          if (attempt % 6 === 5) {
-            width = Math.max(1, Math.round(width * 0.8));
-            height = Math.max(1, Math.round(height * 0.8));
-          }
-        }
-        throw new Error(`Foto ${file.name} tetap terlalu besar setelah dikompresi. Pilih gambar yang lebih kecil.`);
-      } finally {
-        bitmap.close();
-      }
-    })();
+    // Dokumen pelanggan dikompresi ke 360 KB (batas server 400 KB).
+    return DriveLinkImages.compress(file, {
+      maxBytes: 360 * 1024,
+      maxEdge: 1600,
+      label: 'Dokumen',
+    }).then(({ dataUrl }) => dataUrl);
   }
 
   bookingForm.addEventListener('submit', async (event) => {

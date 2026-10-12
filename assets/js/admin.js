@@ -959,241 +959,29 @@ function renderVehicleService() {
   updateServiceExpenseTotal();
 }
 
-function readImageDataUrl(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => resolve(String(reader.result)));
-    reader.addEventListener('error', () => reject(new Error(`Nota servis ${file.name} gagal dibaca.`)));
-    reader.readAsDataURL(file);
-  });
-}
-
-const serviceReceiptCompressionCache = new WeakMap();
+// Batas sebelum kompresi dan batas total, mengikuti validasi server.
 const MAX_SERVICE_RECEIPT_INPUT_BYTES = 20 * 1024 * 1024;
 const MAX_SERVICE_RECEIPT_BYTES = 300 * 1024;
-
-function compressServiceReceipt(file) {
-  const cached = serviceReceiptCompressionCache.get(file);
-  if (cached) return cached;
-
-  const compression = (async () => {
-    if (!['image/jpeg', 'image/png'].includes(file.type) || file.size > MAX_SERVICE_RECEIPT_INPUT_BYTES) {
-      throw new Error(`Nota ${file.name} harus JPG/PNG dan maksimal 20 MB sebelum dikompresi.`);
-    }
-
-    let bitmap;
-    try {
-      bitmap = await createImageBitmap(file);
-    } catch (error) {
-      throw new Error(`Nota ${file.name} tidak dapat dibuka: ${error.message}`);
-    }
-
-    try {
-      const canvas = document.createElement('canvas');
-      const scale = Math.min(1, 2000 / Math.max(bitmap.width, bitmap.height));
-      let width = Math.max(1, Math.round(bitmap.width * scale));
-      let height = Math.max(1, Math.round(bitmap.height * scale));
-      const context = canvas.getContext('2d');
-      if (!context) throw new Error('Browser tidak dapat menyiapkan kompresi nota.');
-
-      for (let attempt = 0; attempt < 30; attempt += 1) {
-        canvas.width = width;
-        canvas.height = height;
-        context.fillStyle = '#fff';
-        context.fillRect(0, 0, width, height);
-        context.drawImage(bitmap, 0, 0, width, height);
-        const quality = [0.9, 0.82, 0.74, 0.66, 0.58, 0.5][attempt % 6];
-        const blob = await new Promise((resolve, reject) => {
-          canvas.toBlob((result) => {
-            if (result) resolve(result);
-            else reject(new Error(`Nota ${file.name} gagal dikompresi.`));
-          }, 'image/jpeg', quality);
-        });
-        if (blob.size <= MAX_SERVICE_RECEIPT_BYTES) {
-          const dataUrl = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.addEventListener('load', () => resolve(String(reader.result)));
-            reader.addEventListener('error', () => reject(new Error(`Nota ${file.name} gagal disiapkan.`)));
-            reader.readAsDataURL(blob);
-          });
-          return { dataUrl, sizeBytes: blob.size };
-        }
-        if (attempt % 6 === 5) {
-          width = Math.max(1, Math.round(width * 0.78));
-          height = Math.max(1, Math.round(height * 0.78));
-        }
-      }
-      throw new Error(`Nota ${file.name} tetap melebihi 300 KB setelah dikompresi.`);
-    } finally {
-      bitmap.close();
-    }
-  })();
-
-  serviceReceiptCompressionCache.set(file, compression);
-  compression.catch(() => serviceReceiptCompressionCache.delete(file));
-  return compression;
-}
-
-const fleetPhotoCompressionCache = new WeakMap();
 const MAX_FLEET_PHOTO_INPUT_BYTES = 20 * 1024 * 1024;
 const MAX_FLEET_PHOTO_BYTES = 700 * 1024;
 const MAX_FLEET_PHOTO_TOTAL_BYTES = 4 * 1024 * 1024;
 
-function compressFleetPhoto(file) {
-  const cached = fleetPhotoCompressionCache.get(file);
-  if (cached) return cached;
-
-  const compression = (async () => {
-    if (!['image/jpeg', 'image/png'].includes(file.type) || file.size > MAX_FLEET_PHOTO_INPUT_BYTES) {
-      throw new Error(`Foto ${file.name} harus JPG/PNG dan maksimal 20 MB sebelum dikompresi.`);
-    }
-
-    let bitmap;
-    try {
-      bitmap = await createImageBitmap(file);
-    } catch (error) {
-      throw new Error(`Foto ${file.name} tidak dapat dibuka: ${error.message}`);
-    }
-
-    try {
-      const canvas = document.createElement('canvas');
-      const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
-      let width = Math.max(1, Math.round(bitmap.width * scale));
-      let height = Math.max(1, Math.round(bitmap.height * scale));
-      const context = canvas.getContext('2d');
-      if (!context) throw new Error('Browser tidak dapat menyiapkan kompresi foto.');
-
-      for (let attempt = 0; attempt < 12; attempt += 1) {
-        canvas.width = width;
-        canvas.height = height;
-        context.fillStyle = '#fff';
-        context.fillRect(0, 0, width, height);
-        context.drawImage(bitmap, 0, 0, width, height);
-        const quality = [0.86, 0.78, 0.7, 0.62, 0.54, 0.46][attempt % 6];
-        const blob = await new Promise((resolve, reject) => {
-          canvas.toBlob((result) => {
-            if (result) resolve(result);
-            else reject(new Error(`Foto ${file.name} gagal dikompresi.`));
-          }, 'image/jpeg', quality);
-        });
-        if (blob.size <= MAX_FLEET_PHOTO_BYTES) {
-          const dataUrl = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.addEventListener('load', () => resolve(String(reader.result)));
-            reader.addEventListener('error', () => reject(new Error(`Foto ${file.name} gagal disiapkan.`)));
-            reader.readAsDataURL(blob);
-          });
-          return { name: file.name, dataUrl, sizeBytes: blob.size };
-        }
-        if (attempt % 3 === 2) {
-          width = Math.max(1, Math.round(width * 0.82));
-          height = Math.max(1, Math.round(height * 0.82));
-        }
-      }
-      throw new Error(`Foto ${file.name} tetap melebihi 700 KB setelah dikompresi.`);
-    } finally {
-      bitmap.close();
-    }
-  })();
-
-  fleetPhotoCompressionCache.set(file, compression);
-  compression.catch(() => fleetPhotoCompressionCache.delete(file));
-  return compression;
+// Nota servis dikompresi ke 290 KB (batas server 300 KB).
+function compressServiceReceipt(file) {
+  return DriveLinkImages.compress(file, {
+    maxBytes: 290 * 1024,
+    maxEdge: 2000,
+    label: 'Nota',
+  });
 }
 
-async function saveVehicleService(event) {
-  event.preventDefault();
-  const form = event.currentTarget;
-  const message = document.getElementById('vehicleServiceMessage');
-  const data = new FormData(form);
-  const plate = String(data.get('plate') || '').trim().toUpperCase();
-  const lastServiceKm = Number(data.get('lastServiceKm'));
-  const nextServiceKm = Number(data.get('nextServiceKm'));
-  const receiptFile = data.get('receipt');
-  const lastServiceDate = String(data.get('lastServiceDate') || '');
-  const nextServiceDate = String(data.get('nextServiceDate') || '');
-  const items = [...document.querySelectorAll('#serviceExpenseItems .service-expense-row')].map((row) => ({
-    category: row.querySelector('[name="serviceCategory"]').value,
-    part: row.querySelector('[name="servicePart"]').value.trim(),
-    details: row.querySelector('[name="serviceDetails"]').value.trim(),
-    cost: Number(row.querySelector('[name="serviceCost"]').value),
-  }));
-  if (!plate || !data.get('engine') || !data.get('workshop')
-    || !Number.isInteger(lastServiceKm) || lastServiceKm < 0
-    || !Number.isInteger(nextServiceKm) || nextServiceKm <= lastServiceKm
-    || !lastServiceDate || !nextServiceDate || nextServiceDate <= lastServiceDate
-    || !items.length || items.length > 20
-    || items.some((item) => !serviceCategories.includes(item.category) || !item.part
-      || !Number.isSafeInteger(item.cost) || item.cost < 0 || item.cost > 1_000_000_000)
-    || items.reduce((sum, item) => sum + item.cost, 0) > 1_000_000_000
-    || !(receiptFile instanceof File) || !receiptFile.size
-    || receiptFile.size > MAX_SERVICE_RECEIPT_INPUT_BYTES || !['image/jpeg', 'image/png'].includes(receiptFile.type)) {
-    message.textContent = 'Lengkapi data servis, minimal satu rincian biaya, jadwal berikutnya, dan nota JPG/PNG maksimal 20 MB sebelum kompresi.';
-    message.classList.add('is-error');
-    return;
-  }
-  try {
-    const { dataUrl: receipt } = await compressServiceReceipt(receiptFile);
-    const units = readVehicleUnits();
-    const existing = units.find((unit) => unit.plate.toUpperCase() === plate);
-    const service = {
-      plate,
-      carType: String(data.get('carType')),
-      date: lastServiceDate,
-      km: lastServiceKm,
-      workshop: String(data.get('workshop')).trim(),
-      receipt,
-      items,
-      totalCost: items.reduce((sum, item) => sum + item.cost, 0),
-      nextServiceKm,
-      nextServiceDate,
-    };
-    const unit = {
-      ...(existing || {}),
-      plate,
-      carType: String(data.get('carType')),
-      engine: String(data.get('engine')).trim(),
-      workshop: service.workshop,
-      lastServiceDate,
-      lastServiceKm,
-      currentKm: Math.max(Number(existing?.currentKm) || 0, lastServiceKm),
-      nextServiceKm,
-      nextServiceDate,
-      receipt,
-      serviceHistory: [...(existing?.serviceHistory || []), service],
-    };
-    const nextUnits = existing
-      ? units.map((item) => item.plate.toUpperCase() === plate ? unit : item)
-      : [...units, unit];
-    if (window.DriveLinkAPI) {
-      await DriveLinkAPI.post('/api/admin/vehicle-services', {
-        plate: unit.plate,
-        carType: unit.carType,
-        engine: unit.engine,
-        workshop: unit.workshop,
-        lastServiceDate: unit.lastServiceDate,
-        lastServiceKm: unit.lastServiceKm,
-        nextServiceKm: unit.nextServiceKm,
-        nextServiceDate: unit.nextServiceDate,
-        receipt: unit.receipt,
-        items: service.items,
-      });
-      serverVehicleUnits = await DriveLinkAPI.get('/api/admin/vehicle-services');
-    } else {
-      DriveLinkStorage.write('drivelink-vehicle-units', nextUnits);
-      serverVehicleUnits = nextUnits;
-    }
-    message.classList.remove('is-error');
-    message.textContent = `Data servis unit ${plate} berhasil disimpan.`;
-    form.reset();
-    document.getElementById('addServiceExpense').disabled = false;
-    document.getElementById('serviceExpenseItems').replaceChildren(createServiceExpenseRow());
-    renderVehicleService();
-  } catch (error) {
-    console.error('Tidak dapat menyimpan data servis unit.', error);
-    message.textContent = `Data servis atau nota gagal disimpan: ${error.message}`;
-    message.classList.add('is-error');
-  }
+// Foto armada dikompresi ke 680 KB per foto (batas server 700 KB, total 4 MB).
+function compressFleetPhoto(file) {
+  return DriveLinkImages.compress(file, {
+    maxBytes: 680 * 1024,
+    maxEdge: 2000,
+    label: 'Foto armada',
+  });
 }
 
 function openBookingRejectionDialog(bookingId) {

@@ -541,79 +541,16 @@ function escapeHtml(value) {
   })[character]);
 }
 
-function readFile(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => resolve(String(reader.result)));
-    reader.addEventListener('error', () => reject(new Error(`Foto ${file.name} gagal dibaca.`)));
-    reader.readAsDataURL(file);
-  });
-}
-
-const conditionPhotoCompressionCache = new WeakMap();
 const MAX_CONDITION_PHOTO_INPUT_BYTES = 20 * 1024 * 1024;
 const MAX_CONDITION_PHOTO_BYTES = 250 * 1024;
 
+// Foto kondisi dan foto depan dikompresi ke 240 KB (batas server 250 KB).
 function compressConditionPhoto(file) {
-  const cached = conditionPhotoCompressionCache.get(file);
-  if (cached) return cached;
-
-  const compression = (async () => {
-    if (!['image/jpeg', 'image/png'].includes(file.type) || file.size > MAX_CONDITION_PHOTO_INPUT_BYTES) {
-      throw new Error(`Foto ${file.name} harus JPG/PNG dan maksimal 20 MB sebelum dikompresi.`);
-    }
-
-    let bitmap;
-    try {
-      bitmap = await createImageBitmap(file);
-    } catch (error) {
-      throw new Error(`Foto ${file.name} tidak dapat dibuka: ${error.message}`);
-    }
-
-    try {
-      const canvas = document.createElement('canvas');
-      const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
-      let width = Math.max(1, Math.round(bitmap.width * scale));
-      let height = Math.max(1, Math.round(bitmap.height * scale));
-      const context = canvas.getContext('2d');
-      if (!context) throw new Error('Browser tidak dapat menyiapkan kompresi foto kondisi.');
-
-      for (let attempt = 0; attempt < 30; attempt += 1) {
-        canvas.width = width;
-        canvas.height = height;
-        context.fillStyle = '#fff';
-        context.fillRect(0, 0, width, height);
-        context.drawImage(bitmap, 0, 0, width, height);
-        const quality = [0.88, 0.8, 0.72, 0.64, 0.56, 0.48][attempt % 6];
-        const blob = await new Promise((resolve, reject) => {
-          canvas.toBlob((result) => {
-            if (result) resolve(result);
-            else reject(new Error(`Foto ${file.name} gagal dikompresi.`));
-          }, 'image/jpeg', quality);
-        });
-        if (blob.size <= MAX_CONDITION_PHOTO_BYTES) {
-          const dataUrl = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.addEventListener('load', () => resolve(String(reader.result)));
-            reader.addEventListener('error', () => reject(new Error(`Foto ${file.name} gagal disiapkan.`)));
-            reader.readAsDataURL(blob);
-          });
-          return { dataUrl, sizeBytes: blob.size };
-        }
-        if (attempt % 6 === 5) {
-          width = Math.max(1, Math.round(width * 0.78));
-          height = Math.max(1, Math.round(height * 0.78));
-        }
-      }
-      throw new Error(`Foto ${file.name} tetap melebihi 250 KB setelah dikompresi.`);
-    } finally {
-      bitmap.close();
-    }
-  })();
-
-  conditionPhotoCompressionCache.set(file, compression);
-  compression.catch(() => conditionPhotoCompressionCache.delete(file));
-  return compression;
+  return DriveLinkImages.compress(file, {
+    maxBytes: 240 * 1024,
+    maxEdge: 1600,
+    label: 'Foto unit',
+  });
 }
 
 function setPhotoStatus(input, text) {

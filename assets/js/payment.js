@@ -292,19 +292,24 @@ form.addEventListener('submit', async (event) => {
   }
   const file = proofInput.files[0];
   const requiresProof = Boolean(booking.depositPaymentRequired) || method !== 'Cash ke petugas';
-  if (requiresProof && (!file || file.size > 400 * 1024 || !['image/jpeg', 'image/png'].includes(file.type))) {
-    message.textContent = 'Pilih bukti pembayaran atau kuitansi tunai berupa foto JPG/PNG maksimal 400 KB.';
+  if (requiresProof && (!file || !['image/jpeg', 'image/png', 'image/webp'].includes(file.type))) {
+    message.textContent = 'Pilih bukti pembayaran atau kuitansi tunai berupa foto JPG/PNG. Foto dikompresi otomatis.';
     message.classList.add('is-error');
     return;
   }
 
   try {
-    const proofImage = file ? await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.addEventListener('load', () => resolve(String(reader.result)));
-      reader.addEventListener('error', () => reject(new Error('Bukti pembayaran gagal dibaca. Pilih ulang file dan coba kembali.')));
-      reader.readAsDataURL(file);
-    }) : '';
+    submitButton.disabled = true;
+    message.classList.remove('is-error');
+    message.textContent = file ? 'Mengompresi bukti pembayaran...' : 'Menyimpan pilihan pembayaran...';
+    // Bukti pembayaran dikompresi ke 360 KB (batas server 400 KB).
+    const proofImage = file
+      ? (await DriveLinkImages.compress(file, {
+        maxBytes: 360 * 1024,
+        maxEdge: 1600,
+        label: 'Bukti pembayaran',
+      })).dataUrl
+      : '';
     currentBooking = await DriveLinkAPI.post(`/api/bookings/${encodeURIComponent(bookingId)}/payment`, {
       phone: booking.phone,
       ...(booking.depositPaymentRequired ? { stage: paymentStage } : {}),
@@ -319,6 +324,8 @@ form.addEventListener('submit', async (event) => {
       ? 'Pilihan tunai tersimpan. Bayar langsung kepada petugas saat menerima unit; persiapan unit dapat langsung dimulai.'
       : 'Bukti pembayaran tersimpan. Persiapan unit dapat langsung dimulai tanpa menunggu konfirmasi admin.';
   } catch (error) {
+    // Aktifkan lagi tombol supaya pengguna bisa mencoba ulang berkas yang sama.
+    submitButton.disabled = false;
     message.textContent = error.message;
     message.classList.add('is-error');
   }

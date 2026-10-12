@@ -262,27 +262,28 @@ function applyLogoToCurrentPage(image) {
   });
 }
 
-logoFile.addEventListener('change', () => {
+logoFile.addEventListener('change', async () => {
   const file = logoFile.files[0];
   if (!file) return;
-  if (!['image/jpeg', 'image/png'].includes(file.type) || file.size > 1 * 1024 * 1024) {
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
     logoFile.value = '';
-    setFormMessage(logoMessage, 'Pilih logo JPG/PNG dengan ukuran maksimal 1 MB.', true);
+    setFormMessage(logoMessage, 'Pilih logo JPG, PNG, atau WebP.', true);
     return;
   }
-  const reader = new FileReader();
-  reader.addEventListener('load', () => {
-    if (typeof reader.result !== 'string') {
-      setFormMessage(logoMessage, 'Logo gagal dibaca dari perangkat.', true);
-      return;
-    }
-    showLogoPreview(reader.result, file.name);
-    setFormMessage(logoMessage, '');
-  });
-  reader.addEventListener('error', () => {
-    setFormMessage(logoMessage, 'Logo gagal dibaca dari perangkat.', true);
-  }, { once: true });
-  reader.readAsDataURL(file);
+  setFormMessage(logoMessage, 'Mengompresi logo...');
+  try {
+    // Logo dikompresi ke 900 KB (batas server 1 MB).
+    const { dataUrl, sizeBytes } = await DriveLinkImages.compress(file, {
+      maxBytes: 900 * 1024,
+      maxEdge: 1200,
+      label: 'Logo',
+    });
+    showLogoPreview(dataUrl, file.name);
+    setFormMessage(logoMessage, `Logo siap · ${Math.ceil(sizeBytes / 1024)} KB setelah kompresi`);
+  } catch (error) {
+    logoFile.value = '';
+    setFormMessage(logoMessage, error.message, true);
+  }
 });
 
 logoForm.addEventListener('submit', async (event) => {
@@ -334,27 +335,29 @@ function updateHomeBannerToggleStatus() {
 
 homeBannerEnabled.addEventListener('change', updateHomeBannerToggleStatus);
 
-homeBannerFile.addEventListener('change', () => {
+homeBannerFile.addEventListener('change', async () => {
   const file = homeBannerFile.files[0];
   if (!file) return;
-  if (!['image/jpeg', 'image/png'].includes(file.type) || file.size > 3 * 1024 * 1024) {
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
     homeBannerFile.value = '';
-    setFormMessage(homeBannerMessage, 'Pilih poster JPG/PNG dengan ukuran maksimal 3 MB.', true);
+    setFormMessage(homeBannerMessage, 'Pilih poster JPG, PNG, atau WebP.', true);
     return;
   }
-  const reader = new FileReader();
-  reader.addEventListener('load', () => {
-    if (typeof reader.result !== 'string') {
-      setFormMessage(homeBannerMessage, 'Poster gagal dibaca dari perangkat.', true);
-      return;
-    }
-    showHomeBannerPreview(reader.result, file.name);
-    setFormMessage(homeBannerMessage, '');
-  });
-  reader.addEventListener('error', () => {
-    setFormMessage(homeBannerMessage, 'Poster gagal dibaca dari perangkat.', true);
-  }, { once: true });
-  reader.readAsDataURL(file);
+  setFormMessage(homeBannerMessage, 'Mengompresi poster...');
+  try {
+    // Poster dikompresi ke 2,6 MB (batas server 3 MB). Sisi terpanjang dibatasi
+    // 2000 px supaya poster A4 tetap tajam saat dicetak.
+    const { dataUrl, sizeBytes } = await DriveLinkImages.compress(file, {
+      maxBytes: 2600 * 1024,
+      maxEdge: 2000,
+      label: 'Poster',
+    });
+    showHomeBannerPreview(dataUrl, file.name);
+    setFormMessage(homeBannerMessage, `Poster siap · ${Math.ceil(sizeBytes / 1024)} KB setelah kompresi`);
+  } catch (error) {
+    homeBannerFile.value = '';
+    setFormMessage(homeBannerMessage, error.message, true);
+  }
 });
 
 homeBannerForm.addEventListener('submit', async (event) => {
