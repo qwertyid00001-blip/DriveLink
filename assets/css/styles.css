@@ -953,6 +953,80 @@ p {
   background: color-mix(in srgb, var(--primary) 6%, #fff);
 }
 
+/* Status kedatangan dan barang jaminan pada halaman Reservasi. */
+.arrival-status {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.status-active {
+  background: color-mix(in srgb, var(--primary) 12%, #fff);
+  color: var(--primary-dark);
+}
+
+.status-complete {
+  background: #e7f7ed;
+  color: #14713f;
+}
+
+.status-cancelled {
+  background: #fdeaea;
+  color: #b42318;
+}
+
+.status-pending {
+  background: #f1f4f9;
+  color: var(--muted);
+}
+
+.collateral-chip {
+  display: inline-block;
+  margin: 2px 4px 2px 0;
+  padding: 3px 9px;
+  border: 1px solid #dce4f1;
+  border-radius: 999px;
+  background: #f9fbff;
+  font-size: 0.72rem;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.rental-policy-group {
+  margin: 18px 0;
+  padding: 14px 16px;
+  border: 1px solid #dce4f1;
+  border-radius: 14px;
+}
+
+.rental-policy-group legend {
+  padding: 0 6px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.rental-policy-list {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.rental-policy-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+}
+
+.rental-policy-check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+}
+
 .collateral-choice-field .field-hint {
   margin: 0 0 12px;
   color: var(--muted);

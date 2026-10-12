@@ -1,7 +1,7 @@
 (() => {
   const featureByPage = {
     'admin.html': 'overview',
-    'admin-bookings.html': 'bookings',
+    'admin-reservations.html': 'reservations',
     'admin-fleet.html': 'fleet',
     'admin-fleet-deletions.html': 'fleet-deletions',
     'admin-vehicle-service.html': 'vehicle-service',
@@ -20,7 +20,8 @@
   };
   const pageByFeature = {
     overview: 'admin.html',
-    bookings: 'admin-bookings.html',
+    reservations: 'admin-reservations.html',
+    bookings: 'admin-reservations.html',
     fleet: 'admin-fleet.html',
     'vehicle-service': 'admin-vehicle-service.html',
     location: 'admin-location.html',
@@ -37,7 +38,7 @@
     'fleet-deletions': 'admin-fleet-deletions.html',
   };
   const notificationFeatureByPage = {
-    'admin-bookings.html': 'bookings',
+    'admin-reservations.html': 'reservations',
     'admin-payments.html': 'payments',
     'admin-handover.html': 'handover',
     'admin-return.html': 'returns',
@@ -52,7 +53,7 @@
   };
   const sidebarItemByPage = {
     'admin.html': { icon: '⌂', label: 'Beranda' },
-    'admin-bookings.html': { icon: '≡', label: 'Pesanan' },
+    'admin-reservations.html': { icon: '◷', label: 'Reservasi' },
     'admin-fleet.html': { icon: '▣', label: 'Armada' },
     'admin-fleet-deletions.html': { icon: '×', label: 'Permintaan hapus' },
     'admin-vehicle-service.html': { icon: '⚒', label: 'Servis unit' },

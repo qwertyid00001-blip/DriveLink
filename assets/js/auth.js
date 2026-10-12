@@ -11,7 +11,7 @@ document.getElementById('loginForm').addEventListener('submit', (event) => {
       message.classList.remove('is-error');
       const destinations = {
         overview: 'admin.html',
-        bookings: 'admin-bookings.html',
+        bookings: 'admin-reservations.html',
         fleet: 'admin-fleet.html',
         'vehicle-service': 'admin-vehicle-service.html',
         location: 'admin-location.html',

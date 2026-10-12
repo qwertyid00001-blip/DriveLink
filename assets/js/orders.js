@@ -22,6 +22,29 @@ function formatCurrency(value) {
   }).format(Number(value) || 0);
 }
 
+// Hitung mundur kedatangan untuk pelanggan: berapa lagi menuju jadwal datang,
+// atau berapa lama sudah terlambat bila lewat.
+function arrivalStatusLabel(booking) {
+  if (!booking.arrivalAt) return 'Jadwal kedatangan belum diatur';
+  const arrival = new Date(booking.arrivalAt).getTime();
+  if (Number.isNaN(arrival)) return 'Jadwal kedatangan tidak terbaca';
+  if (booking.rentalStartedAt || booking.handoverStatus === 'Disetujui') return 'Anda sudah menerima unit';
+  const difference = arrival - Date.now();
+  if (difference > 0) {
+    const totalMinutes = Math.ceil(difference / 60000);
+    const days = Math.floor(totalMinutes / 1440);
+    const hours = Math.floor((totalMinutes % 1440) / 60);
+    const minutes = totalMinutes % 60;
+    const parts = [];
+    if (days) parts.push(`${days} hari`);
+    if (hours) parts.push(`${hours} jam`);
+    parts.push(`${minutes} menit`);
+    return `Datang dalam ${parts.join(' ')}`;
+  }
+  const lateMinutes = Math.floor(-difference / 60000);
+  return lateMinutes < 60 ? `Sudah datang (${lateMinutes} menit lalu)` : `Terlambat ${Math.floor(lateMinutes / 60)} jam ${lateMinutes % 60} menit`;
+}
+
 function formatDate(value) {
   if (!value) return '-';
   const date = new Date(value);
@@ -332,6 +355,8 @@ function showStageDetails(key) {
         ['Disetujui pada', formatDate(currentBooking.bookingApprovedAt)],
         ['Jenis pemesanan', currentBooking.bookingType],
         ['Jadwal kedatangan', formatDate(currentBooking.arrivalAt)],
+    ['Status kedatangan', arrivalStatusLabel(currentBooking)],
+    ['Barang jaminan dititipkan', currentBooking.collateralItems?.length ? currentBooking.collateralItems.join(', ') : 'Tidak ada jaminan'],
         ['Kendaraan', currentBooking.carType],
         ['Durasi', currentBooking.duration],
         ['Layanan', `${currentBooking.driverOption || '-'}${currentBooking.fuelPackage ? ` · ${currentBooking.fuelPackage}` : ''}`],

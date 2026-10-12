@@ -1,6 +1,5 @@
 const policyForm = document.getElementById('rentalPolicyForm');
 const depositOptionsContainer = document.getElementById('rentalDepositOptions');
-const collateralItemsContainer = document.getElementById('rentalCollateralItems');
 const policyMessage = document.getElementById('rentalPolicyMessage');
 const defaultRentalPolicy = {
   depositOptions: [
@@ -32,31 +31,13 @@ function createDepositOption(option = {}) {
   depositOptionsContainer.append(row);
 }
 
-function createCollateralItem(value = '') {
-  const row = document.createElement('div');
-  row.className = 'rental-policy-row rental-collateral-item';
-  row.innerHTML = `
-    <label>Barang jaminan<input name="collateralItem" type="text" maxlength="60" /></label>
-    <button class="rental-policy-remove" type="button" aria-label="Hapus barang jaminan">×</button>
-  `;
-  row.querySelector('[name="collateralItem"]').value = value;
-  row.querySelector('.rental-policy-remove').addEventListener('click', () => {
-    row.remove();
-    updateAddButtons();
-  });
-  collateralItemsContainer.append(row);
-}
-
 function updateAddButtons() {
   document.getElementById('addRentalDepositOption').disabled = depositOptionsContainer.children.length >= 6;
-  document.getElementById('addRentalCollateralItem').disabled = collateralItemsContainer.children.length >= 10;
 }
 
 function renderRentalPolicy(policy) {
   depositOptionsContainer.replaceChildren();
-  collateralItemsContainer.replaceChildren();
   policy.depositOptions.forEach(createDepositOption);
-  policy.collateralItems.forEach(createCollateralItem);
   updateAddButtons();
 }
 
@@ -64,29 +45,18 @@ document.getElementById('addRentalDepositOption').addEventListener('click', () =
   createDepositOption();
   updateAddButtons();
 });
-document.getElementById('addRentalCollateralItem').addEventListener('click', () => {
-  createCollateralItem();
-  updateAddButtons();
-});
-
 policyForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   const depositOptions = [...depositOptionsContainer.querySelectorAll('.rental-deposit-option')].map((row) => ({
     label: row.querySelector('[name="depositLabel"]').value.trim(),
     description: row.querySelector('[name="depositDescription"]').value.trim(),
   }));
-  const collateralItems = [...collateralItemsContainer.querySelectorAll('[name="collateralItem"]')]
-    .map((input) => input.value.trim())
-    .filter(Boolean);
+  // Daftar jaminan kini dikelola di halaman Reservasi; kirim null agar server
+  // mempertahankan daftar yang sudah tersimpan.
+  const collateralItems = null;
   const uniqueDepositLabels = new Set(depositOptions.map(({ label }) => label.toLocaleLowerCase('id-ID')));
-  const uniqueCollateralItems = new Set(collateralItems.map((item) => item.toLocaleLowerCase('id-ID')));
   if (!depositOptions.length || uniqueDepositLabels.size !== depositOptions.length) {
     policyMessage.textContent = 'Isi minimal satu pilihan deposit dan pastikan setiap namanya berbeda.';
-    policyMessage.classList.add('is-error');
-    return;
-  }
-  if (collateralItems.length > 10 || uniqueCollateralItems.size !== collateralItems.length) {
-    policyMessage.textContent = 'Barang jaminan harus unik dan maksimal 10 item.';
     policyMessage.classList.add('is-error');
     return;
   }

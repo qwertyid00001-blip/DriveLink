@@ -28,6 +28,13 @@ const DEFAULT_RENTAL_POLICY = {
   ],
   collateralItems: ['Motor', 'KTP'],
 };
+const DEFAULT_RESERVATION_POLICY = {
+  bookingTypes: [
+    { label: 'Reservasi', description: 'Tentukan tanggal dan waktu kedatangan yang akan datang.', requiresFutureArrival: true },
+    { label: 'Sewa langsung hari ini', description: 'Datang ke lokasi rental hari ini untuk mengambil kendaraan.', requiresFutureArrival: false },
+  ],
+  arrivalGraceMinutes: 30,
+};
 const DEFAULT_HOME_BANNER = { enabled: false, image: '', updatedAt: '' };
 const HOME_HERO_EFFECTS = new Set([
   'static', 'fade', 'slide-up', 'slide-left', 'slide-right',
@@ -64,6 +71,7 @@ const DEFAULT_HOME_OFFER = {
 };
 const EMPLOYEE_FEATURES = [
   { id: 'overview', label: 'Ringkasan' },
+  { id: 'reservations', label: 'Reservasi' },
   { id: 'bookings', label: 'Booking' },
   { id: 'fleet', label: 'Armada' },
   { id: 'vehicle-service', label: 'Kontrol unit & servis' },
@@ -80,7 +88,8 @@ const EMPLOYEE_FEATURES = [
 ];
 const ADMIN_PAGE_FEATURES = {
   'admin.html': 'overview',
-  'admin-bookings.html': 'bookings',
+  'admin-reservations.html': ['reservations', 'bookings'],
+  'admin-bookings.html': ['reservations', 'bookings'],
   'admin-fleet.html': 'fleet',
   'admin-fleet-deletions.html': 'fleet-deletions',
   'admin-vehicle-service.html': 'vehicle-service',
@@ -320,6 +329,21 @@ function createDatabase(databasePath, adminUsername, adminPassword) {
     }
     db.prepare('INSERT INTO settings (key, value) VALUES (?, ?)').run(rentalArchiveMigrationKey, 'complete');
   }
+  // Izin reservasi mengambil alih peran izin booking pada halaman pengajuan.
+  // Karyawan yang sebelumnya boleh membuka halaman booking ikut diberi izin
+  // reservasi agar akses mereka tidak hilang.
+  const reservationPermissionMigrationKey = 'employee-reservation-permissions-v1';
+  if (!db.prepare('SELECT 1 FROM settings WHERE key = ?').get(reservationPermissionMigrationKey)) {
+    const bookingEmployees = db.prepare("SELECT username, permissions_json FROM admins WHERE role = 'employee'").all();
+    for (const employee of bookingEmployees) {
+      const permissions = JSON.parse(employee.permissions_json || '[]');
+      if (permissions.includes('bookings') && !permissions.includes('reservations')) {
+        permissions.push('reservations');
+        updateEmployeePermissions.run(JSON.stringify([...new Set(permissions)]), employee.username);
+      }
+    }
+    db.prepare('INSERT INTO settings (key, value) VALUES (?, ?)').run(reservationPermissionMigrationKey, 'complete');
+  }
   db.exec('CREATE UNIQUE INDEX IF NOT EXISTS admins_email_unique ON admins(email) WHERE email <> \'\'');
   const fleetColumns = db.prepare('PRAGMA table_info(fleet)').all();
   if (!fleetColumns.some((column) => column.name === 'photos_json')) {
@@ -545,6 +569,24 @@ function createApp(options = {}) {
 
   function readRentalPolicy() {
     return readSetting('rental-policy', DEFAULT_RENTAL_POLICY);
+  }
+
+  function readReservationPolicy() {
+    return readSetting('reservation-policy', DEFAULT_RESERVATION_POLICY);
+  }
+
+  // Daftar jenis pemesanan aktif, diluruskan agar booking lama dengan label yang
+  // sudah dihapus admin tetap punya entri agar tidak dianggap tidak valid.
+  function activeBookingTypes() {
+    const policy = readReservationPolicy();
+    const types = Array.isArray(policy.bookingTypes) && policy.bookingTypes.length
+      ? policy.bookingTypes
+      : DEFAULT_RESERVATION_POLICY.bookingTypes;
+    return types.map((type) => ({
+      label: String(type.label || '').trim(),
+      description: String(type.description || '').trim(),
+      requiresFutureArrival: Boolean(type.requiresFutureArrival),
+    })).filter((type) => type.label);
   }
 
   function fleetRecord(row) {
@@ -1170,6 +1212,11 @@ function createApp(options = {}) {
     res.json(readRentalPolicy());
   });
 
+  // Dibaca form booking untuk menampilkan pilihan jenis pemesanan dari server.
+  app.get('/api/site-settings/reservation-policy', (req, res) => {
+    res.json({ bookingTypes: activeBookingTypes() });
+  });
+
   app.get('/api/reviews', (req, res) => {
     const reviews = readSetting('customer-reviews', []).map((review) => {
       const { reviewerIpHash, ...publicReview } = review;
@@ -1646,10 +1693,18 @@ function createApp(options = {}) {
       return fail(res, 400, 'Email atau nomor telepon tidak valid.');
     }
     const days = DURATIONS.get(body.duration);
-    if (!days || !['Reservasi', 'Sewa langsung hari ini'].includes(body.bookingType)) return fail(res, 400, 'Jenis booking atau durasi tidak valid.');
+    if (!days) return fail(res, 400, 'Pilih durasi rental yang tersedia.');
+    // Jenis pemesanan diatur admin pada halaman Reservasi.
+    const requestedBookingType = body.bookingType.trim();
+    const selectedBookingType = activeBookingTypes()
+      .find((type) => type.label.toLocaleLowerCase('id-ID') === requestedBookingType.toLocaleLowerCase('id-ID'));
+    if (!selectedBookingType) return fail(res, 400, 'Pilih salah satu jenis pemesanan yang tersedia.');
     const arrivalAt = new Date(body.arrivalAt);
-    if (Number.isNaN(arrivalAt.getTime()) || body.bookingType === 'Reservasi' && arrivalAt <= new Date()) {
-      return fail(res, 400, 'Pilih jadwal kedatangan yang valid dan masih akan datang.');
+    if (Number.isNaN(arrivalAt.getTime())) {
+      return fail(res, 400, 'Pilih jadwal kedatangan yang valid.');
+    }
+    if (selectedBookingType.requiresFutureArrival && arrivalAt <= new Date()) {
+      return fail(res, 400, `"${selectedBookingType.label}" memerlukan jadwal kedatangan yang masih akan datang.`);
     }
     // Terima id maupun nama kendaraan. Sebelumnya hanya nama yang cocok, sehingga klien
     // yang mengirim id dari /api/fleet mendapat "Kendaraan tidak tersedia".
@@ -1756,6 +1811,7 @@ function createApp(options = {}) {
     const booking = {
       ...accepted,
       carType: vehicle.name,
+      bookingType: selectedBookingType.label,
       vehicleColor,
       id,
       phone: String(body.phone).trim(),
@@ -2510,11 +2566,65 @@ function createApp(options = {}) {
     res.json(readRentalPolicy());
   });
 
+  // Pengaturan halaman Reservasi: jenis pemesanan, toleransi keterlambatan, dan
+  // daftar barang jaminan yang boleh dipilih pelanggan.
+  app.get('/api/admin/reservation-policy', requireFeature('reservations'), (req, res) => {
+    res.json({ ...readReservationPolicy(), collateralItems: readRentalPolicy().collateralItems || [] });
+  });
+
+  app.put('/api/admin/reservation-policy', requireFeature('reservations'), (req, res) => {
+    const bookingTypes = req.body?.bookingTypes;
+    if (!Array.isArray(bookingTypes) || bookingTypes.length < 1 || bookingTypes.length > 8) {
+      return fail(res, 400, 'Sediakan minimal satu dan maksimal delapan jenis pemesanan.');
+    }
+    const normalizedTypes = [];
+    const typeLabels = new Set();
+    for (const type of bookingTypes) {
+      const label = typeof type?.label === 'string' ? type.label.trim() : '';
+      const description = typeof type?.description === 'string' ? type.description.trim() : '';
+      const normalizedLabel = label.toLocaleLowerCase('id-ID');
+      if (!label || label.length > 100 || !description || description.length > 180
+        || typeLabels.has(normalizedLabel)) {
+        return fail(res, 400, 'Nama jenis pemesanan harus unik dan keterangannya wajib diisi.');
+      }
+      typeLabels.add(normalizedLabel);
+      normalizedTypes.push({ label, description, requiresFutureArrival: Boolean(type.requiresFutureArrival) });
+    }
+    const graceMinutes = Number(req.body?.arrivalGraceMinutes);
+    if (!Number.isInteger(graceMinutes) || graceMinutes < 0 || graceMinutes > 720) {
+      return fail(res, 400, 'Toleransi keterlambatan harus berupa menit antara 0 dan 720.');
+    }
+    const rentalPolicy = readRentalPolicy();
+    // collateralItems opsional: bila tidak dikirim, daftar yang ada dipertahankan.
+    const requestedCollateral = Array.isArray(req.body?.collateralItems) ? req.body.collateralItems : null;
+    const collateralItems = requestedCollateral === null ? [...(rentalPolicy.collateralItems || [])] : [];
+    if (requestedCollateral !== null) {
+      if (requestedCollateral.length > 10) return fail(res, 400, 'Barang jaminan maksimal 10 item.');
+      const collateralLabels = new Set();
+      for (const item of requestedCollateral) {
+        const label = typeof item === 'string' ? item.trim() : '';
+        const normalizedLabel = label.toLocaleLowerCase('id-ID');
+        if (!label || label.length > 60 || collateralLabels.has(normalizedLabel)) {
+          return fail(res, 400, 'Nama barang jaminan harus unik dan maksimal 60 karakter.');
+        }
+        collateralLabels.add(normalizedLabel);
+        collateralItems.push(label);
+      }
+      writeSetting('rental-policy', { ...rentalPolicy, collateralItems });
+    }
+    const policy = { bookingTypes: normalizedTypes, arrivalGraceMinutes: graceMinutes };
+    writeSetting('reservation-policy', policy);
+    return res.json({ ...policy, collateralItems });
+  });
+
   app.put('/api/admin/rental-policy', requireFeature('rental-settings'), (req, res) => {
     const depositOptions = req.body?.depositOptions;
-    const collateralItems = req.body?.collateralItems;
+    // collateralItems opsional: halaman Pengaturan sewa hanya mengelola deposit,
+    // sedangkan daftar jaminan dikelola dari halaman Reservasi. Bila tidak dikirim,
+    // daftar yang sudah ada dipertahankan.
+    const requestedCollateral = Array.isArray(req.body?.collateralItems) ? req.body.collateralItems : null;
     if (!Array.isArray(depositOptions) || depositOptions.length < 1 || depositOptions.length > 6
-      || !Array.isArray(collateralItems) || collateralItems.length > 10) {
+      || requestedCollateral !== null && requestedCollateral.length > 10) {
       return fail(res, 400, 'Sediakan 1–6 pilihan deposit dan maksimal 10 barang jaminan.');
     }
     const normalizedDepositOptions = [];
@@ -2532,16 +2642,22 @@ function createApp(options = {}) {
     }
     const normalizedCollateralItems = [];
     const collateralLabels = new Set();
-    for (const item of collateralItems) {
-      const label = typeof item === 'string' ? item.trim() : '';
-      const normalizedLabel = label.toLocaleLowerCase('id-ID');
-      if (!label || label.length > 60 || collateralLabels.has(normalizedLabel)) {
-        return fail(res, 400, 'Nama barang jaminan harus unik dan maksimal 60 karakter.');
+    if (requestedCollateral !== null) {
+      for (const item of requestedCollateral) {
+        const label = typeof item === 'string' ? item.trim() : '';
+        const normalizedLabel = label.toLocaleLowerCase('id-ID');
+        if (!label || label.length > 60 || collateralLabels.has(normalizedLabel)) {
+          return fail(res, 400, 'Nama barang jaminan harus unik dan maksimal 60 karakter.');
+        }
+        collateralLabels.add(normalizedLabel);
+        normalizedCollateralItems.push(label);
       }
-      collateralLabels.add(normalizedLabel);
-      normalizedCollateralItems.push(label);
     }
-    const policy = { depositOptions: normalizedDepositOptions, collateralItems: normalizedCollateralItems };
+    // Bila daftar jaminan tidak dikirim dari halaman ini, pertahankan yang tersimpan.
+    const collateralItems = requestedCollateral === null
+      ? [...(readRentalPolicy().collateralItems || [])]
+      : normalizedCollateralItems;
+    const policy = { depositOptions: normalizedDepositOptions, collateralItems };
     writeSetting('rental-policy', policy);
     return res.json(policy);
   });
@@ -3200,12 +3316,20 @@ function createApp(options = {}) {
         WHERE sessions.token_hash = ? AND sessions.expires_at > ? AND admins.active = 1
       `).get(hashSessionToken(token), new Date().toISOString()) : null;
       if (!session) return res.redirect('/auth.html');
-      if (['accounts', 'settings', 'fleet-deletions'].includes(feature) && session.role !== 'admin') {
+      // Satu halaman boleh dilindungi lebih dari satu izin; akses diberikan bila
+      // Akses diberikan bila salah satu izin dimiliki. Ini mencegah karyawan
+      // kehilangan akses saat izin lamanya dipindahkan ke izin baru.
+      // saat izin lamanya dipindahkan ke izin baru.
+      const features = Array.isArray(feature) ? feature : [feature];
+      if (features.some((item) => ['accounts', 'settings', 'fleet-deletions'].includes(item))
+        && session.role !== 'admin') {
         return fail(res, 403, 'Halaman ini hanya dapat diakses administrator.');
       }
-      if (session.role !== 'admin' && feature !== 'accounts'
-        && !JSON.parse(session.permissions_json || '[]').includes(feature)) {
-        return fail(res, 403, 'Akun Anda tidak memiliki izin untuk halaman ini.');
+      if (session.role !== 'admin' && !features.includes('accounts')) {
+        const granted = JSON.parse(session.permissions_json || '[]');
+        if (!features.some((item) => granted.includes(item))) {
+          return fail(res, 403, 'Akun Anda tidak memiliki izin untuk halaman ini.');
+        }
       }
     }
     if (isPage) {

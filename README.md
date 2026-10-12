@@ -193,6 +193,21 @@ produksi, dan URL baru dibuat setiap kali perintah dijalankan.
   digunakan untuk mencocokkan kendaraan dengan paket perjalanan. Admin mengelola
   paket, bundling makan/air mineral, dan promo bertanggal pada halaman Paket
   perjalanan & promo.
+- **Reservasi.** Halaman `admin-reservations.html` melayani pengajuan: admin
+  menerima atau menolak reservasi, memantau jadwal kedatangan, dan melihat barang
+  jaminan yang dicentang pelanggan. Halaman ini juga mengelola ketentuan reservasi:
+  jenis pemesanan (maksimal 8, tiap jenis menentukan apakah jadwal kedatangan wajib
+  di masa depan), toleransi keterlambatan dalam menit, dan daftar barang jaminan
+  yang boleh dipilih pelanggan. Pelanggan membaca daftar jenis pemesanan dari
+  `GET /api/site-settings/reservation-policy`, sehingga pilihan pada formulir selalu
+  sama dengan yang diatur admin. Tabel reservasi menampilkan hitung mundur
+  kedatangan (`Datang dalam 2 jam 15 menit`, `Sudah tiba`, atau `Terlambat 45 menit`)
+  sesuai toleransi yang diatur; pelanggan melihat keterangan yang sama di Pesanan
+  Saya. Daftar barang jaminan dipindahkan dari halaman Pengaturan sewa ke halaman
+  Reservasi, sehingga memilih deposit di Pengaturan sewa tidak lagi mengubah
+  daftar jaminan. Izin **`Reservasi`** mengatur akses halaman ini; karyawan yang
+  sebelumnya hanya memiliki izin Booking otomatis mendapat izin Reservasi saat
+  server pertama kali dijalankan setelah perubahan ini.
 - Booking pelanggan dapat memilih paket dan promo yang cocok. Server memeriksa
   kategori unit, masa promo, dan menghitung ulang potongan persen/nominal atau
   kredit BBM gratis sebelum menyimpan total booking.

@@ -16,7 +16,7 @@
         <span class="sidebar-label">MENU ADMIN</span>
         <nav class="admin-nav" aria-label="Navigasi dashboard">
           <a class="admin-nav-link" href="admin.html">◫ <span>Ringkasan</span></a>
-          <a class="admin-nav-link" href="admin-bookings.html">▤ <span>Booking</span></a>
+          <a class="admin-nav-link" href="admin-reservations.html">◷ <span>Reservasi</span></a>
           <a class="admin-nav-link" href="admin-fleet.html">▣ <span>Armada</span></a>
           <a class="admin-nav-link" href="admin-vehicle-service.html">⚙ <span>Kontrol unit & servis</span></a>
           <a class="admin-nav-link" href="admin-location.html">⌖ <span>Lokasi rental</span></a>
@@ -69,25 +69,20 @@
           </form>
         </section>
         <section class="admin-panel rental-deposit-settings">
-          <div class="panel-heading rental-settings-panel-heading"><div><span class="rental-settings-kicker">Ketentuan booking</span><h2>Deposit dan barang jaminan</h2><p>Atur pilihan deposit yang tampil di formulir booking dan barang yang perlu dititipkan pelanggan.</p></div></div>
+          <div class="panel-heading rental-settings-panel-heading"><div><span class="rental-settings-kicker">Ketentuan booking</span><h2>Pilihan deposit</h2><p>Atur pilihan deposit yang tampil di formulir booking pelanggan.</p></div></div>
           <form id="rentalPolicyForm" class="admin-settings-form">
             <fieldset class="choice-field">
               <legend>Pilihan deposit pelanggan</legend>
               <div id="rentalDepositOptions" class="rental-deposit-options"></div>
               <button class="btn btn-secondary" id="addRentalDepositOption" type="button">+ Tambah pilihan deposit</button>
-              <small class="file-name">Pelanggan akan memilih salah satu opsi ini. Isi nama dan keterangan, misalnya “Deposit Rp1.000.000” atau “Titip motor”.</small>
-            </fieldset>
-            <fieldset class="choice-field">
-              <legend>Barang jaminan yang dititipkan</legend>
-              <div id="rentalCollateralItems" class="rental-collateral-items"></div>
-              <button class="btn btn-secondary" id="addRentalCollateralItem" type="button">+ Tambah barang jaminan</button>
-              <small class="file-name">Daftar ini ditampilkan otomatis pada formulir booking pelanggan.</small>
+              <small class="file-name">Pelanggan akan memilih salah satu opsi ini. Isi nama dan keterangan, misalnya "Deposit Rp1.000.000" atau "Titip motor".</small>
             </fieldset>
             <div class="rental-settings-form-footer">
               <p class="workflow-message" id="rentalPolicyMessage" aria-live="polite"></p>
-              <button class="btn btn-primary" type="submit"><span aria-hidden="true">✓</span> Simpan deposit & jaminan</button>
+              <button class="btn btn-primary" type="submit"><span aria-hidden="true">✓</span> Simpan pilihan deposit</button>
             </div>
           </form>
+          <p class="workflow-demo-note">Daftar barang jaminan yang boleh dicentang pelanggan diatur pada halaman <a href="admin-reservations.html">Reservasi</a>.</p>
         </section>
         <div class="rental-settings-footnote"><span aria-hidden="true">🔒</span><p><strong>Tersimpan dengan aman</strong><br />Pengaturan tersimpan di server. Pengingat tampil saat dashboard admin terbuka; tautan WhatsApp membuka pesan untuk dikirim admin dan tidak mengirimnya otomatis.</p></div>
       </main>

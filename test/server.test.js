@@ -1200,7 +1200,7 @@ test('booking flow skips payment and handover admin confirmations and exposes re
   assert.equal((await fetch(`${baseUrl}/api/admin/payment-settings`, { headers: { cookie: employeeCookie } })).status, 403);
   assert.equal((await fetch(`${baseUrl}/api/admin/fleet`, { headers: { cookie: employeeCookie } })).status, 403);
   assert.equal((await fetch(`${baseUrl}/admin-fleet.html`, { headers: { cookie: employeeCookie } })).status, 403);
-  assert.equal((await fetch(`${baseUrl}/admin-bookings.html`, { headers: { cookie: employeeCookie } })).status, 200);
+  assert.equal((await fetch(`${baseUrl}/admin-reservations.html`, { headers: { cookie: employeeCookie } })).status, 200);
   assert.equal((await fetch(`${baseUrl}/api/admin/accounts`, { headers: { cookie: employeeCookie } })).status, 403);
   assert.equal((await fetch(`${baseUrl}/admin-settings.html`, { headers: { cookie: employeeCookie } })).status, 403);
   assert.equal((await fetch(`${baseUrl}/api/admin/travel-offers`, { headers: { cookie: employeeCookie } })).status, 403);

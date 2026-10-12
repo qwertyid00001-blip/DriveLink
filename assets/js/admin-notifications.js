@@ -124,7 +124,7 @@
         cycleHours,
         title: isOverdue ? `Masa sewa terlewat: ${booking.name}` : `Konfirmasi rental: ${booking.name}`,
         detail: `${booking.id} · ${booking.carType} · ${isOverdue ? `melewati batas ${formatDateTime(currentEndsAt)}` : `checkpoint ${formatDateTime(checkpointAt)}`}`,
-        href: isOverdue ? `admin-return.html?booking=${encodeURIComponent(booking.id)}` : 'admin-bookings.html',
+        href: isOverdue ? `admin-return.html?booking=${encodeURIComponent(booking.id)}` : 'admin-reservations.html',
         whatsapp: isOverdue ? '' : whatsapp,
         urgent: isOverdue || targetAt - now <= 15 * 60 * 1000,
       });

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kelola Booking | DriveLink Admin</title>
+    <title>Reservasi | DriveLink Admin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -16,7 +16,7 @@
         <span class="sidebar-label">MENU ADMIN</span>
         <nav class="admin-nav" aria-label="Navigasi dashboard">
           <a class="admin-nav-link" href="admin.html">◫ <span>Ringkasan</span></a>
-          <a class="admin-nav-link is-active" href="admin-bookings.html">▤ <span>Booking</span></a>
+          <a class="admin-nav-link is-active" href="admin-reservations.html">◷ <span>Reservasi</span></a>
           <a class="admin-nav-link" href="admin-fleet.html">▣ <span>Armada</span></a>
           <a class="admin-nav-link" href="admin-vehicle-service.html">⚙ <span>Kontrol unit & servis</span></a>
           <a class="admin-nav-link" href="admin-location.html">⌖ <span>Lokasi rental</span></a>
@@ -35,13 +35,31 @@
         <div class="sidebar-bottom"><div class="sidebar-help"><strong>DriveLink Admin</strong><span>Prototipe dashboard</span></div><button class="logout-button" id="logoutButton">Keluar</button></div>
       </aside>
       <main class="admin-main">
-        <header class="admin-header"><div><span class="admin-date" id="todayLabel"></span><h1>Booking</h1></div><div class="admin-user"><span class="admin-avatar">AD</span><span><strong id="adminName">Admin</strong><small>Administrator</small></span></div></header>
-        <div class="admin-welcome compact-welcome"><div><span class="eyebrow">Manajemen booking</span><h2>Daftar pengajuan</h2><p>Tinjau setiap pengajuan. Booking yang disetujui akan memesan satu unit dan membuka tahap pembayaran.</p></div><a href="booking.html" class="btn btn-primary">+ Buat booking</a></div>
+        <header class="admin-header"><div><span class="admin-date" id="todayLabel"></span><h1>Reservasi</h1></div><div class="admin-user"><span class="admin-avatar">AD</span><span><strong id="adminName">Admin</strong><small>Administrator</small></span></div></header>
+        <div class="admin-welcome compact-welcome"><div><span class="eyebrow">Melayani reservasi</span><h2>Daftar reservasi</h2><p>Terima pengajuan, atur jenis pemesanan dan jadwal datang, lalu pantau kedatangan pelanggan beserta barang jaminannya.</p></div><a href="booking.html" class="btn btn-primary">+ Buat booking</a></div>
         <section class="admin-panel payment-review-panel">
           <div class="panel-heading"><div><h2>Verifikasi pembayaran</h2><p>Verifikasi bukti deposit Rp1.000.000 terlebih dahulu. Setelah deposit disetujui, pelanggan dapat membayar sewa; persiapan unit dimulai setelah pembayaran sewa disetujui.</p></div></div>
           <div class="payment-review-list" id="bookingPaymentReviewList"></div>
           <p class="empty-state" id="bookingPaymentQueueEmpty" hidden>Tidak ada pembayaran yang menunggu verifikasi.</p>
           <p class="workflow-message" id="bookingActionMessage" aria-live="polite"></p>
+        </section>
+        <section class="admin-panel reservation-settings-panel">
+          <div class="panel-heading"><div><span class="rental-settings-kicker">Ketentuan reservasi</span><h2>Jenis pemesanan, jadwal datang, dan jaminan</h2><p>Atur jenis pemesanan yang tampil di formulir, toleransi keterlambatan kedatangan, dan daftar barang jaminan yang boleh dicentang pelanggan.</p></div></div>
+          <form id="reservationPolicyForm" class="admin-settings-form">
+            <label class="field-row two-col"><span>Toleransi keterlambatan (menit) <b>*</b></span><input type="number" name="arrivalGraceMinutes" id="arrivalGraceMinutes" min="0" max="720" step="5" required /><small class="file-name">Pelanggan dianggap terlambat setelah melewati jadwal datang lebih dari nilai ini.</small></label>
+            <fieldset class="rental-policy-group">
+              <legend>Jenis pemesanan</legend>
+              <div id="reservationTypeList" class="rental-policy-list"></div>
+              <button class="btn btn-secondary" type="button" id="addReservationType">+ Tambah jenis pemesanan</button>
+            </fieldset>
+            <fieldset class="rental-policy-group">
+              <legend>Barang jaminan yang boleh dipilih</legend>
+              <div id="reservationCollateralList" class="rental-policy-list"></div>
+              <button class="btn btn-secondary" type="button" id="addReservationCollateral">+ Tambah barang jaminan</button>
+            </fieldset>
+            <button class="btn btn-primary" type="submit">Simpan pengaturan reservasi</button>
+            <p class="workflow-message" id="reservationPolicyMessage" aria-live="polite"></p>
+          </form>
         </section>
         <section class="admin-panel">
           <div class="booking-toolbar">
@@ -49,7 +67,7 @@
             <label class="filter-field"><span class="sr-only">Filter status</span><select id="statusFilter"><option value="">Semua status</option><option>Booking</option><option>Pembayaran</option><option>Persiapan unit</option><option>Serah terima</option><option>Rental berjalan</option><option>Selesai</option><option>Dikembalikan</option><option>Dibatalkan</option></select></label>
             <a class="btn btn-secondary" href="admin-handover-archive.html">Arsip checklist unit</a>
           </div>
-          <div class="table-scroll"><table class="admin-table"><thead><tr><th>ID Booking</th><th>Pelanggan / alamat</th><th>Kendaraan</th><th>Durasi</th><th>Jadwal datang</th><th>Layanan</th><th>Tarif / hari</th><th>Persetujuan</th><th>Pembayaran</th><th>Serah-terima</th><th>Asal perjalanan</th><th>Dokumen</th><th>Tanggal booking</th><th>Tahap</th><th>Aksi</th></tr></thead><tbody id="allBookingsBody"></tbody></table></div>
+          <div class="table-scroll"><table class="admin-table"><thead><tr><th>ID Booking</th><th>Pelanggan / alamat</th><th>Kendaraan</th><th>Durasi</th><th>Jadwal datang</th><th>Kedatangan</th><th>Jaminan</th><th>Layanan</th><th>Tarif / hari</th><th>Persetujuan</th><th>Pembayaran</th><th>Serah-terima</th><th>Asal perjalanan</th><th>Dokumen</th><th>Tanggal booking</th><th>Tahap</th><th>Aksi</th></tr></thead><tbody id="allBookingsBody"></tbody></table></div>
           <p class="empty-state" id="allEmpty" hidden>Tidak ada booking yang cocok dengan pencarian ini.</p>
         </section>
         <dialog class="customer-details-dialog" id="customerDetailsDialog" aria-labelledby="customerDetailsTitle">
@@ -79,6 +97,7 @@
     <script src="assets/js/api-client.js?v=2026-10-13"></script>
     <script src="assets/js/admin-access.js?v=2026-10-13"></script>
     <script src="assets/js/admin.js?v=2026-10-13"></script>
+    <script src="assets/js/admin-reservations.js?v=2026-10-13"></script>
     <script src="assets/js/admin-notifications.js?v=2026-10-13"></script>
     <script src="assets/js/responsive-nav.js?v=2026-10-13"></script>
   </body>

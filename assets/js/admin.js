@@ -370,6 +370,10 @@ function renderBookings() {
       <td>${escapeHtml(booking.carType)}</td>
       <td>${escapeHtml(booking.duration)}</td>
       <td><strong>${escapeHtml(booking.bookingType || 'Reservasi')}</strong><small>${escapeHtml(formattedArrival(booking.arrivalAt))}</small></td>
+      <td data-arrival-cell="${escapeHtml(booking.id)}"><span class="arrival-status status-pending">Memuat…</span></td>
+      <td>${booking.collateralItems?.length
+    ? booking.collateralItems.map((item) => `<span class="collateral-chip">${escapeHtml(item)}</span>`).join('')
+    : '<small>Tidak ada jaminan</small>'}</td>
       <td>${escapeHtml(booking.driverOption || '-')}</td>
       <td>${booking.ratePerDay ? escapeHtml(formatCurrency(booking.ratePerDay)) : '-'}</td>
       <td><span class="status-pill ${booking.bookingApproval === 'Disetujui' ? 'status-active' : booking.bookingApproval === 'Ditolak' ? 'status-cancelled' : 'status-pending'}">${escapeHtml(booking.bookingApproval || 'Menunggu persetujuan')}</span></td>
@@ -1653,7 +1657,7 @@ if (window.DriveLinkAPI && currentPage.startsWith('admin')) {
         document.getElementById('dailyRevenue').textContent = formatCurrency(overview.dailyRevenue);
         document.getElementById('serviceExpenses').textContent = formatCurrency(overview.totalServiceExpenses);
         renderOverviewCharts(overview);
-      } else if (currentPage === 'admin-bookings.html') {
+      } else if (currentPage === 'admin-reservations.html') {
         const bookings = await DriveLinkAPI.get('/api/admin/bookings');
         DriveLinkStorage.writeBookings(bookings);
         renderBookings();

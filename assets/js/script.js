@@ -317,13 +317,18 @@ if (bookingForm) {
     return localDate.toISOString().slice(0, 16);
   }
   function updateArrivalSchedule() {
-    const bookingType = bookingForm.elements.bookingType?.value || 'Reservasi';
-    const isReservation = bookingType === 'Reservasi';
-    if (arrivalField) arrivalField.hidden = !isReservation;
-    if (arrivalHeading) arrivalHeading.hidden = !isReservation;
+    const selected = bookingForm.querySelector('[name="bookingType"]:checked');
+    // Aturan per jenis pemesanan berasal dari server (dikelola admin di halaman Reservasi).
+    const label = selected?.value || 'Reservasi';
+    const rule = Array.isArray(bookingTypeRules)
+      ? bookingTypeRules.find((type) => type.label === label)
+      : null;
+    const requiresFuture = rule ? Boolean(rule.requiresFutureArrival) : label === 'Reservasi';
+    if (arrivalField) arrivalField.hidden = !requiresFuture;
+    if (arrivalHeading) arrivalHeading.hidden = !requiresFuture;
     if (arrivalInput) {
-      arrivalInput.required = isReservation;
-      if (isReservation) {
+      arrivalInput.required = requiresFuture;
+      if (requiresFuture) {
         arrivalInput.min = localDateTimeValue(Date.now() + 60000);
         if (!arrivalInput.value || new Date(arrivalInput.value).getTime() <= Date.now()) {
           arrivalInput.value = arrivalInput.min;
@@ -334,9 +339,6 @@ if (bookingForm) {
       }
     }
   }
-  bookingForm.querySelectorAll('[name="bookingType"]').forEach((field) => {
-    field.addEventListener('change', updateArrivalSchedule);
-  });
   updateArrivalSchedule();
   const initialFleet = [
     { name: 'Avanza Smart', category: 'MPV', totalCount: 5, availableCount: 5, priceNoDriver: 420000, priceWithDriverFuel: 420000, priceWithDriverNoFuel: 420000 },
@@ -593,10 +595,19 @@ if (bookingForm) {
     const message = document.getElementById('bookingSubmitMessage');
     const arrivalAt = String(formData.get('arrivalAt') || '');
     const arrivalTime = new Date(arrivalAt);
+    // Aturan "wajib jadwal masa depan" mengikuti jenis pemesanan dari server.
+    const selectedTypeRule = Array.isArray(bookingTypeRules)
+      ? bookingTypeRules.find((type) => type.label === bookingType)
+      : null;
+    const arrivalMustBeFuture = selectedTypeRule
+      ? Boolean(selectedTypeRule.requiresFutureArrival)
+      : bookingType === 'Reservasi';
     if (!arrivalAt || Number.isNaN(arrivalTime.getTime())
-      || (bookingType === 'Reservasi' && arrivalTime.getTime() <= Date.now())) {
+      || (arrivalMustBeFuture && arrivalTime.getTime() <= Date.now())) {
       if (message) {
-        message.textContent = 'Pilih tanggal dan waktu reservasi yang masih akan datang.';
+        message.textContent = arrivalMustBeFuture
+          ? 'Pilih tanggal dan waktu kedatangan yang masih akan datang.'
+          : 'Pilih tanggal dan waktu kedatangan yang valid.';
         message.classList.add('is-error');
       }
       return;
