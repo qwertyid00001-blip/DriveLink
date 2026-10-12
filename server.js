@@ -383,10 +383,20 @@ function createApp(options = {}) {
   const app = express();
   const loginAttempts = new Map();
   const reviewAttempts = new Map();
+  const bookingAttempts = new Map();
   const updateStreams = new Set();
   const updateInstanceId = crypto.randomUUID();
 
+  // CATATAN KEAMANAN: header proxy di bawah hanya bisa dipercaya bila server hanya dapat
+  // dijangkau lewat Cloudflare Tunnel (scripts/share.js), karena hanya Cloudflare yang
+  // dapat menyetel cf-connecting-ip. Bila server dibuka langsung ke jaringan, header ini
+  // bisa dipalsukan dan batas 1 ulasan/IP tidak berlaku.
+  // req.ip (alamat socket) dipakai sebagai cadangan saat tidak ada header proxy.
   function getClientIp(req) {
+    const cloudflareIp = req.headers['cf-connecting-ip'];
+    if (typeof cloudflareIp === 'string' && cloudflareIp.trim()) {
+      return cloudflareIp.trim();
+    }
     const forwarded = req.headers['x-forwarded-for'];
     if (typeof forwarded === 'string' && forwarded.trim()) {
       return forwarded.split(',')[0].trim();
@@ -394,10 +404,6 @@ function createApp(options = {}) {
     const realIp = req.headers['x-real-ip'];
     if (typeof realIp === 'string' && realIp.trim()) {
       return realIp.trim();
-    }
-    const cloudflareIp = req.headers['cf-connecting-ip'];
-    if (typeof cloudflareIp === 'string' && cloudflareIp.trim()) {
-      return cloudflareIp.trim();
     }
     return req.ip || req.socket?.remoteAddress || 'unknown';
   }
@@ -744,6 +750,7 @@ function createApp(options = {}) {
       'baseTotal', 'discountAmount', 'freeFuelDays',
       'status', 'bookingApproval', 'paymentStatus', 'paymentMethod',
       'handoverStatus', 'handoverAdminNote', 'handoverPhotos',
+      'bookingRejectionReason', 'paymentAdminNote', 'depositPaymentAdminNote',
       'handoverSubmittedAt', 'handoverApprovedAt', 'customerHandoverCompletedAt',
       'rentalStartedAt', 'rentalReturnedAt',
       'vehicleInspection', 'createdAt',
@@ -795,6 +802,9 @@ function createApp(options = {}) {
       status: booking.status,
       bookingApproval: booking.bookingApproval,
       bookingApprovedAt: booking.bookingApprovedAt || '',
+      bookingRejectionReason: booking.bookingRejectionReason || '',
+      paymentAdminNote: booking.paymentAdminNote || '',
+      depositPaymentAdminNote: booking.depositPaymentAdminNote || '',
       paymentStatus: booking.paymentStatus,
       paymentMethod: booking.paymentMethod || '',
       depositAmount: booking.depositAmount || 0,
@@ -1166,6 +1176,11 @@ function createApp(options = {}) {
     if (!name || name.length > 60 || !comment || comment.length > 600
       || !Number.isInteger(rating) || rating < 1 || rating > 5) {
       return fail(res, 400, 'Isi nama, penilaian 1 sampai 5 bintang, dan ulasan maksimal 600 karakter.');
+    }
+    // Pangkas percobaan lama supaya peta di memori tidak tumbuh tanpa batas.
+    const reviewCutoff = Date.now() - 24 * 60 * 60 * 1000;
+    for (const [key, stamp] of reviewAttempts) {
+      if (stamp < reviewCutoff) reviewAttempts.delete(key);
     }
     reviewAttempts.set(reviewerIpHash, Date.now());
     const review = {
@@ -1594,9 +1609,23 @@ function createApp(options = {}) {
 
   app.post('/api/bookings', (req, res) => {
     const body = req.body || {};
+    const bookingAttemptCutoff = Date.now() - 15 * 60 * 1000;
+    const bookingAddress = req.ip || req.socket?.remoteAddress || 'unknown';
+    const recentBookingAttempts = (bookingAttempts.get(bookingAddress) || [])
+      .filter((timestamp) => timestamp > bookingAttemptCutoff);
+    if (recentBookingAttempts.length >= 20) {
+      return fail(res, 429, 'Terlalu banyak permintaan booking dari perangkat ini. Coba lagi beberapa menit lagi.');
+    }
+    recentBookingAttempts.push(Date.now());
+    bookingAttempts.set(bookingAddress, recentBookingAttempts);
+
     const required = ['name', 'email', 'phone', 'address', 'carType', 'duration', 'arrivalAt', 'bookingType'];
     if (required.some((key) => typeof body[key] !== 'string' || !body[key].trim())) {
       return fail(res, 400, 'Lengkapi data pemesan, kendaraan, durasi, dan jadwal.');
+    }
+    if (body.name.trim().length > 100 || body.address.trim().length > 500
+      || body.phone.trim().length > 30 || body.email.trim().length > 254) {
+      return fail(res, 400, 'Data pemesan terlalu panjang. Periksa nama, alamat, telepon, dan email.');
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email) || normalizePhone(body.phone).length < 9) {
       return fail(res, 400, 'Email atau nomor telepon tidak valid.');
@@ -1607,7 +1636,10 @@ function createApp(options = {}) {
     if (Number.isNaN(arrivalAt.getTime()) || body.bookingType === 'Reservasi' && arrivalAt <= new Date()) {
       return fail(res, 400, 'Pilih jadwal kedatangan yang valid dan masih akan datang.');
     }
-    const vehicle = db.prepare('SELECT * FROM fleet WHERE name = ? AND is_archived = 0').get(body.carType);
+    // Terima id maupun nama kendaraan. Sebelumnya hanya nama yang cocok, sehingga klien
+    // yang mengirim id dari /api/fleet mendapat "Kendaraan tidak tersedia".
+    const vehicle = db.prepare('SELECT * FROM fleet WHERE (name = ? OR id = ?) AND is_archived = 0')
+      .get(body.carType, body.carType);
     if (!vehicle || vehicle.available_count < 1) return fail(res, 409, 'Kendaraan tidak tersedia.');
     const physicalUnits = fleetPhysicalUnits(body.carType);
     let vehicleColor = '';
@@ -1687,8 +1719,17 @@ function createApp(options = {}) {
       id = makeId();
     } while (db.prepare('SELECT 1 FROM bookings WHERE id = ?').get(id));
     const createdAt = new Date().toISOString();
+    // Hanya field di bawah yang disimpan. Field lain dari permintaan diabaikan supaya
+    // data asing tidak tersimpan permanen di database.
+    const accepted = {};
+    for (const key of ['name', 'email', 'phone', 'address', 'bookingType', 'arrivalAt', 'carType', 'vehicleColor',
+      'duration', 'driverOption', 'fuelPackage', 'deposit', 'packageId', 'promotionId',
+      'documents', 'travelType']) {
+      if (body[key] !== undefined) accepted[key] = body[key];
+    }
     const booking = {
-      ...body,
+      ...accepted,
+      carType: vehicle.name,
       vehicleColor,
       id,
       phone: String(body.phone).trim(),

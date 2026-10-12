@@ -191,7 +191,9 @@ function renderOrder(booking) {
       key: 'booking',
       label: 'Pengajuan booking',
       state: stageState(approved, approval === 'Menunggu persetujuan' ? 'Menunggu persetujuan admin' : approval === 'Ditolak' ? 'Ditolak admin' : ''),
-      detail: approval === 'Ditolak' ? 'Pengajuan ditolak admin.' : 'Admin meninjau data dan ketersediaan kendaraan.',
+      detail: approval === 'Ditolak'
+        ? `Pengajuan ditolak admin${booking.bookingRejectionReason ? `: ${booking.bookingRejectionReason}` : '.'}`
+        : 'Admin meninjau data dan ketersediaan kendaraan.',
       completed: approved,
     },
     {
@@ -328,6 +330,9 @@ function showStageDetails(key) {
         ['Alamat', currentBooking.address],
         ['Tanggal pengajuan', formatDate(currentBooking.createdAt)],
         ['Persetujuan admin', currentBooking.bookingApproval],
+        ['Alasan penolakan', currentBooking.bookingRejectionReason],
+        ['Catatan admin pembayaran', currentBooking.paymentAdminNote],
+        ['Catatan admin deposit', currentBooking.depositPaymentAdminNote],
         ['Disetujui pada', formatDate(currentBooking.bookingApprovedAt)],
         ['Jenis pemesanan', currentBooking.bookingType],
         ['Jadwal kedatangan', formatDate(currentBooking.arrivalAt)],
