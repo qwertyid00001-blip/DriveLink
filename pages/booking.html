@@ -66,7 +66,11 @@
             <legend>Pilihan deposit</legend>
             <div id="rentalDepositOptions" class="rental-deposit-options"><p class="file-name">Memuat pilihan deposit...</p></div>
           </fieldset>
-          <div class="booking-collateral-note" id="rentalCollateralNote" hidden><strong>Barang jaminan yang perlu dititipkan</strong><ul id="rentalCollateralItems"></ul></div>
+          <fieldset class="choice-field collateral-choice-field" id="rentalCollateralNote" hidden>
+            <legend>Barang jaminan yang dititipkan</legend>
+            <p class="field-hint">Centang barang yang Anda titipkan sebagai jaminan. Kosongkan bila tidak menitipkan barang.</p>
+            <div id="rentalCollateralItems" class="rental-collateral-options"><p class="file-name">Memuat daftar jaminan...</p></div>
+          </fieldset>
           <div class="booking-form-heading"><h2>Dokumen persyaratan</h2><p>Pilih foto JPG/PNG hingga 10 MB. Foto akan otomatis dikompresi maksimal 300 KB sebelum dikirim.</p></div>
           <div class="field-row two-col">
             <label><span>Jenis identitas <b>*</b></span><select name="identityType" id="identityType" required><option value="KTP">KTP</option><option value="Paspor">Paspor</option></select></label>

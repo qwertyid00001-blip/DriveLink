@@ -936,6 +936,29 @@ p {
   accent-color: var(--primary);
 }
 
+/* Jaminan memakai checkbox dalam beberapa kolom, bukan satu daftar panjang. */
+.rental-collateral-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+}
+
+.rental-collateral-options .choice-option {
+  align-items: center;
+  padding: 12px 14px;
+}
+
+.rental-collateral-options .choice-option:has(input:checked) {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 6%, #fff);
+}
+
+.collateral-choice-field .field-hint {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
 .choice-option span,
 .choice-option small {
   display: block;

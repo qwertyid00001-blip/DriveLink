@@ -663,6 +663,7 @@ if (bookingForm) {
       packageId: formData.get('packageId'),
       promotionId: formData.get('promotionId'),
       deposit: formData.get('deposit'),
+      collateralItems: typeof readSelectedCollateral === 'function' ? readSelectedCollateral() : [],
       travelType: residencyType,
       documents,
       status: 'Booking',

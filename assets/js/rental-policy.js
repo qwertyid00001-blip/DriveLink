@@ -1,5 +1,5 @@
 const depositOptionsElement = document.getElementById('rentalDepositOptions');
-const collateralNote = document.getElementById('rentalCollateralNote');
+const collateralFieldset = document.getElementById('rentalCollateralNote');
 const collateralList = document.getElementById('rentalCollateralItems');
 
 function escapeRentalPolicyText(value) {
@@ -12,6 +12,31 @@ function escapeRentalPolicyText(value) {
   })[character]);
 }
 
+// Daftar barang jaminan dari pengaturan admin, untuk checkbox di form booking.
+function buildCollateralCheckboxes(items) {
+  collateralList.replaceChildren(...items.map((item, index) => {
+    const label = document.createElement('label');
+    label.className = 'choice-option';
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.name = 'collateralItem';
+    input.value = item;
+    // Barang pertama dicentang sebagai pilihan awal agar pelanggan tidak lupa.
+    if (index === 0) input.checked = true;
+    const span = document.createElement('span');
+    const strong = document.createElement('strong');
+    strong.textContent = item;
+    span.append(strong);
+    label.append(input, span);
+    return label;
+  }));
+}
+
+// Kembalikan daftar jaminan yang dicentang, untuk dikirim bersama booking.
+function readSelectedCollateral() {
+  return [...collateralList.querySelectorAll('input[name="collateralItem"]:checked')].map((input) => input.value);
+}
+
 window.DriveLinkRentalPolicyReady = DriveLinkAPI.get('/api/site-settings/rental-policy')
   .then((policy) => {
     depositOptionsElement.innerHTML = policy.depositOptions.map((option, index) => `
@@ -20,12 +45,8 @@ window.DriveLinkRentalPolicyReady = DriveLinkAPI.get('/api/site-settings/rental-
         <span><strong>${escapeRentalPolicyText(option.label)}</strong><small>${escapeRentalPolicyText(option.description)}</small></span>
       </label>
     `).join('');
-    collateralList.replaceChildren(...policy.collateralItems.map((item) => {
-      const entry = document.createElement('li');
-      entry.textContent = item;
-      return entry;
-    }));
-    collateralNote.hidden = policy.collateralItems.length === 0;
+    buildCollateralCheckboxes(policy.collateralItems);
+    collateralFieldset.hidden = policy.collateralItems.length === 0;
     return policy;
   })
   .catch((error) => {

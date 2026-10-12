@@ -196,6 +196,15 @@ produksi, dan URL baru dibuat setiap kali perintah dijalankan.
 - Booking pelanggan dapat memilih paket dan promo yang cocok. Server memeriksa
   kategori unit, masa promo, dan menghitung ulang potongan persen/nominal atau
   kredit BBM gratis sebelum menyimpan total booking.
+- **Deposit dan barang jaminan diatur admin pada halaman Pengaturan sewa.**
+  Admin menambah, mengubah, dan menghapus pilihan deposit (maksimal 6, tiap
+  pilihan punya nama dan keterangan) serta daftar barang jaminan yang boleh
+  dipilih pelanggan (maksimal 10). Pelanggan memilih deposit lewat tombol
+  pilihan dan mencentang barang jaminan yang dititipkan pada form booking;
+  pilihan yang tidak dicentang berarti tidak ada barang yang dititipkan. Server
+  hanya menerima jaminan yang ada di daftar aktif, lalu menyimpan pilihan
+  jaminan ke booking. Admin dan pelanggan sama-sama melihat daftar jaminan
+  yang dipilih pada detail booking.
 
 Permintaan admin memakai cookie sesi HttpOnly selama delapan jam. Harga booking
 dihitung ulang di server, approval stok dilakukan dalam transaksi SQLite, dan

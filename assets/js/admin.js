@@ -252,6 +252,7 @@ async function openCustomerDetails(bookingId) {
     ['Tarif per hari', booking.ratePerDay ? formatCurrency(booking.ratePerDay) : '-'],
     ['Estimasi total', booking.estimatedTotal ? formatCurrency(booking.estimatedTotal) : '-'],
     ['Pilihan deposit', booking.deposit],
+    ...(booking.collateralItems?.length ? [['Barang jaminan dititipkan', booking.collateralItems.join(', ')]] : []),
     ['Persetujuan booking', booking.bookingApproval],
     ['Status pembayaran', booking.paymentStatus],
     ['Status serah-terima', booking.handoverStatus],

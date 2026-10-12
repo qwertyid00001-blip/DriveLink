@@ -64,6 +64,7 @@ function renderRentalReceipt(booking) {
     ['Metode pembayaran', booking.paymentMethod],
     ['Biaya rental', formatCurrency(booking.estimatedTotal)],
     ['Deposit', booking.deposit],
+    ...(booking.collateralItems?.length ? [['Barang jaminan dititipkan', booking.collateralItems.join(', ')]] : []),
     ...(booking.depositPaymentRequired ? [['Status deposit', booking.depositPaymentStatus || 'Belum dibayar']] : []),
     ['Serah-terima selesai', formatDate(booking.customerHandoverCompletedAt || booking.handoverSubmittedAt)],
     ['Waktu mulai sewa', formatDate(booking.rentalStartedAt)],

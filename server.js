@@ -763,6 +763,7 @@ function createApp(options = {}) {
       'id', 'phone', 'carType', 'vehicleColor', 'duration', 'bookingType', 'arrivalAt',
       'driverOption', 'fuelPackage', 'ratePerDay', 'estimatedTotal', 'deposit',
       'depositAmount', 'depositPaymentRequired', 'depositPaymentStatus', 'depositPaymentMethod',
+      'collateralItems',
       'packageId', 'packageName', 'packageIncludes', 'promotionId', 'promotionName',
       'baseTotal', 'discountAmount', 'freeFuelDays',
       'status', 'bookingApproval', 'paymentStatus', 'paymentMethod',
@@ -812,6 +813,7 @@ function createApp(options = {}) {
       baseTotal: booking.baseTotal,
       discountAmount: booking.discountAmount,
       deposit: booking.deposit,
+      collateralItems: booking.collateralItems || [],
       packageName: booking.packageName,
       packageIncludes: booking.packageIncludes,
       promotionName: booking.promotionName,
@@ -1670,6 +1672,17 @@ function createApp(options = {}) {
     const deposit = String(body.deposit || rentalPolicy.depositOptions[0].label).trim();
     const selectedDeposit = rentalPolicy.depositOptions.find((option) => option.label === deposit);
     if (!selectedDeposit) return fail(res, 400, 'Pilih salah satu metode deposit yang tersedia.');
+    // Barang jaminan hanya boleh dipilih dari daftar aktif yang diatur admin.
+    const requestedCollateral = Array.isArray(body.collateralItems) ? body.collateralItems : [];
+    if (requestedCollateral.length > 10) return fail(res, 400, 'Jumlah barang jaminan yang dipilih terlalu banyak.');
+    const activeCollateral = new Map(rentalPolicy.collateralItems.map((item) => [item.toLocaleLowerCase('id-ID'), item]));
+    const selectedCollateral = [];
+    for (const rawItem of requestedCollateral) {
+      const label = String(rawItem || '').trim();
+      const canonical = activeCollateral.get(label.toLocaleLowerCase('id-ID'));
+      if (!canonical) return fail(res, 400, 'Barang jaminan yang dipilih tidak tersedia. Muat ulang halaman.');
+      if (!selectedCollateral.includes(canonical)) selectedCollateral.push(canonical);
+    }
     const fuelPackage = body.driverOption === 'Pakai driver' ? body.fuelPackage : '';
     if (fuelPackage && !['Termasuk BBM', 'Belum termasuk BBM'].includes(fuelPackage)) return fail(res, 400, 'Pilihan paket BBM tidak valid.');
     const rate = body.driverOption === 'Lepas kunci'
@@ -1737,7 +1750,7 @@ function createApp(options = {}) {
     const accepted = {};
     for (const key of ['name', 'email', 'phone', 'address', 'bookingType', 'arrivalAt', 'carType', 'vehicleColor',
       'duration', 'driverOption', 'fuelPackage', 'deposit', 'packageId', 'promotionId',
-      'documents', 'travelType']) {
+      'documents', 'travelType', 'collateralItems']) {
       if (body[key] !== undefined) accepted[key] = body[key];
     }
     const booking = {
@@ -1761,6 +1774,7 @@ function createApp(options = {}) {
       ratePerDay: rate,
       estimatedTotal,
       deposit: selectedDeposit.label,
+      collateralItems: selectedCollateral,
       depositAmount: depositAmountFromLabel(selectedDeposit.label),
       depositPaymentRequired: depositAmountFromLabel(selectedDeposit.label) === 1_000_000,
       depositPaymentStatus: depositAmountFromLabel(selectedDeposit.label) === 1_000_000 ? 'Belum dibayar' : '',
