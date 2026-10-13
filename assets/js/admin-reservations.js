@@ -10,6 +10,7 @@ const arrivalGraceInput = document.getElementById('arrivalGraceMinutes');
 
 let arrivalGraceMinutes = 30;
 let arrivalTickInterval = null;
+let arrivalObserver = null;
 
 function createReservationTypeRow(type = {}) {
   const row = document.createElement('div');
@@ -144,8 +145,14 @@ function arrivalState(booking, now = Date.now()) {
   return { key: 'late', label: `Terlambat ${overdue} menit`, tone: 'cancelled' };
 }
 
+// Dipasang ke window supaya admin-table-cards.js bisa memanggilnya setelah
+// tabel digambar ulang.
+window.updateArrivalTimers = updateArrivalTimers;
+
 // Perbarui sel `[data-arrival-cell]` yang ada di tabel reservasi.
-function updateArrivalTimers() {
+// Fungsi ini hanya mengubah teks sel, tidak menggambar ulang tabel: memanggil
+// renderBookings() di sini akan menulis ulang isi sel kembali ke "Memuat…".
+function paintArrivalCells() {
   const bookings = typeof readBookings === 'function' ? readBookings() : [];
   document.querySelectorAll('[data-arrival-cell]').forEach((cell) => {
     const booking = bookings.find((item) => item.id === cell.dataset.arrivalCell);
@@ -156,10 +163,24 @@ function updateArrivalTimers() {
     pill.textContent = state.label;
     pill.className = `arrival-status status-${state.tone}`;
   });
-  if (typeof renderBookings === 'function') renderBookings();
+}
+
+function updateArrivalTimers() {
+  // Tabel reservasi diisi oleh admin.js setelah data dari server tiba, yang bisa
+  // terjadi setelah pemanggilan pertama. Observer dipakai agar sel diperbarui
+  // begitu barisnya benar-benar muncul.
+  if (arrivalObserver) arrivalObserver.disconnect();
+  arrivalObserver = new MutationObserver(() => {
+    if (!document.querySelector('[data-arrival-cell]')) return;
+    paintArrivalCells();
+    arrivalObserver.disconnect();
+  });
+  arrivalObserver.observe(document.documentElement, { childList: true, subtree: true });
+  paintArrivalCells();
+
   if (arrivalTickInterval) window.clearInterval(arrivalTickInterval);
   arrivalTickInterval = window.setInterval(() => {
-    if (typeof readBookings === 'function' && document.querySelector('[data-arrival-cell]')) updateArrivalTimers();
+    if (document.querySelector('[data-arrival-cell]')) paintArrivalCells();
   }, 60000);
 }
 

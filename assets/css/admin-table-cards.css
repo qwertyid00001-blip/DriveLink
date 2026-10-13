@@ -1,0 +1,174 @@
+/* Tabel admin menjadi kartu di layar kecil.
+ *
+ * Hanya berlaku pada lebar 720px ke bawah. Di atas lebar itu tidak ada aturan
+ * sama sekali, sehingga tampilan desktop tidak berubah.
+ *
+ * Nama kolom diambil dari <thead> lalu ditempel ke tiap <td> sebagai
+ * data-label oleh assets/js/admin-table-cards.js, sehingga tabel yang dibuat
+ * lewat JavaScript ikut terbaca tanpa perlu diubah satu per satu. */
+
+@media (max-width: 720px) {
+  /* Wadah tabel tidak lagi mengunci lebar; kartu mengikuti lebar layar. */
+  .table-scroll {
+    overflow-x: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  /* Sembunyikan kepala tabel; label-nya pindah ke tiap baris. */
+  .admin-table thead {
+    display: none;
+  }
+
+  /* min-width:0 dan tabel-layout:auto diperlukan karena .admin-table pada
+     styles.css memakai table-layout:fixed; tanpa ini tabel tetap memakai lebar
+     kolom aslinya dan isinya terpotong di luar layar. */
+  .admin-table,
+  .admin-table tbody,
+  .admin-table tr,
+  .admin-table td {
+    display: block;
+    width: auto;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .admin-table {
+    table-layout: auto;
+  }
+
+  .admin-table tr {
+    margin: 0 0 14px;
+    padding: 6px 16px 14px;
+    border: 1px solid #e6ebf4;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(15, 42, 166, 0.05);
+  }
+
+  .admin-table td {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 10px 0;
+    border: 0;
+    border-bottom: 1px solid #eef2f8;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  /* Baris terakhir tidak butuh garis pemisah. */
+  .admin-table tr td:last-child {
+    border-bottom: 0;
+    padding-bottom: 4px;
+  }
+
+  /* Nama kolom di kiri, isi di kanan. Lebar label dibatasi agar isi punya
+     ruang dan tidak saling bertumpuk. */
+  .admin-table td::before {
+    content: attr(data-label);
+    flex: 0 0 42%;
+    max-width: 42%;
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* Isi sel mengisi sisa ruang, boleh membungkus, dan tidak meluber. */
+  .admin-table td > * {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    text-align: right;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  /* Sel yang isinya teks polos (tanpa elemen anak) tidak bisa dirapikan dengan
+     flex pada ::before saja, karena teks sel ikut jadi item flex yang panjang.
+     Di sini label dibuat di atas dan teks sel turun ke baris sendiri. */
+  .admin-table td:not(:has(> *)) {
+    display: block;
+    padding-top: 22px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .admin-table td:not(:has(> *))::before {
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  /* Sel yang isinya satu blok teks panjang (mis. ID booking) tetap memakai
+     flex, tetapi teksnya diberi ruang dan boleh membungkus. */
+  .admin-table td > strong:only-child,
+  .admin-table td > span:only-child {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  /* Sel yang memuat beberapa baris info (mis. nama, email, telepon, alamat)
+     dikumpulkan menjadi satu blok di kolom kanan agar tidak bertumpuk. */
+  .admin-table td > strong,
+  .admin-table td > small {
+    display: block;
+    text-align: right;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .admin-table td > small {
+    margin-top: 2px;
+  }
+
+  /* Semua elemen anak turun ke baris penuh di bawah label. */
+  .admin-table td:has(> strong),
+  .admin-table td:has(> small) {
+    display: block;
+    padding-top: 22px;
+  }
+
+  .admin-table td:has(> strong)::before,
+  .admin-table td:has(> small)::before {
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  /* Kolom yang isinya tombol atau chip tidak perlu label ulang. */
+  .admin-table td:empty {
+    display: none;
+  }
+
+  /* Tombol aksi dibuat penuh lebar agar mudah diketik. */
+  .admin-table td .btn,
+  .admin-table td button {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  /* Foto dan chip tetap rapi. */
+  .admin-table td .photo-grid,
+  .admin-table td .collateral-chip,
+  .admin-table td .customer-document-grid {
+    text-align: right;
+  }
+
+  .admin-table td .photo-grid {
+    justify-content: flex-end;
+  }
+
+  /* Status pill tidak ikut ter-justify ke kanan bila sendirian. */
+  .admin-table td .status-pill,
+  .admin-table td .arrival-status {
+    margin-left: auto;
+  }
+
+  /* Baris yang tidak punya isi sama sekali disembunyikan. */
+  .admin-table tr:empty {
+    display: none;
+  }
+}
