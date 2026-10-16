@@ -11,8 +11,8 @@
       href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/css/styles.css?v=2026-10-13-responsive-v1" />
-    <link rel="stylesheet" href="assets/css/admin-table-cards.css?v=2026-10-13" />
+    <link rel="stylesheet" href="assets/css/styles.css?v=2026-10-16-icon-fix" />
+    <link rel="stylesheet" href="assets/css/admin-table-cards.css?v=2026-10-16" />
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
   </head>
   <body class="admin-page">
@@ -24,22 +24,22 @@
         </a>
         <span class="sidebar-label">MENU</span>
         <nav class="admin-nav" aria-label="Navigasi dashboard">
-          <a class="admin-nav-link is-active" href="admin.html">◫ <span>Ringkasan</span></a>
-          <a class="admin-nav-link" href="admin-reservations.html">◷ <span>Reservasi</span></a>
-          <a class="admin-nav-link" href="admin-fleet.html">▣ <span>Armada</span></a>
-          <a class="admin-nav-link" href="admin-vehicle-service.html">⚙ <span>Kontrol unit & servis</span></a>
-          <a class="admin-nav-link" href="admin-location.html">⌖ <span>Lokasi rental</span></a>
-          <a class="admin-nav-link" href="admin-rental-settings.html">◷ <span>Pengaturan sewa</span></a>
-          <a class="admin-nav-link" href="admin-travel-packages.html">✦ <span>Paket perjalanan & promo</span></a>
-          <a class="admin-nav-link" href="admin-monitoring.html">⌁ <span>Monitoring IoT</span></a>
-          <a class="admin-nav-link" href="admin-payments.html">＄ <span>Pembayaran</span></a>
-          <a class="admin-nav-link" href="admin-handover.html">✓ <span>Serah-terima</span></a>
-          <a class="admin-nav-link" href="admin-checklist.html">☷ <span>Atur checklist</span></a>
-          <a class="admin-nav-link" href="admin-handover-archive.html">▤ <span>Arsip checklist</span></a>
-          <a class="admin-nav-link" href="admin-return.html">↩ <span>Pengembalian unit</span></a>
-          <a class="admin-nav-link" href="admin-rental-archive.html">▤ <span>Arsip penyewaan</span></a>
-          <a class="admin-nav-link" href="admin-accounts.html">♙ <span>Akun & karyawan</span></a>
-          <a class="admin-nav-link" href="admin-settings.html">⚙ <span>Pengaturan admin</span></a>
+          <a class="admin-nav-link is-active" href="admin.html"><span class="admin-nav-icon">◫</span><span class="admin-nav-label">Ringkasan</span></a>
+          <a class="admin-nav-link" href="admin-reservations.html"><span class="admin-nav-icon">◷</span><span class="admin-nav-label">Reservasi</span></a>
+          <a class="admin-nav-link" href="admin-fleet.html"><span class="admin-nav-icon">▣</span><span class="admin-nav-label">Armada</span></a>
+          <a class="admin-nav-link" href="admin-vehicle-service.html"><span class="admin-nav-icon">⚙</span><span class="admin-nav-label">Kontrol unit & servis</span></a>
+          <a class="admin-nav-link" href="admin-location.html"><span class="admin-nav-icon">⌖</span><span class="admin-nav-label">Lokasi rental</span></a>
+          <a class="admin-nav-link" href="admin-rental-settings.html"><span class="admin-nav-icon">◷</span><span class="admin-nav-label">Pengaturan sewa</span></a>
+          <a class="admin-nav-link" href="admin-travel-packages.html"><span class="admin-nav-icon">✦</span><span class="admin-nav-label">Paket perjalanan & promo</span></a>
+          <a class="admin-nav-link" href="admin-monitoring.html"><span class="admin-nav-icon">⌁</span><span class="admin-nav-label">Monitoring IoT</span></a>
+          <a class="admin-nav-link" href="admin-payments.html"><span class="admin-nav-icon">＄</span><span class="admin-nav-label">Pembayaran</span></a>
+          <a class="admin-nav-link" href="admin-handover.html"><span class="admin-nav-icon">✓</span><span class="admin-nav-label">Serah-terima</span></a>
+          <a class="admin-nav-link" href="admin-checklist.html"><span class="admin-nav-icon">☷</span><span class="admin-nav-label">Atur checklist</span></a>
+          <a class="admin-nav-link" href="admin-handover-archive.html"><span class="admin-nav-icon">▤</span><span class="admin-nav-label">Arsip checklist</span></a>
+          <a class="admin-nav-link" href="admin-return.html"><span class="admin-nav-icon">↩</span><span class="admin-nav-label">Pengembalian unit</span></a>
+          <a class="admin-nav-link" href="admin-rental-archive.html"><span class="admin-nav-icon">▤</span><span class="admin-nav-label">Arsip penyewaan</span></a>
+          <a class="admin-nav-link" href="admin-accounts.html"><span class="admin-nav-icon">♙</span><span class="admin-nav-label">Akun & karyawan</span></a>
+          <a class="admin-nav-link" href="admin-settings.html"><span class="admin-nav-icon">⚙</span><span class="admin-nav-label">Pengaturan admin</span></a>
         </nav>
         <div class="sidebar-bottom">
           <div class="sidebar-help">
@@ -145,11 +145,30 @@
 
           <div class="admin-bottom-grid">
             <section class="admin-panel quick-panel">
-              <h2>Akses cepat</h2>
-              <a href="admin-reservations.html">▤ <span>Kelola booking</span> →</a>
-              <a href="admin-fleet.html">▣ <span>Lihat armada</span> →</a>
-              <a href="admin-location.html">⌖ <span>Atur lokasi rental</span> →</a>
-              <a href="index.html">↗ <span>Buka website</span></a>
+              <div class="panel-heading">
+                <div>
+                  <h2>Akses cepat</h2>
+                  <p>Pintasan langsung ke menu operasional utama.</p>
+                </div>
+              </div>
+              <div class="quick-panel-links">
+                <a class="quick-panel-link" href="admin-reservations.html">
+                  <span>▤ Kelola booking</span>
+                  <span class="quick-arrow" aria-hidden="true">→</span>
+                </a>
+                <a class="quick-panel-link" href="admin-fleet.html">
+                  <span>▣ Lihat armada</span>
+                  <span class="quick-arrow" aria-hidden="true">→</span>
+                </a>
+                <a class="quick-panel-link" href="admin-location.html">
+                  <span>⌖ Atur lokasi rental</span>
+                  <span class="quick-arrow" aria-hidden="true">→</span>
+                </a>
+                <a class="quick-panel-link" href="index.html" target="_blank" rel="noopener">
+                  <span>↗ Buka website publik</span>
+                  <span class="quick-arrow" aria-hidden="true">→</span>
+                </a>
+              </div>
             </section>
           </div>
         </section>
@@ -160,7 +179,7 @@
     <script src="assets/js/api-client.js?v=2026-10-13"></script>
     <script src="assets/js/admin-access.js?v=2026-10-13"></script>
     <script src="assets/js/admin.js?v=2026-10-13"></script>
-    <script src="assets/js/admin-notifications.js?v=2026-10-13"></script>
+    <script src="assets/js/admin-notifications.js?v=2026-10-16-panel-fix"></script>
         <script src="assets/js/admin-table-cards.js?v=2026-10-13"></script>
     <script src="assets/js/responsive-nav.js?v=2026-10-13"></script>
   </body>

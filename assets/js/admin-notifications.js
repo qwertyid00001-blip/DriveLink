@@ -33,16 +33,29 @@
   notificationArea.className = 'admin-notifications';
   notificationArea.innerHTML = `
     <button class="admin-notification-toggle" type="button" aria-label="Notifikasi admin" aria-expanded="false" aria-controls="adminNotificationPanel">
-      <span aria-hidden="true">🔔</span><span class="admin-notification-count" hidden></span>
+      <span class="admin-notification-icon" aria-hidden="true">
+        <svg class="admin-notification-bell-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+      </span>
+      <span class="admin-notification-count" hidden></span>
     </button>
     <section class="admin-notification-panel" id="adminNotificationPanel" aria-label="Notifikasi admin" hidden>
-      <div class="admin-notification-heading"><strong>Notifikasi</strong><span class="admin-notification-summary"></span></div>
+      <div class="admin-notification-heading">
+        <div class="admin-notification-title-wrap">
+          <strong>Notifikasi</strong>
+          <span class="admin-notification-summary"></span>
+        </div>
+        <button type="button" class="admin-notification-close" aria-label="Tutup notifikasi">✕</button>
+      </div>
       <div class="admin-notification-list"></div>
     </section>
   `;
   adminUser.prepend(notificationArea);
   const toggle = notificationArea.querySelector('.admin-notification-toggle');
   const panel = notificationArea.querySelector('.admin-notification-panel');
+  const close = notificationArea.querySelector('.admin-notification-close');
   const count = notificationArea.querySelector('.admin-notification-count');
   const summary = notificationArea.querySelector('.admin-notification-summary');
   const list = notificationArea.querySelector('.admin-notification-list');
@@ -154,12 +167,37 @@
     }
   });
 
+  function updatePanelPosition() {
+    if (window.innerWidth <= 720) {
+      const toggleRect = toggle.getBoundingClientRect();
+      const topOffset = Math.max(16, Math.round(toggleRect.bottom + 8));
+      panel.style.setProperty('--panel-top', `${topOffset}px`);
+    } else {
+      panel.style.removeProperty('--panel-top');
+    }
+  }
+
   toggle.addEventListener('click', () => {
     const open = panel.hidden;
     panel.hidden = !open;
     toggle.setAttribute('aria-expanded', String(open));
-    if (open) renderNotifications();
+    if (open) {
+      updatePanelPosition();
+      renderNotifications();
+    }
   });
+
+  if (close) {
+    close.addEventListener('click', () => {
+      panel.hidden = true;
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  window.addEventListener('resize', () => {
+    if (!panel.hidden) updatePanelPosition();
+  });
+
   document.addEventListener('click', (event) => {
     if (!notificationArea.contains(event.target)) {
       panel.hidden = true;

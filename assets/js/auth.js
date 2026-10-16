@@ -36,3 +36,23 @@ document.getElementById('loginForm').addEventListener('submit', (event) => {
       message.classList.add('is-error');
     });
 });
+
+const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+if (togglePasswordBtn) {
+  const passwordInput = document.getElementById('passwordInput');
+  const eyeIcon = togglePasswordBtn.querySelector('.icon-eye');
+  const eyeOffIcon = togglePasswordBtn.querySelector('.icon-eye-off');
+
+  togglePasswordBtn.addEventListener('click', () => {
+    if (!passwordInput) return;
+    const isPassword = passwordInput.getAttribute('type') === 'password';
+    passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+    togglePasswordBtn.setAttribute('aria-label', isPassword ? 'Sembunyikan password' : 'Tampilkan password');
+    if (eyeIcon && eyeOffIcon) {
+      eyeIcon.style.display = isPassword ? 'none' : 'block';
+      eyeOffIcon.style.display = isPassword ? 'block' : 'none';
+    }
+    passwordInput.focus();
+  });
+}
+
